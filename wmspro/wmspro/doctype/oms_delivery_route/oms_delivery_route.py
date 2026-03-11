@@ -82,7 +82,7 @@ class OMSDeliveryRoute(Document):
 
 
         # --------------------------------------------------
-        # Calculate Shipment Payload
+        # Calculate Shipment Payload using Packaging
         # --------------------------------------------------
 
         total_weight = 0
@@ -95,18 +95,30 @@ class OMSDeliveryRoute(Document):
             if qty <= 0:
                 continue
 
-            weight = frappe.db.get_value(
-                "Item",
-                item.item_code,
-                "weight_per_unit"
-            ) or 0
+            pkg = frappe.get_all(
+                "Item Packaging Level Details",
+                filters={"parent": item.item_code},
+                fields=["gross_weight", "length", "width", "height"],
+                limit=1
+            )
 
-            total_weight += flt(weight) * qty
+            if not pkg:
+                continue
+
+            p = pkg[0]
+
+            gross_weight = flt(p.get("gross_weight"))
+            length = flt(p.get("length"))
+            width = flt(p.get("width"))
+            height = flt(p.get("height"))
+
+            total_weight += gross_weight * qty
+
+            if length and width and height:
+                total_volume += ((length * width * height) / 1000000) * qty
 
 
         result["weight"] = flt(total_weight, 3)
-
-        # Volume calculation skipped if dimensions not available
         result["volume"] = flt(total_volume, 6)
 
         return result
