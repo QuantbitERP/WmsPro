@@ -37,15 +37,19 @@ def create_bin_ledger_entry(
     batch_no=None,
     voucher_type=None,
     voucher_no=None,
-    is_reservation=0
+    is_reservation=0,
+    to_check_balance=False
 ):
 
     if not qty_change:
         return
 
     bin_doc = frappe.get_doc("WMS Bin", bin_location)
-
-    current = get_bin_balance(bin_location, item_code, batch_no)
+    
+    if to_check_balance:
+        current = get_bin_balance(bin_location, item_code, batch_no)
+    else:
+        current = {"balance": 0, "reserved": 0, "available": 0}
 
     new_balance = current["balance"] + qty_change
 

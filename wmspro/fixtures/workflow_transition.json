@@ -1,0 +1,36 @@
+[
+ {
+  "action": "Request For Approval",
+  "allow_self_approval": 1,
+  "allowed": "L2",
+  "condition": null,
+  "docstatus": 0,
+  "doctype": "Workflow Transition",
+  "modified": "2026-02-27 18:23:10.215507",
+  "name": "h8uea34m7j",
+  "next_state": "Approved",
+  "parent": "OMS Req Work flow",
+  "parentfield": "transitions",
+  "parenttype": "Workflow",
+  "send_email_to_creator": 0,
+  "state": "Draft",
+  "workflow_builder_id": "action-1"
+ },
+ {
+  "action": "Submit",
+  "allow_self_approval": 1,
+  "allowed": "L3",
+  "condition": null,
+  "docstatus": 0,
+  "doctype": "Workflow Transition",
+  "modified": "2026-02-27 18:23:10.215867",
+  "name": "h8u8kpgb0p",
+  "next_state": "Submit",
+  "parent": "OMS Req Work flow",
+  "parentfield": "transitions",
+  "parenttype": "Workflow",
+  "send_email_to_creator": 0,
+  "state": "Approved",
+  "workflow_builder_id": "action-2"
+ }
+]

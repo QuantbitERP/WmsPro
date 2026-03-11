@@ -129,3 +129,44 @@ frappe.ui.form.on('Advanced Shipment Notice', {
     }
 
 });
+
+// Add amount calculation for ASN Details child table
+frappe.ui.form.on("Advanced Shipment Notice Details", {
+    ordered_qty: function(frm, cdt, cdn) {
+        calculate_asn_amount(frm, cdt, cdn);
+    },
+    
+    mrp: function(frm, cdt, cdn) {
+        calculate_asn_amount(frm, cdt, cdn);
+    },
+    
+    rate: function(frm, cdt, cdn) {
+        // If MRP is not set, use rate for amount calculation
+        let row = locals[cdt][cdn];
+        if (!row.mrp || row.mrp <= 0) {
+            calculate_asn_amount(frm, cdt, cdn);
+        }
+    },
+    
+    item_code: function(frm, cdt, cdn) {
+        // Calculate amount when item is populated
+        setTimeout(() => calculate_asn_amount(frm, cdt, cdn), 100);
+    }
+});
+
+function calculate_asn_amount(frm, cdt, cdn) {
+    let row = locals[cdt][cdn];
+    let ordered_qty = parseFloat(row.ordered_qty) || 0;
+    let mrp = parseFloat(row.mrp) || parseFloat(row.rate) || 0;
+    
+    // Calculate amount = ordered_qty * mrp
+    let amount = ordered_qty * mrp;
+    
+    // Set the amount field
+    frappe.model.set_value(cdt, cdn, "amount", amount);
+    
+    // Force refresh of the field
+    setTimeout(() => {
+        frm.refresh_field("advanced_shipment_notice_details");
+    }, 50);
+}

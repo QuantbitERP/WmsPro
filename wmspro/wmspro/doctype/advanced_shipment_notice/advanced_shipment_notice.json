@@ -147,7 +147,7 @@
   },
   {
    "fieldname": "expected_arrival_time",
-   "fieldtype": "Datetime",
+   "fieldtype": "Time",
    "label": "Expected Arrival Time"
   },
   {
@@ -262,8 +262,8 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-02-26 11:34:47.830694",
- "modified_by": "sourabh.yelpale@erpdata.in",
+ "modified": "2026-03-11 16:02:22.747692",
+ "modified_by": "Administrator",
  "module": "WmsPro",
  "name": "Advanced Shipment Notice",
  "naming_rule": "By \"Naming Series\" field",

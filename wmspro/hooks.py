@@ -153,20 +153,38 @@ fixtures = [
         ]
     },
     {
-        "dt": "Custom HTML Block",
+        "doctype": "Custom HTML Block",
         "filters": [
             ["name", "=", "OMS Requisition Order Dashboard"]
         ]
     },
     {
-        "dt": "Workflow",
+        "doctype": "Workflow",
         "filters": [
             ["name", "=", "OMS Req Work flow"]
         ]
     },
-    {"dt": "Insights Workbook"},
-    {"dt": "Insights Data Source"}
-
+    {
+        "doctype": "Workflow State"
+    },
+    {
+        "doctype": "Workflow Transition"
+    },
+    {
+        "doctype": "Workflow Action Master"
+    },
+    {
+        "doctype": "Role",
+        "filters": [
+            ["name", "in", ["L1", "L2", "L3"]]
+        ]
+    },
+    {
+        "doctype": "Insights Workbook"
+    },
+    {
+        "doctype": "Insights Data Source"
+    }
 ]
 
 # Scheduled Tasks

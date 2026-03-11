@@ -71,11 +71,12 @@ class AdvancedShipmentNotice(Document):
                     mrp = 1  # Default fallback to ensure MRP > 0
 
                 # Get rate and amount from ASN row
-                rate = getattr(row, 'rate', 0)
-                amount = rate * qty if rate else 0
+                ordered_qty = getattr(row, 'ordered_qty', 0)
+                rate = getattr(row, 'rate', 0)  # Define rate from ASN row
+                amount = mrp * ordered_qty if ordered_qty else 0
                 
                 # Debug: Check rate and amount values
-                frappe.log_error(f"DEBUG ASN Rate/Amount: item_code={item_code}, rate={rate}, amount={amount}, row.rate={getattr(row, 'rate', 'NOT_SET')}")
+                frappe.log_error(f"DEBUG ASN Rate/Amount: item_code={item_code}, ordered_qty={ordered_qty}, amount={amount}, mrp={mrp}")
 
                 # Handle batch number - create if doesn't exist
                 batch_no = row.batch_no

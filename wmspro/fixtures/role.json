@@ -1,0 +1,41 @@
+[
+ {
+  "desk_access": 1,
+  "disabled": 0,
+  "docstatus": 0,
+  "doctype": "Role",
+  "home_page": null,
+  "is_custom": 0,
+  "modified": "2026-02-20 15:45:58.147676",
+  "name": "L1",
+  "restrict_to_domain": null,
+  "role_name": "L1",
+  "two_factor_auth": 0
+ },
+ {
+  "desk_access": 1,
+  "disabled": 0,
+  "docstatus": 0,
+  "doctype": "Role",
+  "home_page": null,
+  "is_custom": 0,
+  "modified": "2026-02-20 15:46:03.418559",
+  "name": "L2",
+  "restrict_to_domain": null,
+  "role_name": "L2",
+  "two_factor_auth": 0
+ },
+ {
+  "desk_access": 1,
+  "disabled": 0,
+  "docstatus": 0,
+  "doctype": "Role",
+  "home_page": null,
+  "is_custom": 0,
+  "modified": "2026-02-20 15:46:08.270625",
+  "name": "L3",
+  "restrict_to_domain": null,
+  "role_name": "L3",
+  "two_factor_auth": 0
+ }
+]
