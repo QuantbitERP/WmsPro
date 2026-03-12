@@ -22,6 +22,7 @@
   "picking_strategy",
   "path_optimization",
   "wave_number",
+  "to_bin_location",
   "section_break_hpjo",
   "items",
   "section_break_sotf",
@@ -221,14 +222,20 @@
    "fieldname": "estimated_time_minutes",
    "fieldtype": "Float",
    "label": "Estimated Time Minutes"
+  },
+  {
+   "fieldname": "to_bin_location",
+   "fieldtype": "Link",
+   "label": "To Bin Location",
+   "options": "WMS Bin"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-02-19 11:07:38.677222",
- "modified_by": "sourabh.yelpale@erpdata.in",
+ "modified": "2026-03-12 18:22:38.416563",
+ "modified_by": "sanket.lohar@erpdata.in",
  "module": "WmsPro",
  "name": "WMS Pick List",
  "naming_rule": "By \"Naming Series\" field",

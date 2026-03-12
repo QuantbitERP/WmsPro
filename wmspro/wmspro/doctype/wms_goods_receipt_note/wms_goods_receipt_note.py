@@ -71,25 +71,25 @@ class WMSGoodsReceiptNote(Document):
             if pr.docstatus == 0:
                 pr.submit()
 
-        # # ---- Create Bin Ledger Entries ----
-        # staging_bin = self.get_staging_bin_for_warehouse()
+        # ---- Create Bin Ledger Entries ----
+        staging_bin = self.get_staging_bin_for_warehouse()
 
-        # for item in self.wms_grn_item:
+        for item in self.wms_grn_item:
 
-        #     qty = item.qty_expected or item.qty_accepted
+            qty = item.qty_expected or item.qty_accepted
 
-        #     if not qty:
-        #         continue
+            if not qty:
+                continue
 
-        #     create_bin_ledger_entry(
-        #         bin_location=staging_bin,
-        #         item_code=item.item_code,
-        #         qty_change=float(qty),
-        #         batch_no=item.batch_no,
-        #         voucher_type="WMS Goods Receipt Note",
-        #         voucher_no=self.name
-        #     )
-
+            create_bin_ledger_entry(
+                bin_location=staging_bin,
+                item_code=item.item_code,
+                qty_change=float(qty),
+                batch_no=item.batch_no,
+                voucher_type="WMS Goods Receipt Note",
+                voucher_no=self.name
+            )
+        frappe.msgprint(staging_bin)
         frappe.msgprint("Purchase Receipt Submitted")
         self.create_putaway_tasks()
         

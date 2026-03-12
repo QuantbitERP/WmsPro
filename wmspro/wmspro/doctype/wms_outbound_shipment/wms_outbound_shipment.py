@@ -70,6 +70,10 @@ class WMSOutboundShipment(Document):
         })
 
         has_qty = False
+        package_no = 1
+
+        total_weight = 0
+        total_volume = 0
 
         for row in self.items:
 
@@ -80,22 +84,61 @@ class WMSOutboundShipment(Document):
 
             has_qty = True
 
+            # ---------------------------------------------
+            # Add item to Packing List
+            # ---------------------------------------------
             packing.append("items", {
                 "item_code": row.item_code,
                 "qty_to_pack": qty_to_pack,
                 "qty_packed": qty_to_pack,
                 "uom": row.uom,
-                "package_no": 1
+                "package_no": package_no
             })
+
+            # ---------------------------------------------
+            # Get packaging details from Item
+            # ---------------------------------------------
+            packaging = frappe.db.get_value(
+                "Item Packaging Level Details",
+                {"parent": row.item_code},
+                ["length", "width", "height", "gross_weight"],
+                as_dict=True
+            )
+
+            length = packaging.length if packaging else 0
+            width = packaging.width if packaging else 0
+            height = packaging.height if packaging else 0
+            weight = packaging.gross_weight if packaging else 0
+
+            volume = (length * width * height) / 1000000
+
+            # ---------------------------------------------
+            # Create Package Automatically
+            # ---------------------------------------------
+            packing.append("packages", {
+                "package_no": package_no,
+                "package_type": "Carton",
+                "lengh_cm": length,
+                "width_cm": width,
+                "height_cm": height,
+                "gross_weight_kg": weight,
+                "volume_cbm": volume
+            })
+
+            total_weight += weight
+            total_volume += volume
+
+            package_no += 1
 
         if not has_qty:
             frappe.throw("No picked quantity available to pack")
 
-        # Create default package (without fixed dimensions or weight)
-        packing.append("packages", {
-            "package_no": 1,
-            "package_type": "Carton"
-        })
+        # ---------------------------------------------
+        # Fill totals automatically
+        # ---------------------------------------------
+        packing.total_packages = package_no - 1
+        packing.total_weight_kg = total_weight
+        packing.total_volume_cbm = total_volume
 
         packing.insert(ignore_permissions=True)
 

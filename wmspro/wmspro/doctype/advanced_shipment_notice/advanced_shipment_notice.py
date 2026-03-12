@@ -79,28 +79,31 @@ class AdvancedShipmentNotice(Document):
                 frappe.log_error(f"DEBUG ASN Rate/Amount: item_code={item_code}, ordered_qty={ordered_qty}, amount={amount}, mrp={mrp}")
 
                 # Handle batch number - create if doesn't exist
+                # batch_no = row.batch_no
+                # if batch_no:
+                #     # Check if batch exists
+                #     batch_exists = frappe.db.exists("Batch", batch_no)
+                #     if not batch_exists:
+                #         # Create batch if it doesn't exist
+                #         try:
+                #             batch_doc = frappe.new_doc("Batch")
+                #             batch_doc.batch_id = batch_no
+                #             batch_doc.item = item_code
+                #             batch_doc.save(ignore_permissions=True)
+                #             frappe.msgprint(f"Created new Batch: {batch_no}")
+                #         except Exception as batch_error:
+                #             frappe.log_error(f"Failed to create batch {batch_no}: {str(batch_error)}")
+                #             batch_no = None  # Set to None if batch creation fails
+                
+                # Use batch_no directly from ASN row without creating new batches
                 batch_no = row.batch_no
-                if batch_no:
-                    # Check if batch exists
-                    batch_exists = frappe.db.exists("Batch", batch_no)
-                    if not batch_exists:
-                        # Create batch if it doesn't exist
-                        try:
-                            batch_doc = frappe.new_doc("Batch")
-                            batch_doc.batch_id = batch_no
-                            batch_doc.item = item_code
-                            batch_doc.save(ignore_permissions=True)
-                            frappe.msgprint(f"Created new Batch: {batch_no}")
-                        except Exception as batch_error:
-                            frappe.log_error(f"Failed to create batch {batch_no}: {str(batch_error)}")
-                            batch_no = None  # Set to None if batch creation fails
 
                 grn.append("wms_grn_item", {
                     "item_code": item_code,
                     "item_name": item_name,
                     "description": row.description,
 
-                    # 🔥 Mandatory fields for GRN
+                    # Mandatory fields for GRN
                     "batch_no": batch_no,  # Use validated batch_no (None if doesn't exist)
                     "expiry_date": row.expiry_date,
                     "mrp": mrp,

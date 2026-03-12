@@ -8,6 +8,13 @@
 // });
 
 frappe.ui.form.on("OMS Requisition Order", {
+
+    onload(frm) {
+        if (!frm.doc.request_date) {
+            frm.set_value("request_date", frappe.datetime.get_today());
+        }
+    },
+
     requesting_facility(frm) {
         if (!frm.doc.requesting_facility) {
             frm.set_value("delivery_address", "");

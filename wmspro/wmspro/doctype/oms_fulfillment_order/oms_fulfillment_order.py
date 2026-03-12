@@ -1,10 +1,9 @@
 # Copyright (c) 2026, Quantbit Technologies Private Limited  and contributors
 # For license information, please see license.txt
 
-
 import frappe
 from frappe.model.document import Document
-from frappe.utils import nowdate, nowtime
+from frappe.utils import nowdate, nowtime, now_datetime
 
 
 class OMSFulfillmentOrder(Document):
@@ -65,6 +64,7 @@ class OMSFulfillmentOrder(Document):
 
                 qty = min(row.available_qty, qty_needed)
 
+                # Create reservation entry in Bin Ledger
                 self.create_reservation_entry(
                     row=row,
                     item_code=item.item_code,
@@ -89,23 +89,39 @@ class OMSFulfillmentOrder(Document):
     # ---------------------------------------------------------
     def create_reservation_entry(self, row, item_code, qty):
 
+        item_name, stock_uom = frappe.db.get_value(
+            "Item",
+            item_code,
+            ["item_name", "stock_uom"]
+        )
+
         frappe.get_doc({
             "doctype": "WMS Bin Ledger",
+
             "posting_date": nowdate(),
             "posting_time": nowtime(),
-            "posting_datetime": frappe.utils.now_datetime(),
+            "posting_datetime": now_datetime(),
+
             "warehouse": self.source_warehouse,
             "bin_location": row.bin_location,
+
             "item_code": item_code,
+            "item_name": item_name,
+
+            # Reservation logic
             "quantity_change": 0,
             "balance_qty": row.balance_qty,
-            "reserved_qty": row.reserved_qty + qty,
-            "available_qty": row.available_qty - qty,
-            "stock_uom": frappe.db.get_value("Item", item_code, "stock_uom"),
+            "reserved_qty": (row.reserved_qty or 0) + qty,
+            "available_qty": max(row.available_qty - qty, 0),
+
+            "stock_uom": stock_uom,
+
             "voucher_type": "OMS Fulfillment Order",
             "voucher_no": self.name,
+
             "is_reservation": 1,
             "is_cancelled": 0
+
         }).insert(ignore_permissions=True)
 
     # ---------------------------------------------------------
@@ -113,9 +129,13 @@ class OMSFulfillmentOrder(Document):
     # ---------------------------------------------------------
     def create_pick_list_from_allocations(self, allocations):
 
+        if not allocations:
+            frappe.throw("No allocations found")
+
         first_bin = allocations[0]["bin_location"]
 
         zone = frappe.db.get_value("WMS Bin", first_bin, "zone")
+
         if not zone:
             zone = frappe.db.get_value("WMS Zone", {"is_active": 1}, "name")
 
@@ -131,7 +151,9 @@ class OMSFulfillmentOrder(Document):
             "items": []
         })
 
-        # 🔥 AGGREGATE allocations by item
+        # ---------------------------------------------------------
+        # Aggregate allocations by item
+        # ---------------------------------------------------------
         item_qty_map = {}
         bin_map = {}
 
@@ -143,7 +165,9 @@ class OMSFulfillmentOrder(Document):
             bin_map[row["item_code"]].append(row["bin_location"])
 
         seq = 1
+
         for item_code, total_qty in item_qty_map.items():
+
             item_name, stock_uom = frappe.db.get_value(
                 "Item",
                 item_code,
@@ -163,4 +187,5 @@ class OMSFulfillmentOrder(Document):
             seq += 1
 
         pick_list.insert(ignore_permissions=True)
+
         return pick_list

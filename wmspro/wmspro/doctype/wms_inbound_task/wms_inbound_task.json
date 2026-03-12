@@ -118,11 +118,10 @@
   {
    "columns": 1,
    "fieldname": "batch_no",
-   "fieldtype": "Link",
+   "fieldtype": "Data",
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Batch no.",
-   "options": "Batch",
    "reqd": 1
   },
   {
@@ -277,7 +276,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-03-11 17:26:44.697385",
+ "modified": "2026-03-12 18:32:45.222525",
  "modified_by": "Administrator",
  "module": "WmsPro",
  "name": "WMS Inbound Task",
