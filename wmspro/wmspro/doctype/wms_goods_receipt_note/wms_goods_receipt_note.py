@@ -15,14 +15,9 @@ class WMSGoodsReceiptNote(Document):
         pr.supplier = self.supplier
         pr.set_warehouse = self.warehouse
         pr.custom_invoice_no = f"AUTO-{frappe.utils.random_string(6)}"
-
-        # Set custom_department from first GRN item's warehouse
-        if self.wms_grn_item and len(self.wms_grn_item) > 0:
-            first_item = self.wms_grn_item[0]
-            item_warehouse = getattr(first_item, 'warehouse', None) or self.warehouse
-            pr.custom_department = item_warehouse
-        else:
-            pr.custom_department = self.warehouse
+        
+        # Set custom_department from GRN's warehouse
+        pr.custom_department = self.warehouse
 
         for item in self.wms_grn_item:
 
@@ -31,7 +26,7 @@ class WMSGoodsReceiptNote(Document):
             if not qty or qty <= 0:
                 frappe.throw(f"Quantity cannot be zero for Item {item.item_code}")
 
-            # Use staging_bin's warehouse if available, otherwise use GRN warehouse
+            #Use staging_bin's warehouse if available, otherwise use GRN warehouse
             item_warehouse = getattr(item, 'warehouse', None) or self.warehouse
 
             pr.append("items", {
