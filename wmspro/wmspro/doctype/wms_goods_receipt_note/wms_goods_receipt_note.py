@@ -13,11 +13,15 @@ class WMSGoodsReceiptNote(Document):
         pr.posting_date = today()
         pr.posting_time = now()
         pr.supplier = self.supplier
-        pr.set_warehouse = self.warehouse
+        
+        # Get department and custom_stock_location from warehouse
+        department = frappe.get_value("Warehouse", self.warehouse, "custom_department")
+        custom_stock_location = frappe.get_value("Department", department, "custom_stock_location")
+        
+        pr.set_warehouse = custom_stock_location
+        pr.custom_department = department
         pr.custom_invoice_no = f"AUTO-{frappe.utils.random_string(6)}"
         
-        # Set custom_department from GRN's warehouse
-        pr.custom_department = self.warehouse
 
         for item in self.wms_grn_item:
 
