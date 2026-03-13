@@ -58,11 +58,22 @@ class WMSOutboundShipment(Document):
             "company"
         )
 
+        # --------------------------------------------------
+        # Get Pick List linked to this shipment
+        # --------------------------------------------------
+
+        pick_list = frappe.db.get_value(
+            "WMS Pick List",
+            {"outbound_shipment": self.name},
+            "name"
+        )
+
         packing = frappe.get_doc({
             "doctype": "WMS Packing List",
             "company": company,
             "packing_date": nowdate(),
             "outbound_shipment": self.name,
+            "pick_list": pick_list,
             "warehouse": self.from_warehouse,
             "status": "Packing",
             "items": [],

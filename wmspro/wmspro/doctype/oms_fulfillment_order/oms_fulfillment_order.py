@@ -109,45 +109,64 @@ class OMSFulfillmentOrder(Document):
         return allocations
 
 
-    # ---------------------------------------------------------
+        # ---------------------------------------------------------
     # STEP 2: Create reservation entry
     # ---------------------------------------------------------
     def create_reservation_entry(self, row, item_code, qty):
 
-        item_name, stock_uom = frappe.db.get_value(
-            "Item",
-            item_code,
-            ["item_name", "stock_uom"]
-        )
+            item_name, stock_uom = frappe.db.get_value(
+                "Item",
+                item_code,
+                ["item_name", "stock_uom"]
+            )
 
-        frappe.get_doc({
-            "doctype": "WMS Bin Ledger",
+            sle = frappe.db.sql(
+                """
+                SELECT qty_after_transaction
+                FROM `tabStock Ledger Entry`
+                WHERE item_code=%s
+                AND warehouse=%s
+                AND is_cancelled=0
+                ORDER BY posting_datetime DESC, creation DESC
+                LIMIT 1
+                """,
+                (item_code, self.source_warehouse),
+                as_dict=True
+            )
 
-            "posting_date": nowdate(),
-            "posting_time": nowtime(),
-            "posting_datetime": now_datetime(),
+            sle_balance = sle[0].qty_after_transaction if sle else 0
 
-            "warehouse": self.source_warehouse,
-            "bin_location": row.bin_location,
+            frappe.get_doc({
+                "doctype": "WMS Bin Ledger",
 
-            "item_code": item_code,
-            "item_name": item_name,
+                "posting_date": nowdate(),
+                "posting_time": nowtime(),
+                "posting_datetime": now_datetime(),
 
-            "quantity_change": 0,
-            "balance_qty": row.balance_qty,
+                "warehouse": self.source_warehouse,
+                "bin_location": row.bin_location,
 
-            "reserved_qty": (row.reserved_qty or 0) + qty,
-            "available_qty": max(row.available_qty - qty, 0),
+                "item_code": item_code,
+                "item_name": item_name,
 
-            "stock_uom": stock_uom,
+                "quantity_change": 0,
 
-            "voucher_type": "OMS Fulfillment Order",
-            "voucher_no": self.name,
+                # 🔵 Use Stock Ledger balance
+                "balance_qty": sle_balance,
 
-            "is_reservation": 1,
-            "is_cancelled": 0
+                "reserved_qty": (row.reserved_qty or 0) + qty,
 
-        }).insert(ignore_permissions=True)
+                "available_qty": max(sle_balance - ((row.reserved_qty or 0) + qty), 0),
+
+                "stock_uom": stock_uom,
+
+                "voucher_type": "OMS Fulfillment Order",
+                "voucher_no": self.name,
+
+                "is_reservation": 1,
+                "is_cancelled": 0
+
+            }).insert(ignore_permissions=True)
 
 
     # ---------------------------------------------------------
@@ -174,6 +193,7 @@ class OMSFulfillmentOrder(Document):
             "warehouse": self.source_warehouse,
             "zone": zone,
             "status": "Released",
+            "fulfillment_order": self.name,
             "items": []
         })
 
