@@ -1,4 +1,4 @@
-# Copyright (c) 2026, Quantbit Technologies Private Limited  and contributors
+# Copyright (c) 2026, Quantbit Technologies Private Limited
 # For license information, please see license.txt
 
 import frappe
@@ -11,8 +11,9 @@ class OMSFulfillmentOrder(Document):
     @frappe.whitelist()
     def create_pick_list_button(self):
 
-        if self.pick_list:
-            frappe.throw("Pick List already created")
+        # NEW CHECK
+        if (self.total_qty_allocated or 0) >= (self.total_qty_required or 0):
+            frappe.throw("All required quantity already allocated. No new Pick List needed.")
 
         allocations = self.allocate_inventory()
 
@@ -26,6 +27,7 @@ class OMSFulfillmentOrder(Document):
 
         return pick_list.name
 
+
     # ---------------------------------------------------------
     # STEP 1: Allocate inventory BIN-WISE
     # ---------------------------------------------------------
@@ -35,23 +37,30 @@ class OMSFulfillmentOrder(Document):
             frappe.throw("Source Warehouse is required")
 
         allocations = []
+        new_allocated_total = 0
 
         for item in self.items:
-            qty_needed = item.qty_required or 0
-            qty_allocated = 0
+
+            qty_required = item.qty_required or 0
+            new_qty_allocated = item.qty_allocated or 0
+
+            if new_qty_allocated <= 0:
+                continue
+
+            qty_needed = new_qty_allocated
 
             bins = frappe.db.sql(
                 """
                 SELECT
                     bin_location,
                     balance_qty,
-                    IFNULL(reserved_qty, 0) AS reserved_qty,
+                    IFNULL(reserved_qty,0) AS reserved_qty,
                     available_qty
                 FROM `tabWMS Bin Ledger`
                 WHERE item_code = %s
-                  AND warehouse = %s
-                  AND available_qty > 0
-                  AND is_cancelled = 0
+                AND warehouse = %s
+                AND available_qty > 0
+                AND is_cancelled = 0
                 ORDER BY posting_datetime ASC
                 """,
                 (item.item_code, self.source_warehouse),
@@ -59,12 +68,12 @@ class OMSFulfillmentOrder(Document):
             )
 
             for row in bins:
+
                 if qty_needed <= 0:
                     break
 
                 qty = min(row.available_qty, qty_needed)
 
-                # Create reservation entry in Bin Ledger
                 self.create_reservation_entry(
                     row=row,
                     item_code=item.item_code,
@@ -78,11 +87,27 @@ class OMSFulfillmentOrder(Document):
                 })
 
                 qty_needed -= qty
-                qty_allocated += qty
+                new_allocated_total += qty
 
-            item.db_set("qty_allocated", qty_allocated)
+            # update qty_short
+            previous_total = self.total_qty_allocated or 0
+            updated_total = previous_total + new_allocated_total
+
+            qty_short = max(qty_required - updated_total, 0)
+
+            frappe.db.set_value(
+                "OMS Fulfillment Item",
+                item.name,
+                "qty_short",
+                qty_short
+            )
+
+        # update total allocation
+        previous_total = self.total_qty_allocated or 0
+        self.db_set("total_qty_allocated", previous_total + new_allocated_total)
 
         return allocations
+
 
     # ---------------------------------------------------------
     # STEP 2: Create reservation entry
@@ -108,9 +133,9 @@ class OMSFulfillmentOrder(Document):
             "item_code": item_code,
             "item_name": item_name,
 
-            # Reservation logic
             "quantity_change": 0,
             "balance_qty": row.balance_qty,
+
             "reserved_qty": (row.reserved_qty or 0) + qty,
             "available_qty": max(row.available_qty - qty, 0),
 
@@ -124,8 +149,9 @@ class OMSFulfillmentOrder(Document):
 
         }).insert(ignore_permissions=True)
 
+
     # ---------------------------------------------------------
-    # STEP 3: CREATE PICK LIST (ONE ROW PER ITEM)
+    # STEP 3: CREATE PICK LIST
     # ---------------------------------------------------------
     def create_pick_list_from_allocations(self, allocations):
 
@@ -151,13 +177,11 @@ class OMSFulfillmentOrder(Document):
             "items": []
         })
 
-        # ---------------------------------------------------------
-        # Aggregate allocations by item
-        # ---------------------------------------------------------
         item_qty_map = {}
         bin_map = {}
 
         for row in allocations:
+
             item_qty_map.setdefault(row["item_code"], 0)
             item_qty_map[row["item_code"]] += row["qty"]
 

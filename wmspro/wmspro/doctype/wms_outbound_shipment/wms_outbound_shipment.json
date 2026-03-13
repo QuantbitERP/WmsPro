@@ -9,7 +9,6 @@
   "section_break_w1k7",
   "naming_series",
   "to_warehouse",
-  "carrier_service",
   "total_qty_packed",
   "total_qty_picked",
   "status",
@@ -19,16 +18,18 @@
   "carrier",
   "total_qty_ordered",
   "packing_list",
-  "carrier_no",
   "destination_capacity_checked",
   "column_break_wwxo",
   "required_delivery_date",
   "material_request",
+  "sales_order",
   "from_warehouse",
+  "column_break_lxwb",
   "customer",
   "customer_name",
-  "sales_order",
   "delivery_note",
+  "carrier_no",
+  "carrier_service",
   "section_break_vhct",
   "items",
   "section_break_uhpm",
@@ -76,6 +77,8 @@
   {
    "fieldname": "total_qty_packed",
    "fieldtype": "Float",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Total Qty Packed"
   },
   {
@@ -162,6 +165,8 @@
   {
    "fieldname": "total_qty_picked",
    "fieldtype": "Float",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Total Qty Picked"
   },
   {
@@ -199,14 +204,18 @@
    "print_hide": 1,
    "read_only": 1,
    "search_index": 1
+  },
+  {
+   "fieldname": "column_break_lxwb",
+   "fieldtype": "Column Break"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-02-27 12:12:23.583115",
- "modified_by": "Administrator",
+ "modified": "2026-03-13 12:35:56.830520",
+ "modified_by": "sanket.lohar@erpdata.in",
  "module": "WmsPro",
  "name": "WMS Outbound Shipment",
  "naming_rule": "By \"Naming Series\" field",

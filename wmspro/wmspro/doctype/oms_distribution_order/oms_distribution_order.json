@@ -15,6 +15,7 @@
   "column_break_lfhe",
   "source_warehouse",
   "plan_reference",
+  "oms_fulfillment_order",
   "section_break_wodb",
   "items",
   "section_break_xitx",
@@ -177,14 +178,20 @@
   {
    "fieldname": "column_break_pmrf",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "oms_fulfillment_order",
+   "fieldtype": "Link",
+   "label": "OMS Fulfillment Order",
+   "options": "OMS Fulfillment Order"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-02-18 18:18:06.288351",
- "modified_by": "Administrator",
+ "modified": "2026-03-13 10:59:45.431134",
+ "modified_by": "sanket.lohar@erpdata.in",
  "module": "WmsPro",
  "name": "OMS Distribution Order",
  "naming_rule": "By \"Naming Series\" field",

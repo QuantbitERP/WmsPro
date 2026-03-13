@@ -15,13 +15,14 @@
   "column_break_wpbd",
   "sales_order",
   "delivery_note",
-  "customer",
-  "customer_name",
+  "path_optimization",
   "column_break_rkaw",
   "warehouse",
   "picking_strategy",
-  "path_optimization",
   "wave_number",
+  "column_break_slau",
+  "customer_name",
+  "customer",
   "to_bin_location",
   "section_break_hpjo",
   "items",
@@ -158,11 +159,15 @@
   {
    "fieldname": "total_short_qty",
    "fieldtype": "Float",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Total Short Qty"
   },
   {
    "fieldname": "total_qty_picked",
    "fieldtype": "Float",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Total Qty Picked"
   },
   {
@@ -226,15 +231,21 @@
   {
    "fieldname": "to_bin_location",
    "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "To Bin Location",
    "options": "WMS Bin"
+  },
+  {
+   "fieldname": "column_break_slau",
+   "fieldtype": "Column Break"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-03-12 18:22:38.416563",
+ "modified": "2026-03-13 12:25:20.918345",
  "modified_by": "sanket.lohar@erpdata.in",
  "module": "WmsPro",
  "name": "WMS Pick List",

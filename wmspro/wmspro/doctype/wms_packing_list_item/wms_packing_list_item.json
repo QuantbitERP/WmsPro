@@ -39,7 +39,6 @@
   {
    "fieldname": "batch_no",
    "fieldtype": "Link",
-   "in_list_view": 1,
    "label": "Batch No.",
    "options": "Batch"
   },
@@ -84,7 +83,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-02-26 12:20:07.084109",
+ "modified": "2026-03-13 12:39:28.319817",
  "modified_by": "sanket.lohar@erpdata.in",
  "module": "WmsPro",
  "name": "WMS Packing List Item",

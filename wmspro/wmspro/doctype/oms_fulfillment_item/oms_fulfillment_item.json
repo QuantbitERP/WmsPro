@@ -7,15 +7,15 @@
  "engine": "InnoDB",
  "field_order": [
   "item_code",
-  "item_name",
   "qty_required",
   "uom",
+  "bin_location",
+  "qty_allocated",
   "batch_no",
   "expiry_date",
   "shelf_life_remaining_days",
-  "bin_location",
   "column_break_wqtq",
-  "qty_allocated",
+  "item_name",
   "qty_dispatched",
   "qty_delivered",
   "qty_short",
@@ -36,7 +36,6 @@
   {
    "fieldname": "item_name",
    "fieldtype": "Data",
-   "in_list_view": 1,
    "label": "Item Name"
   },
   {
@@ -57,20 +56,17 @@
   {
    "fieldname": "batch_no",
    "fieldtype": "Link",
-   "in_list_view": 1,
    "label": "Batch No",
    "options": "Batch"
   },
   {
    "fieldname": "expiry_date",
    "fieldtype": "Date",
-   "in_list_view": 1,
    "label": "Expiry Date"
   },
   {
    "fieldname": "shelf_life_remaining_days",
    "fieldtype": "Int",
-   "in_list_view": 1,
    "label": "Shelf Life Remaining Days"
   },
   {
@@ -89,45 +85,40 @@
   {
    "fieldname": "qty_dispatched",
    "fieldtype": "Float",
-   "in_list_view": 1,
    "label": "Qty Dispatched"
   },
   {
    "fieldname": "qty_delivered",
    "fieldtype": "Float",
-   "in_list_view": 1,
    "label": "Qty Delivered"
   },
   {
    "fieldname": "qty_short",
    "fieldtype": "Float",
    "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Qty Short"
   },
   {
    "fieldname": "short_reason",
    "fieldtype": "Select",
-   "in_list_view": 1,
    "label": "Short Reason",
    "options": "Insufficient Stock\nNear-Expiry Excluded\nBatch Recalled\nOther"
   },
   {
    "fieldname": "alternate_source_warehouse",
    "fieldtype": "Link",
-   "in_list_view": 1,
    "label": "Alternate Source Warehouse",
    "options": "Warehouse"
   },
   {
    "fieldname": "requisition_item_ref",
    "fieldtype": "Data",
-   "in_list_view": 1,
    "label": "Requisition Item ref"
   },
   {
    "fieldname": "distribution_item_ref",
    "fieldtype": "Data",
-   "in_list_view": 1,
    "label": "Distribution Item ref"
   },
   {
@@ -139,8 +130,8 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-02-18 18:18:06.194618",
- "modified_by": "Administrator",
+ "modified": "2026-03-13 12:15:42.853625",
+ "modified_by": "sanket.lohar@erpdata.in",
  "module": "WmsPro",
  "name": "OMS Fulfillment Item",
  "owner": "sahil.sawant@erpdata.in",

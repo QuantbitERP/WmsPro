@@ -11,14 +11,15 @@
   "naming_series",
   "company",
   "fulfillment_type",
-  "requisition_order",
-  "distribution_order",
+  "required_by_date",
   "column_break_ygov",
   "source_warehouse",
-  "destination_facility",
   "delivery_address",
-  "required_by_date",
   "priority",
+  "column_break_kqig",
+  "requisition_order",
+  "distribution_order",
+  "destination_facility",
   "section_break_fghg",
   "items",
   "section_break_pbco",
@@ -68,6 +69,7 @@
   {
    "fieldname": "company",
    "fieldtype": "Link",
+   "in_standard_filter": 1,
    "label": "Company",
    "options": "Company",
    "reqd": 1
@@ -136,11 +138,15 @@
   {
    "fieldname": "total_qty_required",
    "fieldtype": "Float",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Total qty Required"
   },
   {
    "fieldname": "total_qty_allocated",
    "fieldtype": "Float",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Total qty Allocated"
   },
   {
@@ -246,14 +252,18 @@
   {
    "fieldname": "column_break_uxec",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_kqig",
+   "fieldtype": "Column Break"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-02-27 11:10:28.648977",
- "modified_by": "Administrator",
+ "modified": "2026-03-13 12:17:45.846388",
+ "modified_by": "sanket.lohar@erpdata.in",
  "module": "WmsPro",
  "name": "OMS Fulfillment Order",
  "naming_rule": "By \"Naming Series\" field",

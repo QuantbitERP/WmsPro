@@ -93,11 +93,15 @@
   {
    "fieldname": "item_name",
    "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Item Name"
   },
   {
    "fieldname": "bin_location",
    "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Bin Location ",
    "options": "WMS Bin",
    "reqd": 1
@@ -146,6 +150,8 @@
   {
    "fieldname": "balance_qty",
    "fieldtype": "Float",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Balance Qty",
    "reqd": 1
   },
@@ -157,14 +163,15 @@
   {
    "fieldname": "available_qty",
    "fieldtype": "Float",
+   "in_list_view": 1,
    "label": "Available Qty"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-02-26 10:47:40.829052",
- "modified_by": "Administrator",
+ "modified": "2026-03-13 12:44:51.621333",
+ "modified_by": "sanket.lohar@erpdata.in",
  "module": "WmsPro",
  "name": "WMS Bin Ledger",
  "owner": "Administrator",

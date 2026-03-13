@@ -121,11 +121,15 @@
   {
    "fieldname": "total_packages",
    "fieldtype": "Int",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Total Packages"
   },
   {
    "fieldname": "packed_by",
    "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Packed By",
    "options": "User"
   },
@@ -175,7 +179,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-02-26 12:36:23.164694",
+ "modified": "2026-03-13 12:40:19.008634",
  "modified_by": "sanket.lohar@erpdata.in",
  "module": "WmsPro",
  "name": "WMS Packing List",

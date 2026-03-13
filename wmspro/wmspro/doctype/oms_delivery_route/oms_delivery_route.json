@@ -54,6 +54,7 @@
    "fieldname": "route_date",
    "fieldtype": "Date",
    "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Route Date",
    "reqd": 1
   },
@@ -67,6 +68,8 @@
   {
    "fieldname": "driver",
    "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Driver",
    "options": "User",
    "reqd": 1
@@ -160,6 +163,7 @@
   {
    "fieldname": "status",
    "fieldtype": "Select",
+   "in_list_view": 1,
    "label": "Status",
    "options": "Select\nDraft\nOptimised\nApproved\nDispatched\nIn Transit\nCompleted\nCancelled",
    "reqd": 1
@@ -206,8 +210,8 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-02-19 11:19:48.858597",
- "modified_by": "atharv.jadhav@erpdata.in",
+ "modified": "2026-03-13 12:42:59.650556",
+ "modified_by": "sanket.lohar@erpdata.in",
  "module": "WmsPro",
  "name": "OMS Delivery Route",
  "naming_rule": "By \"Naming Series\" field",
