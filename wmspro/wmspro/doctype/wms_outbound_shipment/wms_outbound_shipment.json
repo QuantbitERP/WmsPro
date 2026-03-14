@@ -67,7 +67,8 @@
    "fieldname": "to_warehouse",
    "fieldtype": "Link",
    "label": "To Warehouse",
-   "options": "Warehouse"
+   "options": "Warehouse",
+   "read_only": 1
   },
   {
    "fieldname": "carrier_service",
@@ -79,7 +80,8 @@
    "fieldtype": "Float",
    "in_list_view": 1,
    "in_standard_filter": 1,
-   "label": "Total Qty Packed"
+   "label": "Total Qty Packed",
+   "read_only": 1
   },
   {
    "fieldname": "status",
@@ -119,14 +121,16 @@
   {
    "fieldname": "total_qty_ordered",
    "fieldtype": "Float",
-   "label": "Total Qty Ordered"
+   "label": "Total Qty Ordered",
+   "read_only": 1
   },
   {
    "allow_on_submit": 1,
    "fieldname": "packing_list",
    "fieldtype": "Link",
    "label": "Packing List",
-   "options": "WMS Packing List"
+   "options": "WMS Packing List",
+   "read_only": 1
   },
   {
    "default": "0",
@@ -148,13 +152,15 @@
    "fieldname": "material_request",
    "fieldtype": "Link",
    "label": "Material Request",
-   "options": "Material Request"
+   "options": "Material Request",
+   "read_only": 1
   },
   {
    "fieldname": "from_warehouse",
    "fieldtype": "Link",
    "label": "From Warehouse",
    "options": "Warehouse",
+   "read_only": 1,
    "reqd": 1
   },
   {
@@ -167,7 +173,8 @@
    "fieldtype": "Float",
    "in_list_view": 1,
    "in_standard_filter": 1,
-   "label": "Total Qty Picked"
+   "label": "Total Qty Picked",
+   "read_only": 1
   },
   {
    "fieldname": "delivery_note",
@@ -214,7 +221,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-03-13 12:35:56.830520",
+ "modified": "2026-03-14 11:21:13.480284",
  "modified_by": "sanket.lohar@erpdata.in",
  "module": "WmsPro",
  "name": "WMS Outbound Shipment",

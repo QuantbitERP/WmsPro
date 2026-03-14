@@ -24,13 +24,15 @@
    "in_list_view": 1,
    "label": "Item Code",
    "options": "Item",
+   "read_only": 1,
    "reqd": 1
   },
   {
    "fieldname": "qty_packed",
    "fieldtype": "Float",
    "in_list_view": 1,
-   "label": "Qty Packed"
+   "label": "Qty Packed",
+   "read_only": 1
   },
   {
    "fieldname": "column_break_zbjy",
@@ -40,7 +42,8 @@
    "fieldname": "batch_no",
    "fieldtype": "Link",
    "label": "Batch No.",
-   "options": "Batch"
+   "options": "Batch",
+   "read_only": 1
   },
   {
    "fieldname": "uom",
@@ -48,6 +51,7 @@
    "in_list_view": 1,
    "label": "UOM",
    "options": "UOM",
+   "read_only": 1,
    "reqd": 1
   },
   {
@@ -59,6 +63,7 @@
    "fieldtype": "Float",
    "in_list_view": 1,
    "label": "Qty To Pack",
+   "read_only": 1,
    "reqd": 1
   },
   {
@@ -83,7 +88,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-03-13 12:39:28.319817",
+ "modified": "2026-03-14 11:24:04.747920",
  "modified_by": "sanket.lohar@erpdata.in",
  "module": "WmsPro",
  "name": "WMS Packing List Item",

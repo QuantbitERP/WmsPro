@@ -8,6 +8,37 @@ from frappe.utils import nowdate, nowtime, now_datetime
 
 class OMSFulfillmentOrder(Document):
 
+    # ---------------------------------------------------------
+    # PREVENT USER FROM CHANGING QTY AFTER FULL ALLOCATION
+    # ---------------------------------------------------------
+    def validate(self):
+
+        if (self.total_qty_allocated or 0) >= (self.total_qty_required or 0):
+
+            if not self.is_new():
+
+                old_doc = self.get_doc_before_save()
+
+                if not old_doc:
+                    return
+
+                for item in self.items:
+
+                    old_item = next((d for d in old_doc.items if d.name == item.name), None)
+
+                    if not old_item:
+                        continue
+
+                    if (item.qty_allocated or 0) != (old_item.qty_allocated or 0):
+
+                        # revert to previous value
+                        item.qty_allocated = old_item.qty_allocated
+
+                        frappe.throw(
+                            "Total required quantity already allocated. You cannot change qty_allocated."
+                        )
+
+
     @frappe.whitelist()
     def create_pick_list_button(self):
 
@@ -109,64 +140,63 @@ class OMSFulfillmentOrder(Document):
         return allocations
 
 
-        # ---------------------------------------------------------
+    # ---------------------------------------------------------
     # STEP 2: Create reservation entry
     # ---------------------------------------------------------
     def create_reservation_entry(self, row, item_code, qty):
 
-            item_name, stock_uom = frappe.db.get_value(
-                "Item",
-                item_code,
-                ["item_name", "stock_uom"]
-            )
+        item_name, stock_uom = frappe.db.get_value(
+            "Item",
+            item_code,
+            ["item_name", "stock_uom"]
+        )
 
-            sle = frappe.db.sql(
-                """
-                SELECT qty_after_transaction
-                FROM `tabStock Ledger Entry`
-                WHERE item_code=%s
-                AND warehouse=%s
-                AND is_cancelled=0
-                ORDER BY posting_datetime DESC, creation DESC
-                LIMIT 1
-                """,
-                (item_code, self.source_warehouse),
-                as_dict=True
-            )
+        sle = frappe.db.sql(
+            """
+            SELECT qty_after_transaction
+            FROM `tabStock Ledger Entry`
+            WHERE item_code=%s
+            AND warehouse=%s
+            AND is_cancelled=0
+            ORDER BY posting_datetime DESC, creation DESC
+            LIMIT 1
+            """,
+            (item_code, self.source_warehouse),
+            as_dict=True
+        )
 
-            sle_balance = sle[0].qty_after_transaction if sle else 0
+        sle_balance = sle[0].qty_after_transaction if sle else 0
 
-            frappe.get_doc({
-                "doctype": "WMS Bin Ledger",
+        frappe.get_doc({
+            "doctype": "WMS Bin Ledger",
 
-                "posting_date": nowdate(),
-                "posting_time": nowtime(),
-                "posting_datetime": now_datetime(),
+            "posting_date": nowdate(),
+            "posting_time": nowtime(),
+            "posting_datetime": now_datetime(),
 
-                "warehouse": self.source_warehouse,
-                "bin_location": row.bin_location,
+            "warehouse": self.source_warehouse,
+            "bin_location": row.bin_location,
 
-                "item_code": item_code,
-                "item_name": item_name,
+            "item_code": item_code,
+            "item_name": item_name,
 
-                "quantity_change": 0,
+            "quantity_change": 0,
 
-                # 🔵 Use Stock Ledger balance
-                "balance_qty": sle_balance,
+            "balance_qty": sle_balance,
 
-                "reserved_qty": (row.reserved_qty or 0) + qty,
+            "reserved_qty": (row.reserved_qty or 0) + qty,
 
-                "available_qty": max(sle_balance - ((row.reserved_qty or 0) + qty), 0),
+            "available_qty": max(sle_balance - ((row.reserved_qty or 0) + qty), 0),
 
-                "stock_uom": stock_uom,
+            "stock_uom": stock_uom,
 
-                "voucher_type": "OMS Fulfillment Order",
-                "voucher_no": self.name,
+            "voucher_type": "OMS Fulfillment Order",
+            "voucher_no": self.name,
 
-                "is_reservation": 1,
-                "is_cancelled": 0
+            "is_reservation": 1,
+            "is_cancelled": 0
 
-            }).insert(ignore_permissions=True)
+        }).insert(ignore_permissions=True)
 
 
     # ---------------------------------------------------------

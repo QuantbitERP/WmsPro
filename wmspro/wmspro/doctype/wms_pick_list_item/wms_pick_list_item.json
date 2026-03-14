@@ -45,6 +45,7 @@
    "in_standard_filter": 1,
    "label": "Warehouse",
    "options": "Warehouse",
+   "read_only": 1,
    "reqd": 1
   },
   {
@@ -60,6 +61,7 @@
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Qty Ordered",
+   "read_only": 1,
    "reqd": 1
   },
   {
@@ -74,7 +76,8 @@
    "fieldtype": "Float",
    "in_list_view": 1,
    "in_standard_filter": 1,
-   "label": "Qty Short"
+   "label": "Qty Short",
+   "read_only": 1
   },
   {
    "fieldname": "short_pick_reason",
@@ -101,6 +104,7 @@
    "in_standard_filter": 1,
    "label": "Item Code",
    "options": "Item",
+   "read_only": 1,
    "reqd": 1
   },
   {
@@ -126,6 +130,7 @@
    "in_standard_filter": 1,
    "label": "UOM",
    "options": "UOM",
+   "read_only": 1,
    "reqd": 1
   },
   {
@@ -167,7 +172,8 @@
    "fieldtype": "Data",
    "in_list_view": 1,
    "in_standard_filter": 1,
-   "label": "Item Name"
+   "label": "Item Name",
+   "read_only": 1
   },
   {
    "fieldname": "batch_no",
@@ -189,11 +195,13 @@
    "fieldtype": "Datetime",
    "in_list_view": 1,
    "in_standard_filter": 1,
-   "label": "Picked At"
+   "label": "Picked At",
+   "read_only": 1
   },
   {
    "fieldname": "picked_by",
    "fieldtype": "Link",
+   "in_filter": 1,
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Picked By",
@@ -204,7 +212,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-03-13 12:32:53.229425",
+ "modified": "2026-03-14 11:17:48.522461",
  "modified_by": "sanket.lohar@erpdata.in",
  "module": "WmsPro",
  "name": "WMS Pick List Item",

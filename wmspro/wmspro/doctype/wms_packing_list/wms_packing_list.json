@@ -9,13 +9,14 @@
   "section_break_vnbn",
   "company",
   "naming_series",
-  "packing_date",
   "column_break_pdru",
   "outbound_shipment",
   "pick_list",
   "column_break_cjjy",
   "packing_station",
   "warehouse",
+  "column_break_zwpb",
+  "packing_date",
   "section_break_uhtj",
   "items",
   "section_break_rysi",
@@ -41,6 +42,7 @@
    "fieldtype": "Link",
    "label": "Company",
    "options": "Company",
+   "read_only": 1,
    "reqd": 1
   },
   {
@@ -68,13 +70,15 @@
    "fieldtype": "Link",
    "label": "Outbound Shipment",
    "options": "WMS Outbound Shipment",
+   "read_only": 1,
    "reqd": 1
   },
   {
    "fieldname": "pick_list",
    "fieldtype": "Link",
    "label": "Pick List",
-   "options": "WMS Pick List"
+   "options": "WMS Pick List",
+   "read_only": 1
   },
   {
    "fieldname": "column_break_cjjy",
@@ -90,6 +94,7 @@
    "fieldtype": "Link",
    "label": "Warehouse",
    "options": "Warehouse",
+   "read_only": 1,
    "reqd": 1
   },
   {
@@ -123,7 +128,8 @@
    "fieldtype": "Int",
    "in_list_view": 1,
    "in_standard_filter": 1,
-   "label": "Total Packages"
+   "label": "Total Packages",
+   "read_only": 1
   },
   {
    "fieldname": "packed_by",
@@ -131,7 +137,8 @@
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Packed By",
-   "options": "User"
+   "options": "User",
+   "read_only": 1
   },
   {
    "fieldname": "column_break_jmsc",
@@ -140,13 +147,15 @@
   {
    "fieldname": "total_weight_kg",
    "fieldtype": "Float",
-   "label": "Total Weight KG"
+   "label": "Total Weight KG",
+   "read_only": 1
   },
   {
    "fieldname": "verified_by",
    "fieldtype": "Link",
    "label": "Verified By",
-   "options": "User"
+   "options": "User",
+   "read_only": 1
   },
   {
    "fieldname": "column_break_qqbd",
@@ -155,7 +164,8 @@
   {
    "fieldname": "total_volume_cbm",
    "fieldtype": "Float",
-   "label": "Total Volume CBM"
+   "label": "Total Volume CBM",
+   "read_only": 1
   },
   {
    "fieldname": "status",
@@ -173,13 +183,17 @@
    "print_hide": 1,
    "read_only": 1,
    "search_index": 1
+  },
+  {
+   "fieldname": "column_break_zwpb",
+   "fieldtype": "Column Break"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-03-13 12:40:19.008634",
+ "modified": "2026-03-14 11:24:55.154172",
  "modified_by": "sanket.lohar@erpdata.in",
  "module": "WmsPro",
  "name": "WMS Packing List",

@@ -222,19 +222,16 @@ class WMSPickList(Document):
 
 
     # ---------------------------------------------------------
-# Apply Stock Movement
-# ---------------------------------------------------------
+    # Apply Stock Movement
+    # ---------------------------------------------------------
     def _apply_stock_movement(self, row):
 
         if not row.qty_picked or row.qty_picked <= 0:
             return
 
         source_bin = row.bin_location
-
-        # 👇 use To Bin Location if available
         target_bin = self.to_bin_location or self._get_staging_bin()
 
-        # Remove from source bin
         source_balance = self._get_stock_balance(row.item_code, row.warehouse)
 
         frappe.get_doc({
@@ -253,7 +250,6 @@ class WMSPickList(Document):
             "voucher_no": self.name
         }).insert(ignore_permissions=True)
 
-        # Add to destination bin
         target_balance = self._get_stock_balance(row.item_code, self.warehouse)
 
         frappe.get_doc({
@@ -301,11 +297,35 @@ class WMSPickList(Document):
 
         material_request = self._get_material_request()
 
+        # NEW LOGIC → get destination warehouse from requisition
+        to_warehouse = None
+
+        fulfillment = frappe.db.get_value(
+            "OMS Fulfillment Order",
+            {"pick_list": self.name},
+            "requisition_order"
+        )
+
+        if fulfillment:
+            requesting_facility = frappe.db.get_value(
+                "OMS Requisition Order",
+                fulfillment,
+                "requesting_facility"
+            )
+
+            if requesting_facility:
+                to_warehouse = frappe.db.get_value(
+                    "Facility",
+                    requesting_facility,
+                    "warehouse"
+                )
+
         shipment = frappe.get_doc({
             "doctype": "WMS Outbound Shipment",
             "shipmenr_date": nowdate(),
             "required_delivery_date": nowdate(),
             "from_warehouse": self.warehouse,
+            "to_warehouse": to_warehouse,
             "pick_list": self.name,
             "material_request": material_request,
             "status": "Picking",

@@ -10,7 +10,6 @@
   "naming_series",
   "outbound_shipment",
   "pick_date",
-  "amended_from",
   "zone",
   "column_break_wpbd",
   "sales_order",
@@ -35,12 +34,14 @@
   "pick_completion_pct",
   "started_at",
   "completed_at",
-  "created_offline",
   "column_break_vemt",
   "assigned_to",
   "status",
+  "created_offline",
+  "column_break_cbco",
   "actual_time_minutes",
-  "estimated_time_minutes"
+  "estimated_time_minutes",
+  "amended_from"
  ],
  "fields": [
   {
@@ -61,22 +62,13 @@
    "fieldname": "outbound_shipment",
    "fieldtype": "Link",
    "label": "Outbound Shipment",
-   "options": "WMS Outbound Shipment"
+   "options": "WMS Outbound Shipment",
+   "read_only": 1
   },
   {
    "fieldname": "pick_date",
    "fieldtype": "Date",
    "label": "Pick Date"
-  },
-  {
-   "fieldname": "amended_from",
-   "fieldtype": "Link",
-   "label": "Amended From",
-   "no_copy": 1,
-   "options": "WMS Pick List",
-   "print_hide": 1,
-   "read_only": 1,
-   "search_index": 1
   },
   {
    "fieldname": "zone",
@@ -175,7 +167,8 @@
    "fieldname": "stock_entry",
    "fieldtype": "Link",
    "label": "Stock Entry",
-   "options": "Stock Entry"
+   "options": "Stock Entry",
+   "read_only": 1
   },
   {
    "fieldname": "column_break_llcy",
@@ -246,13 +239,27 @@
    "fieldtype": "Link",
    "label": "Fulfillment Order",
    "options": "OMS Fulfillment Order"
+  },
+  {
+   "fieldname": "column_break_cbco",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "WMS Pick List",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-03-13 15:27:59.998363",
+ "modified": "2026-03-14 11:18:57.028854",
  "modified_by": "sanket.lohar@erpdata.in",
  "module": "WmsPro",
  "name": "WMS Pick List",

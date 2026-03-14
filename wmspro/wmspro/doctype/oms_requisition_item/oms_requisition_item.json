@@ -11,6 +11,7 @@
   "is_non_catalog",
   "qty_requested",
   "uom",
+  "estimated_unit_price",
   "stock_uom",
   "stock_qty_requested",
   "available_stock",
@@ -18,7 +19,6 @@
   "batch_preference",
   "column_break_bamu",
   "expiry_date_required_min",
-  "estimated_unit_price",
   "estimated_value",
   "qty_allocated",
   "qty_delivered",
@@ -59,6 +59,7 @@
    "in_list_view": 1,
    "label": "UOM",
    "options": "UOM",
+   "read_only": 1,
    "reqd": 1
   },
   {
@@ -90,13 +91,15 @@
   {
    "fieldname": "estimated_unit_price",
    "fieldtype": "Currency",
+   "in_list_view": 1,
    "label": "Estimated Unit Price"
   },
   {
    "fieldname": "estimated_value",
    "fieldtype": "Currency",
    "in_list_view": 1,
-   "label": "Estimated Value"
+   "label": "Estimated Value",
+   "read_only": 1
   },
   {
    "fieldname": "qty_allocated",
@@ -130,15 +133,14 @@
    "fieldname": "stock_uom",
    "fieldtype": "Link",
    "label": "Stock UOM",
-   "options": "UOM",
-   "read_only": 1
+   "options": "UOM"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-02-28 17:03:03.923662",
+ "modified": "2026-03-14 12:55:01.199024",
  "modified_by": "sanket.lohar@erpdata.in",
  "module": "WmsPro",
  "name": "OMS Requisition Item",

@@ -7,19 +7,19 @@
  "engine": "InnoDB",
  "field_order": [
   "section_break_i1pc",
-  "amended_from",
   "naming_series",
   "company",
-  "fulfillment_type",
-  "required_by_date",
-  "column_break_ygov",
   "source_warehouse",
-  "delivery_address",
+  "fulfillment_type",
+  "column_break_ygov",
   "priority",
+  "required_by_date",
   "column_break_kqig",
+  "delivery_address",
+  "destination_facility",
+  "column_break_eude",
   "requisition_order",
   "distribution_order",
-  "destination_facility",
   "section_break_fghg",
   "items",
   "section_break_pbco",
@@ -32,32 +32,24 @@
   "column_break_vrvm",
   "total_qty_delivered",
   "section_break_akii",
-  "allocation_complete",
+  "optimal_source_evaluated",
   "pick_list",
   "outbound_shipment",
-  "delivery_note",
   "column_break_aoux",
-  "optimal_source_evaluated",
+  "allocation_complete",
   "stock_entry",
-  "status",
-  "short_fulfil_approved_by",
+  "delivery_note",
   "column_break_uxec",
-  "notes"
+  "short_fulfil_approved_by",
+  "status",
+  "column_break_bwlh",
+  "notes",
+  "amended_from"
  ],
  "fields": [
   {
    "fieldname": "section_break_i1pc",
    "fieldtype": "Section Break"
-  },
-  {
-   "fieldname": "amended_from",
-   "fieldtype": "Link",
-   "label": "Amended From",
-   "no_copy": 1,
-   "options": "OMS Fulfillment Order",
-   "print_hide": 1,
-   "read_only": 1,
-   "search_index": 1
   },
   {
    "fieldname": "naming_series",
@@ -72,6 +64,7 @@
    "in_standard_filter": 1,
    "label": "Company",
    "options": "Company",
+   "read_only": 1,
    "reqd": 1
   },
   {
@@ -85,19 +78,22 @@
    "fieldname": "requisition_order",
    "fieldtype": "Link",
    "label": "Requisition Order",
-   "options": "OMS Requisition Order"
+   "options": "OMS Requisition Order",
+   "read_only": 1
   },
   {
    "fieldname": "distribution_order",
    "fieldtype": "Link",
    "label": "Distribution Order",
-   "options": "OMS Distribution Order"
+   "options": "OMS Distribution Order",
+   "read_only": 1
   },
   {
    "fieldname": "source_warehouse",
    "fieldtype": "Link",
    "label": "Source Warehouse",
    "options": "Warehouse",
+   "read_only": 1,
    "reqd": 1
   },
   {
@@ -112,6 +108,7 @@
    "fieldtype": "Link",
    "label": "Delivery Address",
    "options": "Address",
+   "read_only": 1,
    "reqd": 1
   },
   {
@@ -119,6 +116,7 @@
    "fieldtype": "Date",
    "in_list_view": 1,
    "label": "Required By Date",
+   "read_only": 1,
    "reqd": 1
   },
   {
@@ -140,24 +138,28 @@
    "fieldtype": "Float",
    "in_list_view": 1,
    "in_standard_filter": 1,
-   "label": "Total qty Required"
+   "label": "Total qty Required",
+   "read_only": 1
   },
   {
    "fieldname": "total_qty_allocated",
    "fieldtype": "Float",
    "in_list_view": 1,
    "in_standard_filter": 1,
-   "label": "Total qty Allocated"
+   "label": "Total qty Allocated",
+   "read_only": 1
   },
   {
    "fieldname": "total_qty_dispatched",
    "fieldtype": "Float",
-   "label": "Total qty Dispatched"
+   "label": "Total qty Dispatched",
+   "read_only": 1
   },
   {
    "fieldname": "total_qty_delivered",
    "fieldtype": "Float",
-   "label": "Total qty Delivered"
+   "label": "Total qty Delivered",
+   "read_only": 1
   },
   {
    "default": "0",
@@ -169,7 +171,8 @@
    "fieldname": "pick_list",
    "fieldtype": "Link",
    "label": "Pick List",
-   "options": "WMS Pick List"
+   "options": "WMS Pick List",
+   "read_only": 1
   },
   {
    "fieldname": "outbound_shipment",
@@ -256,13 +259,31 @@
   {
    "fieldname": "column_break_kqig",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_eude",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_bwlh",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "OMS Fulfillment Order",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-03-13 12:17:45.846388",
+ "modified": "2026-03-14 11:13:53.278171",
  "modified_by": "sanket.lohar@erpdata.in",
  "module": "WmsPro",
  "name": "OMS Fulfillment Order",

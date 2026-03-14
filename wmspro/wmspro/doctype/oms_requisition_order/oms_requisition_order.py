@@ -6,55 +6,64 @@ from frappe.model.document import Document
 from frappe.utils import today
 
 
+# -------------------------
+# GET WAREHOUSE FROM FACILITY (Optimized)
+# -------------------------
 def get_warehouse_from_facility(facility):
+
     if not facility:
         return None
 
-    row = frappe.db.sql(
-        """
-        SELECT warehouse
-        FROM `tabFacility`
-        WHERE name = %s
-        LIMIT 1
-        """,
-        (facility,),
-        as_list=True
-    )
-    return row[0][0] if row and row[0][0] else None
+    return frappe.db.get_value("Facility", facility, "warehouse")
 
 
+# -------------------------
+# GET DELIVERY ADDRESS
+# -------------------------
 @frappe.whitelist()
 def get_delivery_address_from_facility(requesting_facility):
+
     if not requesting_facility:
         return ""
 
     warehouse = get_warehouse_from_facility(requesting_facility)
+
     if not warehouse:
         return ""
 
-    row = frappe.db.sql(
-        """
-        SELECT parent
-        FROM `tabDynamic Link`
-        WHERE link_doctype = 'Warehouse'
-          AND link_name = %s
-          AND parenttype = 'Address'
-        LIMIT 1
-        """,
-        (warehouse,),
-        as_list=True
+    address = frappe.db.get_value(
+        "Dynamic Link",
+        {
+            "link_doctype": "Warehouse",
+            "link_name": warehouse,
+            "parenttype": "Address"
+        },
+        "parent"
     )
-    return row[0][0] if row else ""
+
+    return address or ""
 
 
 class OMSRequisitionOrder(Document):
 
     def validate(self):
+
+        # Prevent wrong warehouse mapping
+        source_wh = get_warehouse_from_facility(self.source_facility)
+        dest_wh = get_warehouse_from_facility(self.requesting_facility)
+
+        if not source_wh:
+            frappe.throw(f"Source Facility {self.source_facility} has no linked Warehouse")
+
+        if not dest_wh:
+            frappe.throw(f"Requesting Facility {self.requesting_facility} has no linked Warehouse")
+
         self.set_request_date()
         self.calculate_item_values()
         self.calculate_totals()
 
     def on_submit(self):
+
         fulfillment = self.create_fulfillment_order()
         self.create_material_request()
         self.create_consumption_forecast()
@@ -63,6 +72,7 @@ class OMSRequisitionOrder(Document):
     # AUTO SET REQUEST DATE
     # -------------------------
     def set_request_date(self):
+
         if not self.request_date:
             self.request_date = today()
 
@@ -70,8 +80,11 @@ class OMSRequisitionOrder(Document):
     # AUTO CALCULATE ITEM VALUE
     # -------------------------
     def calculate_item_values(self):
+
         for row in self.items:
+
             if row.item_code and row.qty_requested:
+
                 valuation_rate = frappe.db.get_value(
                     "Item",
                     row.item_code,
@@ -84,6 +97,7 @@ class OMSRequisitionOrder(Document):
     # TOTAL CALCULATIONS
     # -------------------------
     def calculate_totals(self):
+
         self.total_qty = sum(d.qty_requested or 0 for d in self.items)
         self.total_value = sum(d.estimated_value or 0 for d in self.items)
 
@@ -91,8 +105,17 @@ class OMSRequisitionOrder(Document):
     # CREATE FULFILLMENT ORDER
     # -------------------------
     def create_fulfillment_order(self):
-        if self.fulfillment_order:
-            return frappe.get_doc("OMS Fulfillment Order", self.fulfillment_order)
+
+        # Prevent duplicate Fulfillment Order
+        existing = frappe.db.get_value(
+            "OMS Fulfillment Order",
+            {"requisition_order": self.name},
+            "name"
+        )
+
+        if existing:
+            self.db_set("fulfillment_order", existing)
+            return frappe.get_doc("OMS Fulfillment Order", existing)
 
         source_wh = get_warehouse_from_facility(self.source_facility)
         dest_wh = get_warehouse_from_facility(self.requesting_facility)
@@ -106,6 +129,7 @@ class OMSRequisitionOrder(Document):
         item_map = {i.name: i for i in items}
 
         doc = frappe.new_doc("OMS Fulfillment Order")
+
         doc.naming_series = "FUL-.YYYY.-.#####"
         doc.company = self.company
         doc.fulfillment_type = "Pull (Requisition)"
@@ -119,6 +143,7 @@ class OMSRequisitionOrder(Document):
         doc.total_qty_required = self.total_qty
 
         for r in self.items:
+
             item = item_map[r.item_code]
 
             doc.append("items", {
@@ -154,19 +179,44 @@ class OMSRequisitionOrder(Document):
 
         mr = frappe.new_doc("Material Request")
 
+        mr.naming_series = "MAT-MR-.YYYY.-"
         mr.material_request_type = "Material Transfer"
         mr.company = self.company
+        mr.transaction_date = today()
         mr.schedule_date = self.required_by_date
-        mr.from_warehouse = from_wh
-        mr.to_warehouse = to_wh
+
+        mr.set_from_warehouse = from_wh
         mr.set_warehouse = to_wh
         mr.custom_for_department = department
 
         for r in self.items:
+
+            item = frappe.db.get_value(
+                "Item",
+                r.item_code,
+                ["item_name", "stock_uom", "description", "item_group"],
+                as_dict=True
+            )
+
             mr.append("items", {
                 "item_code": r.item_code,
+                "item_name": item.item_name,
                 "qty": r.qty_requested,
-                "schedule_date": self.required_by_date
+                "uom": item.stock_uom,
+                "stock_uom": item.stock_uom,
+                "conversion_factor": 1,
+                "schedule_date": self.required_by_date,
+                "warehouse": to_wh,
+                "from_warehouse": from_wh,
+                "description": item.description,
+                "item_group": item.item_group
+            })
+            # Your Custom Table
+            mr.append("custom_material_transfer_items", {
+                "item_code": r.item_code,
+                "item_name": item.item_name,
+                "uom": item.stock_uom,
+                "req_qty": r.qty_requested
             })
 
         mr.insert(ignore_permissions=True)

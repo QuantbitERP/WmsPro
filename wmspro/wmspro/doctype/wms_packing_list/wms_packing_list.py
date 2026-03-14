@@ -53,6 +53,9 @@ class WMSPackingList(Document):
 
     def on_submit(self):
 
+        # ✅ Set verified_by with current user
+        self.db_set("verified_by", frappe.session.user)
+
         total_weight = 0
         total_volume = 0
 

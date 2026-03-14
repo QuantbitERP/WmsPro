@@ -33,21 +33,24 @@
    "fieldtype": "Float",
    "in_list_view": 1,
    "in_standard_filter": 1,
-   "label": "Lengh Cm "
+   "label": "Lengh Cm ",
+   "read_only": 1
   },
   {
    "fieldname": "volume_cbm",
    "fieldtype": "Float",
    "in_list_view": 1,
    "in_standard_filter": 1,
-   "label": "Volume Cbm"
+   "label": "Volume Cbm",
+   "read_only": 1
   },
   {
    "fieldname": "gross_weight_kg",
    "fieldtype": "Float",
    "in_list_view": 1,
    "in_standard_filter": 1,
-   "label": "Gross Weight Kg"
+   "label": "Gross Weight Kg",
+   "read_only": 1
   },
   {
    "fieldname": "column_break_mqto",
@@ -67,14 +70,16 @@
    "fieldtype": "Float",
    "in_list_view": 1,
    "in_standard_filter": 1,
-   "label": "Width Cm"
+   "label": "Width Cm",
+   "read_only": 1
   },
   {
    "fieldname": "tare_weight_kg",
    "fieldtype": "Float",
    "in_list_view": 1,
    "in_standard_filter": 1,
-   "label": "Tare Weight Kg"
+   "label": "Tare Weight Kg",
+   "read_only": 1
   },
   {
    "fieldname": "column_break_wwnp",
@@ -85,29 +90,32 @@
    "fieldtype": "Data",
    "in_list_view": 1,
    "in_standard_filter": 1,
-   "label": "SSCC Barcode"
+   "label": "SSCC Barcode",
+   "read_only": 1
   },
   {
    "fieldname": "height_cm",
    "fieldtype": "Float",
    "in_list_view": 1,
    "in_standard_filter": 1,
-   "label": "Height Cm"
+   "label": "Height Cm",
+   "read_only": 1
   },
   {
    "fieldname": "net_weight_kg",
    "fieldtype": "Float",
    "in_list_view": 1,
    "in_standard_filter": 1,
-   "label": "Net Weight Kg"
+   "label": "Net Weight Kg",
+   "read_only": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-02-19 15:45:30.434129",
- "modified_by": "atharv.jadhav@erpdata.in",
+ "modified": "2026-03-14 11:25:38.834599",
+ "modified_by": "sanket.lohar@erpdata.in",
  "module": "WmsPro",
  "name": "WMS Package",
  "owner": "atharv.jadhav@erpdata.in",
