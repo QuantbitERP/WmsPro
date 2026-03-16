@@ -124,7 +124,7 @@ class WMSPickList(Document):
 
 
     # ---------------------------------------------------------
-    # Get Stock Ledger Balance
+    # Get Stock Ledger Balance (warehouse level)
     # ---------------------------------------------------------
     def _get_stock_balance(self, item_code, warehouse):
 
@@ -143,6 +143,27 @@ class WMSPickList(Document):
         )
 
         return sle[0].qty_after_transaction if sle else 0
+
+
+    # ---------------------------------------------------------
+    # NEW: Get Bin Balance from WMS Bin Ledger
+    # ---------------------------------------------------------
+    def _get_bin_balance(self, item_code, bin_location):
+
+        last = frappe.db.sql(
+            """
+            SELECT balance_qty
+            FROM `tabWMS Bin Ledger`
+            WHERE item_code=%s
+            AND bin_location=%s
+            ORDER BY posting_date DESC, posting_time DESC, creation DESC
+            LIMIT 1
+            """,
+            (item_code, bin_location),
+            as_dict=True
+        )
+
+        return last[0].balance_qty if last else 0
 
 
     # ---------------------------------------------------------
@@ -203,13 +224,20 @@ class WMSPickList(Document):
 
             if row.qty_picked and row.qty_picked > 0:
 
+                source_bin = row.bin_location
+                target_bin = self.to_bin_location or self._get_staging_bin()
+
                 se.append("items", {
                     "item_code": row.item_code,
                     "qty": row.qty_picked,
                     "s_warehouse": row.warehouse,
                     "t_warehouse": self.warehouse,
                     "uom": row.uom,
-                    "batch_no": row.batch_no
+                    "batch_no": row.batch_no,
+
+                    # NEW BIN FIELDS
+                    "s_bin": source_bin,
+                    "t_bin": target_bin
                 })
 
         if not se.items:
@@ -222,7 +250,7 @@ class WMSPickList(Document):
 
 
     # ---------------------------------------------------------
-    # Apply Stock Movement
+    # Apply Stock Movement (UPDATED FOR BIN BALANCE)
     # ---------------------------------------------------------
     def _apply_stock_movement(self, row):
 
@@ -232,7 +260,8 @@ class WMSPickList(Document):
         source_bin = row.bin_location
         target_bin = self.to_bin_location or self._get_staging_bin()
 
-        source_balance = self._get_stock_balance(row.item_code, row.warehouse)
+        # Source bin balance
+        source_balance = self._get_bin_balance(row.item_code, source_bin)
 
         frappe.get_doc({
             "doctype": "WMS Bin Ledger",
@@ -242,15 +271,16 @@ class WMSPickList(Document):
             "bin_location": source_bin,
             "item_code": row.item_code,
             "quantity_change": -row.qty_picked,
-            "balance_qty": source_balance,
+            "balance_qty": source_balance - row.qty_picked,
             "reserved_qty": 0,
-            "available_qty": source_balance,
+            "available_qty": source_balance - row.qty_picked,
             "stock_uom": row.uom,
             "voucher_type": "WMS Pick List",
             "voucher_no": self.name
         }).insert(ignore_permissions=True)
 
-        target_balance = self._get_stock_balance(row.item_code, self.warehouse)
+        # Target bin balance
+        target_balance = self._get_bin_balance(row.item_code, target_bin)
 
         frappe.get_doc({
             "doctype": "WMS Bin Ledger",
@@ -260,9 +290,9 @@ class WMSPickList(Document):
             "bin_location": target_bin,
             "item_code": row.item_code,
             "quantity_change": row.qty_picked,
-            "balance_qty": target_balance,
+            "balance_qty": target_balance + row.qty_picked,
             "reserved_qty": 0,
-            "available_qty": target_balance,
+            "available_qty": target_balance + row.qty_picked,
             "stock_uom": row.uom,
             "voucher_type": "WMS Pick List",
             "voucher_no": self.name
@@ -297,7 +327,6 @@ class WMSPickList(Document):
 
         material_request = self._get_material_request()
 
-        # NEW LOGIC → get destination warehouse from requisition
         to_warehouse = None
 
         fulfillment = frappe.db.get_value(
