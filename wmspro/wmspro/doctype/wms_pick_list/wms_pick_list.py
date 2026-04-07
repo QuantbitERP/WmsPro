@@ -6,6 +6,20 @@ from frappe.model.document import Document
 from frappe.utils import now_datetime, nowdate, nowtime
 
 
+# -------------------------
+# GET WAREHOUSE FROM BIN LOCATION
+# -------------------------
+@frappe.whitelist()
+def get_warehouse_from_bin(bin_location):
+    
+    if not bin_location:
+        return ""
+    
+    warehouse = frappe.db.get_value("WMS Bin", bin_location, "warehouse")
+    
+    return warehouse or ""
+
+
 class WMSPickList(Document):
 
     # ---------------------------------------------------------
@@ -354,6 +368,7 @@ class WMSPickList(Document):
             "shipmenr_date": nowdate(),
             "required_delivery_date": nowdate(),
             "from_warehouse": self.warehouse,
+            "customer": self.customer,
             "to_warehouse": to_warehouse,
             "pick_list": self.name,
             "material_request": material_request,

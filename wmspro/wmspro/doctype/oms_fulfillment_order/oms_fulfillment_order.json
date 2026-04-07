@@ -8,11 +8,12 @@
  "field_order": [
   "section_break_i1pc",
   "naming_series",
-  "company",
+  "customer",
   "source_warehouse",
   "fulfillment_type",
   "column_break_ygov",
   "priority",
+  "company",
   "required_by_date",
   "column_break_kqig",
   "delivery_address",
@@ -277,14 +278,20 @@
    "print_hide": 1,
    "read_only": 1,
    "search_index": 1
+  },
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "label": "Customer",
+   "options": "Customer"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-03-14 11:13:53.278171",
- "modified_by": "sanket.lohar@erpdata.in",
+ "modified": "2026-03-27 10:50:20.242815",
+ "modified_by": "Administrator",
  "module": "WmsPro",
  "name": "OMS Fulfillment Order",
  "naming_rule": "By \"Naming Series\" field",

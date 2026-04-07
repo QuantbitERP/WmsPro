@@ -58,6 +58,7 @@ class OMSRequisitionOrder(Document):
         if not dest_wh:
             frappe.throw(f"Requesting Facility {self.requesting_facility} has no linked Warehouse")
 
+        self.autofill_company_from_requesting_facility()
         self.set_request_date()
         self.calculate_item_values()
         self.calculate_totals()
@@ -132,6 +133,7 @@ class OMSRequisitionOrder(Document):
 
         doc.naming_series = "FUL-.YYYY.-.#####"
         doc.company = self.company
+        doc.customer = self.customer
         doc.fulfillment_type = "Pull (Requisition)"
         doc.requisition_order = self.name
         doc.source_warehouse = source_wh
@@ -249,3 +251,23 @@ class OMSRequisitionOrder(Document):
         doc.submit()
 
         self.db_set("consumption_reference", doc.name)
+
+    # -------------------------
+    # AUTOFILL COMPANY FROM REQUESTING FACILITY
+    # -------------------------
+    def autofill_company_from_requesting_facility(self):
+        
+        if not self.requesting_facility:
+            return
+            
+        # Get warehouse from facility
+        warehouse = get_warehouse_from_facility(self.requesting_facility)
+        
+        if not warehouse:
+            return
+            
+        # Get company from warehouse
+        company = frappe.db.get_value("Warehouse", warehouse, "company")
+        
+        if company and not self.company:
+            self.company = company

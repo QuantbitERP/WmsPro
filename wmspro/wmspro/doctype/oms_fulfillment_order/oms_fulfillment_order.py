@@ -13,6 +13,17 @@ class OMSFulfillmentOrder(Document):
     # ---------------------------------------------------------
     def validate(self):
 
+        # Validate that qty_allocated cannot be greater than qty_required for each item
+        for item in self.items:
+            qty_required = item.qty_required or 0
+            qty_allocated = item.qty_allocated or 0
+            
+            if qty_allocated > qty_required:
+                frappe.throw(
+                    f"Allocated quantity ({qty_allocated}) cannot be greater than required quantity ({qty_required}) "
+                    f"for item {item.item_code}. Please adjust the allocation."
+                )
+
         if (self.total_qty_allocated or 0) >= (self.total_qty_required or 0):
 
             if not self.is_new():
@@ -221,6 +232,8 @@ class OMSFulfillmentOrder(Document):
             "doctype": "WMS Pick List",
             "pick_date": nowdate(),
             "warehouse": self.source_warehouse,
+            "customer": self.customer,
+            "to_warehouse": self.destination_facility,
             "zone": zone,
             "status": "Released",
             "fulfillment_order": self.name,
@@ -263,3 +276,4 @@ class OMSFulfillmentOrder(Document):
         pick_list.insert(ignore_permissions=True)
 
         return pick_list
+        

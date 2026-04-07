@@ -15,6 +15,7 @@
   "is_cancelled",
   "naming_series",
   "column_break_wuqj",
+  "customer",
   "item_code",
   "item_name",
   "bin_location",
@@ -27,7 +28,10 @@
   "serial_no",
   "balance_qty",
   "reserved_qty",
-  "available_qty"
+  "available_qty",
+  "other_info_tab",
+  "doc_link_doctype",
+  "doc_link"
  ],
  "fields": [
   {
@@ -165,15 +169,39 @@
    "fieldtype": "Float",
    "in_list_view": 1,
    "label": "Available Qty"
+  },
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "label": "Customer",
+   "options": "Customer"
+  },
+  {
+   "fieldname": "other_info_tab",
+   "fieldtype": "Tab Break",
+   "label": "Other Info"
+  },
+  {
+   "fieldname": "doc_link_doctype",
+   "fieldtype": "Link",
+   "label": "Doc Link Doctype",
+   "options": "DocType"
+  },
+  {
+   "fieldname": "doc_link",
+   "fieldtype": "Dynamic Link",
+   "label": "Doc Link",
+   "options": "doc_link_doctype"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-03-13 12:44:51.621333",
- "modified_by": "sanket.lohar@erpdata.in",
+ "modified": "2026-04-02 18:13:42.357350",
+ "modified_by": "Administrator",
  "module": "WmsPro",
  "name": "WMS Bin Ledger",
+ "naming_rule": "By \"Naming Series\" field",
  "owner": "Administrator",
  "permissions": [
   {

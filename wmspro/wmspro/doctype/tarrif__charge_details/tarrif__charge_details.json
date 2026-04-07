@@ -1,0 +1,123 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-03-30 11:16:01.461590",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "operation_type",
+  "unit",
+  "column_break_itjh",
+  "service_item_name",
+  "minimum_charges",
+  "column_break_yzfa",
+  "charge_calculation_type",
+  "maximum_charges",
+  "column_break_tacl",
+  "charge_on",
+  "charge_details_section",
+  "charge_by_column",
+  "for_each_unit",
+  "column_break_tlzl",
+  "quantity_range"
+ ],
+ "fields": [
+  {
+   "fieldname": "operation_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Operation Type",
+   "options": "Receiving\nShipment\nStorage\nVas\nRecurring"
+  },
+  {
+   "fieldname": "unit",
+   "fieldtype": "Link",
+   "label": "Unit",
+   "options": "UOM"
+  },
+  {
+   "fieldname": "column_break_itjh",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "charge_calculation_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Charge Calculation Type"
+  },
+  {
+   "fieldname": "minimum_charges",
+   "fieldtype": "Float",
+   "label": "Minimum Charges "
+  },
+  {
+   "fieldname": "column_break_yzfa",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "service_item_name",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Service Item Name ",
+   "options": "Item"
+  },
+  {
+   "fieldname": "maximum_charges",
+   "fieldtype": "Float",
+   "label": "Maximum Charges"
+  },
+  {
+   "fieldname": "column_break_tacl",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "charge_on",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Charge On",
+   "options": "Per Item\nPer Unit\nPer Item & Unit\nPer LP\nPer CBM\nFix Charge"
+  },
+  {
+   "fieldname": "charge_details_section",
+   "fieldtype": "Section Break",
+   "label": "Charge Details"
+  },
+  {
+   "fieldname": "charge_by_column",
+   "fieldtype": "Column Break",
+   "label": "Charge By"
+  },
+  {
+   "default": "0",
+   "fieldname": "for_each_unit",
+   "fieldtype": "Check",
+   "label": "For Each Unit"
+  },
+  {
+   "fieldname": "column_break_tlzl",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "quantity_range",
+   "fieldtype": "Check",
+   "label": "Quantity Range"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-04-04 15:29:59.026958",
+ "modified_by": "Administrator",
+ "module": "WmsPro",
+ "name": "Tarrif  Charge Details",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

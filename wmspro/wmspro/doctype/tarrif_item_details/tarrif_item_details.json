@@ -1,0 +1,114 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-04-04 15:29:32.909828",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "operation_type",
+  "item_code",
+  "lp",
+  "quantity",
+  "column_break_gjzk",
+  "item_name",
+  "fix_charge",
+  "column_break_cqlk",
+  "unit",
+  "bin",
+  "column_break_eixr",
+  "cbm",
+  "weight"
+ ],
+ "fields": [
+  {
+   "fieldname": "item_code",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Item code ",
+   "options": "Item"
+  },
+  {
+   "fieldname": "lp",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "LP"
+  },
+  {
+   "fieldname": "quantity",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Quantity"
+  },
+  {
+   "fieldname": "column_break_gjzk",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "item_name",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Item Name ",
+   "options": "Item"
+  },
+  {
+   "fieldname": "fix_charge",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Fix Charge"
+  },
+  {
+   "fieldname": "column_break_cqlk",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "unit",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Unit"
+  },
+  {
+   "fieldname": "bin",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Bin"
+  },
+  {
+   "fieldname": "column_break_eixr",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "cbm",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "CBM"
+  },
+  {
+   "fieldname": "weight",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Weight"
+  },
+  {
+   "fieldname": "operation_type",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Operation Type"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-04-04 17:49:23.951039",
+ "modified_by": "Administrator",
+ "module": "WmsPro",
+ "name": "Tarrif Item Details",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

@@ -41,14 +41,16 @@ def create_bin_ledger_entry(
     voucher_type=None,
     voucher_no=None,
     is_reservation=0,
-    to_check_balance=False
+    to_check_balance=False,
+    doc_link_doctype=None,
+    doc_link=None
 ):
 
     if not qty_change:
         return
 
     bin_doc = frappe.get_doc("WMS Bin", bin_location)
-    
+    frappe.log_error(message=str(frappe.as_json(bin_doc)), title="Bin Doc")
     if to_check_balance:
         current = get_bin_balance(bin_location, item_code, batch_no)
     else:
@@ -76,7 +78,10 @@ def create_bin_ledger_entry(
         "voucher_type": voucher_type,
         "voucher_no": voucher_no,
         "is_reservation": is_reservation,
+        "doc_link_doctype": doc_link_doctype,
+        "doc_link": doc_link,
     })
+    frappe.log_error(message=str(frappe.as_json(entry)), title="Bin Ledger Entry")
 
     entry.insert(ignore_permissions=True)
 

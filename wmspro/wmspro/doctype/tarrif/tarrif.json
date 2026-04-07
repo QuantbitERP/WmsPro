@@ -1,0 +1,572 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:tarrif_name",
+ "creation": "2026-03-29 12:56:31.862699",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "tarrif_code",
+  "warehouse",
+  "column_break_iflx",
+  "tarrif_name",
+  "calculation_start_date",
+  "column_break_jzmw",
+  "storer",
+  "billing_frequency",
+  "active",
+  "charge_details_section",
+  "tarrif_receiving",
+  "receiving_tab",
+  "receiving_service_item_name",
+  "receiving_unit",
+  "column_break_brvj",
+  "receiving_charge_calculation_type",
+  "receiving_minimum_charges",
+  "column_break_vxra",
+  "receiving_charge_on",
+  "receiving_maximun_charges",
+  "section_break_fevm",
+  "receiving_for_each_unit",
+  "column_break_ictz",
+  "receiving_quantity_range",
+  "section_break_uhzp",
+  "receiving_tarrif_item_details",
+  "shipment_tab",
+  "shipment_service_item_name",
+  "shipment_unit",
+  "column_break_rujk",
+  "shipment_charge_calculation_type",
+  "shipment_minimum_charges",
+  "column_break_vinw",
+  "shipment_charge_on",
+  "shipment_maximun_charges",
+  "section_break_kcvu",
+  "shipment_for_each_unit",
+  "column_break_aqif",
+  "shipment_quantity_range",
+  "section_break_kgmh",
+  "shipment_tarrif_item_details",
+  "storage_tab",
+  "storage_service_item_name",
+  "storage_unit",
+  "column_break_sdzv",
+  "storage_charge_calculation_type",
+  "storage_minimum_charges",
+  "column_break_xvmg",
+  "storage_charge_on",
+  "storage_maximun_charges",
+  "section_break_gdot",
+  "storage_for_each_unit",
+  "column_break_oxnt",
+  "storage_quantity_range",
+  "section_break_ypuo",
+  "storage_tarrif_item_details",
+  "vas_tab",
+  "vas_service_item_name",
+  "vas_unit",
+  "column_break_cbho",
+  "vas_charge_calculation_type_copy",
+  "vas_minimum_charges",
+  "column_break_bkzc",
+  "vas_charge_on",
+  "vas_maximun_charges",
+  "section_break_guin",
+  "vas_for_each_unit",
+  "column_break_jjtu",
+  "vas_quantity_range",
+  "section_break_czpf",
+  "vas_tarrif_item_details",
+  "recurring_tab",
+  "charge_on_section",
+  "recurring_service_item_name",
+  "recurring_unit",
+  "column_break_hsga",
+  "recurring_charge_calculation_type",
+  "recurring_minimum_charges",
+  "column_break_vhad",
+  "recurring_charge_on",
+  "recurring_maximun_charges",
+  "section_break_vbtu",
+  "recurring_for_each_unit",
+  "column_break_ckwv",
+  "recurring_quantity_range",
+  "tarrif_item_details_section",
+  "recurring_tarrif_item_details"
+ ],
+ "fields": [
+  {
+   "fieldname": "tarrif_code",
+   "fieldtype": "Data",
+   "label": "Tarrif Code "
+  },
+  {
+   "default": "0",
+   "fieldname": "active",
+   "fieldtype": "Check",
+   "label": "Active"
+  },
+  {
+   "fieldname": "column_break_iflx",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "tarrif_name",
+   "fieldtype": "Data",
+   "label": "Tarrif Name ",
+   "unique": 1
+  },
+  {
+   "fieldname": "warehouse",
+   "fieldtype": "Link",
+   "label": "Warehouse",
+   "options": "Warehouse"
+  },
+  {
+   "fieldname": "calculation_start_date",
+   "fieldtype": "Date",
+   "label": "Calculation Start Date"
+  },
+  {
+   "fieldname": "column_break_jzmw",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "storer",
+   "fieldtype": "Link",
+   "label": "Storer",
+   "options": "Customer"
+  },
+  {
+   "fieldname": "billing_frequency",
+   "fieldtype": "Select",
+   "label": "Billing Frequency",
+   "options": "\nDaily"
+  },
+  {
+   "fieldname": "charge_details_section",
+   "fieldtype": "Section Break",
+   "label": "Charge Details"
+  },
+  {
+   "fieldname": "tarrif_receiving",
+   "fieldtype": "Table",
+   "hidden": 1,
+   "label": "Tarrif Charge Details",
+   "options": "Tarrif  Charge Details"
+  },
+  {
+   "fieldname": "receiving_tab",
+   "fieldtype": "Tab Break",
+   "label": "Receiving "
+  },
+  {
+   "fieldname": "shipment_tab",
+   "fieldtype": "Tab Break",
+   "label": "Shipment"
+  },
+  {
+   "fieldname": "storage_tab",
+   "fieldtype": "Tab Break",
+   "label": "Storage"
+  },
+  {
+   "fieldname": "vas_tab",
+   "fieldtype": "Tab Break",
+   "label": "Vas"
+  },
+  {
+   "fieldname": "recurring_tab",
+   "fieldtype": "Tab Break",
+   "label": "Recurring "
+  },
+  {
+   "fieldname": "charge_on_section",
+   "fieldtype": "Section Break",
+   "label": "Charge On"
+  },
+  {
+   "fieldname": "column_break_hsga",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_vhad",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_vbtu",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_ckwv",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "tarrif_item_details_section",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "recurring_service_item_name",
+   "fieldtype": "Link",
+   "label": "Service Item Name ",
+   "options": "Item"
+  },
+  {
+   "fieldname": "recurring_charge_calculation_type",
+   "fieldtype": "Select",
+   "label": "Charge Calculation Type"
+  },
+  {
+   "fieldname": "recurring_unit",
+   "fieldtype": "Link",
+   "label": "Unit",
+   "options": "UOM"
+  },
+  {
+   "fieldname": "recurring_charge_on",
+   "fieldtype": "Select",
+   "label": "Charge On",
+   "options": "Per Item\nPer Unit\nPer Item & Unit\nPer LP\nPer CBM\nFix Charge"
+  },
+  {
+   "fieldname": "recurring_minimum_charges",
+   "fieldtype": "Float",
+   "label": "Minimum Charges"
+  },
+  {
+   "fieldname": "recurring_maximun_charges",
+   "fieldtype": "Float",
+   "label": "Maximun Charges"
+  },
+  {
+   "default": "0",
+   "fieldname": "recurring_for_each_unit",
+   "fieldtype": "Check",
+   "label": "For Each Unit"
+  },
+  {
+   "default": "0",
+   "fieldname": "recurring_quantity_range",
+   "fieldtype": "Check",
+   "label": "Quantity Range"
+  },
+  {
+   "fieldname": "recurring_tarrif_item_details",
+   "fieldtype": "Table",
+   "label": "Tarrif Item Details",
+   "options": "Tarrif Item Details"
+  },
+  {
+   "fieldname": "column_break_cbho",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_bkzc",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_guin",
+   "fieldtype": "Section Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "vas_for_each_unit",
+   "fieldtype": "Check",
+   "label": "For Each Unit "
+  },
+  {
+   "fieldname": "column_break_jjtu",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "vas_quantity_range",
+   "fieldtype": "Check",
+   "label": "Quantity Range "
+  },
+  {
+   "fieldname": "section_break_czpf",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "vas_tarrif_item_details",
+   "fieldtype": "Table",
+   "label": "Tarrif Item Details ",
+   "options": "Tarrif Item Details"
+  },
+  {
+   "fieldname": "vas_service_item_name",
+   "fieldtype": "Link",
+   "label": "Service Item Name  ",
+   "options": "Item"
+  },
+  {
+   "fieldname": "vas_charge_calculation_type_copy",
+   "fieldtype": "Select",
+   "label": "Charge Calculation Type "
+  },
+  {
+   "fieldname": "vas_minimum_charges",
+   "fieldtype": "Float",
+   "label": "Minimum Charges "
+  },
+  {
+   "fieldname": "vas_maximun_charges",
+   "fieldtype": "Float",
+   "label": "Maximun Charges "
+  },
+  {
+   "fieldname": "vas_charge_on",
+   "fieldtype": "Select",
+   "label": "Charge On ",
+   "options": "Per Item\nPer Unit\nPer Item & Unit\nPer LP\nPer CBM\nFix Charge"
+  },
+  {
+   "fieldname": "vas_unit",
+   "fieldtype": "Link",
+   "label": "Unit ",
+   "options": "UOM"
+  },
+  {
+   "fieldname": "receiving_service_item_name",
+   "fieldtype": "Link",
+   "label": "Service Item Name   ",
+   "options": "Item"
+  },
+  {
+   "fieldname": "receiving_unit",
+   "fieldtype": "Link",
+   "label": "Unit  ",
+   "options": "UOM"
+  },
+  {
+   "fieldname": "column_break_brvj",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "receiving_charge_calculation_type",
+   "fieldtype": "Select",
+   "label": "Charge Calculation Type  "
+  },
+  {
+   "fieldname": "receiving_minimum_charges",
+   "fieldtype": "Float",
+   "label": "Minimum Charges  "
+  },
+  {
+   "fieldname": "column_break_vxra",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "receiving_charge_on",
+   "fieldtype": "Select",
+   "label": "Charge On  ",
+   "options": "Per Item\nPer Unit\nPer Item & Unit\nPer LP\nPer CBM\nFix Charge"
+  },
+  {
+   "fieldname": "receiving_maximun_charges",
+   "fieldtype": "Float",
+   "label": "Maximun Charges  "
+  },
+  {
+   "fieldname": "shipment_service_item_name",
+   "fieldtype": "Link",
+   "label": "Service Item Name   ",
+   "options": "Item"
+  },
+  {
+   "fieldname": "shipment_unit",
+   "fieldtype": "Link",
+   "label": "Unit  ",
+   "options": "UOM"
+  },
+  {
+   "fieldname": "column_break_rujk",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "shipment_charge_calculation_type",
+   "fieldtype": "Select",
+   "label": "Charge Calculation Type  "
+  },
+  {
+   "fieldname": "shipment_minimum_charges",
+   "fieldtype": "Float",
+   "label": "Minimum Charges  "
+  },
+  {
+   "fieldname": "column_break_vinw",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "shipment_charge_on",
+   "fieldtype": "Select",
+   "label": "Charge On  ",
+   "options": "Per Item\nPer Unit\nPer Item & Unit\nPer LP\nPer CBM\nFix Charge"
+  },
+  {
+   "fieldname": "shipment_maximun_charges",
+   "fieldtype": "Float",
+   "label": "Maximun Charges  "
+  },
+  {
+   "fieldname": "storage_service_item_name",
+   "fieldtype": "Link",
+   "label": "Service Item Name   ",
+   "options": "Item"
+  },
+  {
+   "fieldname": "storage_unit",
+   "fieldtype": "Link",
+   "label": "Unit  ",
+   "options": "UOM"
+  },
+  {
+   "fieldname": "column_break_sdzv",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "storage_charge_calculation_type",
+   "fieldtype": "Select",
+   "label": "Charge Calculation Type  "
+  },
+  {
+   "fieldname": "storage_minimum_charges",
+   "fieldtype": "Float",
+   "label": "Minimum Charges  "
+  },
+  {
+   "fieldname": "column_break_xvmg",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "storage_charge_on",
+   "fieldtype": "Select",
+   "label": "Charge On  ",
+   "options": "Per Item\nPer Unit\nPer Item & Unit\nPer LP\nPer CBM\nFix Charge"
+  },
+  {
+   "fieldname": "storage_maximun_charges",
+   "fieldtype": "Float",
+   "label": "Maximun Charges  "
+  },
+  {
+   "fieldname": "section_break_fevm",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_ictz",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_uhzp",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "section_break_kcvu",
+   "fieldtype": "Section Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "shipment_for_each_unit",
+   "fieldtype": "Check",
+   "label": "For Each Unit  "
+  },
+  {
+   "fieldname": "column_break_aqif",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "shipment_quantity_range",
+   "fieldtype": "Check",
+   "label": "Quantity Range  "
+  },
+  {
+   "fieldname": "section_break_kgmh",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "shipment_tarrif_item_details",
+   "fieldtype": "Table",
+   "label": "Tarrif Item Details  ",
+   "options": "Tarrif Item Details"
+  },
+  {
+   "fieldname": "section_break_gdot",
+   "fieldtype": "Section Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "storage_for_each_unit",
+   "fieldtype": "Check",
+   "label": "For Each Unit  "
+  },
+  {
+   "fieldname": "column_break_oxnt",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "storage_quantity_range",
+   "fieldtype": "Check",
+   "label": "Quantity Range  "
+  },
+  {
+   "fieldname": "section_break_ypuo",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "storage_tarrif_item_details",
+   "fieldtype": "Table",
+   "label": "Tarrif Item Details  ",
+   "options": "Tarrif Item Details"
+  },
+  {
+   "default": "0",
+   "fieldname": "receiving_for_each_unit",
+   "fieldtype": "Check",
+   "label": "For Each Unit  "
+  },
+  {
+   "default": "0",
+   "fieldname": "receiving_quantity_range",
+   "fieldtype": "Check",
+   "label": "Quantity Range  "
+  },
+  {
+   "fieldname": "receiving_tarrif_item_details",
+   "fieldtype": "Table",
+   "label": "Tarrif Item Details  ",
+   "options": "Tarrif Item Details"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-04-04 17:47:58.982866",
+ "modified_by": "Administrator",
+ "module": "WmsPro",
+ "name": "Tarrif",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

@@ -8,12 +8,16 @@ from frappe.utils import now, today
 
 class AdvancedShipmentNotice(Document):
 
-    def on_submit(self):
-        """Auto-create WMS Goods Receipt Note when ASN is submitted"""
+    def before_insert(self):
+        """Set ASN status to Draft when saving"""
+        self.asn_status = "Draft"
 
+    def on_submit(self):
+        """Set ASN status to Confirmed and auto-create WMS Goods Receipt Note"""
+        
         # ---- Mandatory Validations ----
-        if not self.supplier:
-            frappe.throw("Supplier is required to create GRN")
+        if not self.party_name:
+            frappe.throw("Party is required to create GRN")
 
         if not self.company:
             frappe.throw("Company is required to create GRN")
@@ -30,13 +34,17 @@ class AdvancedShipmentNotice(Document):
                 "doctype": "WMS Goods Receipt Note",
                 "asn_reference": self.name,
                 "purchace_order": self.purchase_order,
-                "supplier": self.supplier,
+                "party_type": self.party,
+                "party_name": self.party_name,
                 "supplier_name": self.supplier_name,
+                "customer": self.customer,
                 "company": self.company,
                 "warehouse": self.warehouse,
                 "posting_date": today(),
                 "posting_time": now(),
-                "receipt_type": "Standard"
+                "receipt_type": "Standard",
+                "doc_link_doctype": self.doctype,
+                "doc_link": self.name
             })
 
             # ---- Append Items ----
@@ -102,24 +110,30 @@ class AdvancedShipmentNotice(Document):
                     "item_code": item_code,
                     "item_name": item_name,
                     "description": row.description,
-
+                    "qty_excepted": row.expected_qty or row.ordered_qty,
                     # Mandatory fields for GRN
                     "batch_no": batch_no,  # Use validated batch_no (None if doesn't exist)
                     "expiry_date": row.expiry_date,
                     "mrp": mrp,
                     "rate": rate,  # Add rate from ASN
                     "amount": amount,  # Add calculated amount
-                    "qty_expected": qty,
+
+                    # Additional fields from ASN
+                    "uom": row.uom,  # Pass UOM from ASN
 
                     # Required for stock
                     "qty": qty,
-                    "conversion_factor": 1,
-                    "stock_uom": row.stock_uom,  # Use row.stock_uom instead of asn_item.stock_uom
+                    "conversion_factor": row.conversion_factor or 1,  # Use conversion_factor from ASN
+                    "stock_uom": row.stock_uom,
                     "warehouse": self.warehouse
                 })
-
+                frappe.msgprint(f"Added item to GRN: {item_code}, qty_excepted: {row.expected_qty or row.ordered_qty}")
+            
             # ---- Insert GRN ----
             grn.insert(ignore_permissions=True)
+            
+            # ---- Update ASN Status to Confirmed ----
+            frappe.db.set_value("Advanced Shipment Notice", self.name, "asn_status", "Confirmed")
 
             # ---- Success Message ----
             frappe.msgprint(
@@ -135,3 +149,37 @@ class AdvancedShipmentNotice(Document):
                 title=f"GRN Creation Failed for ASN {self.name}"
             )
             frappe.throw(f"Failed to create GRN: {str(e)}")
+
+
+@frappe.whitelist()
+def get_uom_conversion(from_uom=None, to_uom=None):
+    if from_uom == to_uom:
+        return {"stock_uom": from_uom, "conversion_factor": 1.0}
+
+    exact_match = frappe.db.get_value("UOM Conversion Factor", {"to_uom": to_uom, "from_uom": from_uom}, ["value"], as_dict=1)
+    if exact_match:
+        return {"stock_uom": from_uom, "conversion_factor": exact_match.value}
+
+    inverse_match = frappe.db.get_value("UOM Conversion Factor", {"to_uom": from_uom, "from_uom": to_uom}, ["value"], as_dict=1)
+    if inverse_match:
+        return {"stock_uom": from_uom, "conversion_factor": 1 / inverse_match.value}
+
+    intermediate_match = frappe.db.sql(
+        """
+            SELECT (first.value / second.value) AS value
+            FROM `tabUOM Conversion Factor` first
+            JOIN `tabUOM Conversion Factor` second
+                ON first.from_uom = second.from_uom
+            WHERE
+                first.to_uom = %(to_uom)s
+                AND second.to_uom = %(from_uom)s
+            LIMIT 1
+        """,
+        {"to_uom": to_uom, "from_uom": from_uom},
+        as_dict=1,
+    )
+
+    if intermediate_match:
+        return {"stock_uom": from_uom, "conversion_factor": intermediate_match[0].value}
+    
+    return {"stock_uom": from_uom, "conversion_factor": 1.0}

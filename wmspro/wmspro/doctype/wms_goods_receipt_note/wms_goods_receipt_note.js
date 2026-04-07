@@ -1,128 +1,173 @@
-// // Copyright (c) 2026, Quantbit Technologies Private Limited  and contributors
-// // For license information, please see license.txt
-
-// frappe.ui.form.on("WMS Goods Receipt Note", {
-//     refresh(frm) {
-//         // Enable inline editing for child table
-//         frm.fields_dict['wms_grn_item'].grid.set_df_property('item_code', 'allow_in_quick_entry', 1);
-//         frm.fields_dict['wms_grn_item'].grid.set_df_property('item_name', 'allow_in_quick_entry', 1);
-//         frm.fields_dict['wms_grn_item'].grid.set_df_property('mrp', 'allow_in_quick_entry', 1);
-//         frm.fields_dict['wms_grn_item'].grid.set_df_property('rate', 'allow_in_quick_entry', 1);
-//         frm.fields_dict['wms_grn_item'].grid.set_df_property('amount', 'allow_in_quick_entry', 1);
-//         frm.fields_dict['wms_grn_item'].grid.set_df_property('qty_expected', 'allow_in_quick_entry', 1);
-//         frm.fields_dict['wms_grn_item'].grid.set_df_property('qty_accepted', 'allow_in_quick_entry', 1);
-//         frm.fields_dict['wms_grn_item'].grid.set_df_property('batch_no', 'allow_in_quick_entry', 1);
-//         frm.fields_dict['wms_grn_item'].grid.set_df_property('expiry_date', 'allow_in_quick_entry', 1);
-//         frm.fields_dict['wms_grn_item'].grid.set_df_property('staging_bin', 'allow_in_quick_entry', 1);
-//         frm.fields_dict['wms_grn_item'].grid.set_df_property('warehouse', 'allow_in_quick_entry', 1);
-//     },
+frappe.ui.form.on('WMS Goods Receipt Note', {
     
-//     wms_grn_item_on_form_rendered: function(frm) {
-//         // Add field change handlers for amount calculation
-//         frm.fields_dict['wms_grn_item'].grid.wrapper.on('change', function(field, value) {
-//             calculate_amount(frm);
-//         });
-//     },
+    refresh: function(frm) {
     
-//     // staging_bin: function(frm) {
-//     //     // Update warehouse when staging bin changes
-//     //     if (frm.doc.wms_grn_item && frm.doc.wms_grn_item.length > 0) {
-//     //         frm.doc.wms_grn_item.forEach(function(row) {
-//     //             if (row.staging_bin) {
-//     //                 frappe.call({
-//     //                     method: 'frappe.db.get_value',
-//     //                     args: {
-//     //                         doctype: 'WMS Bin',
-//     //                         filters: { name: row.staging_bin },
-//     //                         fieldname: 'warehouse'
-//     //                     },
-//     //                     callback: function(r) {
-//     //                         if (r.message) {
-//     //                             row.warehouse = r.message;
-//     //                             frm.refresh_field('wms_grn_item');
-//     //                         }
-//     //                     }
-//     //                 });
-//     //             }
-//     //         });
-//     //     }
-//     // }
-// });
+        
+        // Calculate totals on form refresh
+        calculate_totals(frm);
+        
+        // Add custom query for party_type field
+        frm.set_query('party_type', function() {
+            return {
+                filters: {
+                    name: ['in', ['Customer', 'Supplier']]
+                }
+            };
+        });
 
-// function calculate_amount(frm) {
-//     // Calculate amount = qty * mrp for each row
-//     if (frm.doc.wms_grn_item) {
-//         frm.doc.wms_grn_item.forEach(function(row) {
-//             if (row.qty_expected && row.mrp) {
-//                 row.amount = row.qty_expected * row.mrp;
-//             }
-//         });
-//         frm.refresh_field('wms_grn_item');
-//     }
-// }
+        
+        frm.set_query('staging_bin', 'wms_grn_item', function(doc, cdt, cdn) {
 
-// // Add staging_bin change handler for child table
-// frappe.ui.form.on("WMS Inbound Task", {
-//     // staging_bin: function(frm, cdt, cdn) {
-//     //     let row = locals[cdt][cdn];
-//     //     if (row.staging_bin) {
-//     //         frappe.call({
-//     //             method: 'frappe.client.get_value',
-//     //             args: {
-//     //                 doctype: 'WMS Bin',
-//     //                 filters: { name: row.staging_bin },
-//     //                 fieldname: 'warehouse'
-//     //             },
-//     //             callback: function(r) {
-//     //                 if (r.message && r.message.warehouse) {
-//     //                     frappe.model.set_value(cdt, cdn, 'warehouse', r.message.warehouse);
-//     //                 }
-//     //             }
-//     //         });
-//     //     }
-//     // },
+            let filters = {
+                is_staging: 1
+            };
+
+            if (doc.warehouse) {
+                filters.warehouse = doc.warehouse;
+            }
+
+            return {
+                filters: filters
+            };
+        });
+    },
+
+    party_type: function(frm) {
+        frm.set_value('party_name', '');
+        frm.set_value('supplier_name', '');
+        frm.set_value('customer', '');
+        frm.set_value('purchace_order', '');
+        frm.clear_table('wms_grn_item');
+        frm.refresh_field('wms_grn_item');
+    },
+
+    party: function(frm) {
+        if (frm.doc.party_name) {
+            if (frm.doc.party_type === 'Supplier') {
+                frm.set_value('supplier_name', frm.doc.party_name);
+                frm.set_value('customer', '');
+
+                frm.set_query("purchace_order", function() {
+                    return {
+                        filters: {
+                            supplier: frm.doc.party_name,
+                            docstatus: 1
+                        }
+                    };
+                });
+
+                frm.set_value("purchace_order", "");
+                frm.clear_table("wms_grn_item");
+                frm.refresh_field("wms_grn_item");
+
+            } else if (frm.doc.party_type === 'Customer') {
+
+                frm.set_value('customer', frm.doc.party_name);
+                frm.set_value('supplier_name', '');
+                frm.set_value("purchace_order", "");
+                frm.clear_table("wms_grn_item");
+                frm.refresh_field("wms_grn_item");
+            }
+
+        } else {
+            frm.set_value('supplier_name', '');
+            frm.set_value('customer', '');
+            frm.set_value("purchace_order", "");
+            frm.clear_table("wms_grn_item");
+            frm.refresh_field("wms_grn_item");
+        }
+    },
+
+    party_name: function(frm) {
+        frm.trigger('party');
+    }
+});
+
+
+
+frappe.ui.form.on("WMS Inbound Task", {
+
     
-//     // Also calculate amount when qty or mrp changes
-//     qty_expected: function(frm, cdt, cdn) {
-//         calculate_row_amount(frm, cdt, cdn);
-//     },
-    
-//     mrp: function(frm, cdt, cdn) {
-//         calculate_row_amount(frm, cdt, cdn);
-//     }
-// });
 
-// function calculate_row_amount(frm, cdt, cdn) {
-//     let row = locals[cdt][cdn];
-//     let qty = parseFloat(row.qty_expected) || 0;
-//     let mrp = parseFloat(row.mrp) || 0;
-//     let amount = qty * mrp;
+    qty_accepted: function(frm, cdt, cdn) {
+        calculate_stock_qty_accepted(frm, cdt, cdn);
+        calculate_totals(frm);
+    },
     
-//     frappe.model.set_value(cdt, cdn, 'amount', amount);
-// }
+    qty_received: function(frm, cdt, cdn) {
+        calculate_stock_qty_received(frm, cdt, cdn);
+        calculate_totals(frm);
+    },
+    
+    qty_rejected: function(frm, cdt, cdn) {
+        calculate_totals(frm);
+    },
+    
+    conversion_factor: function(frm, cdt, cdn) {
+        calculate_stock_qty_accepted(frm, cdt, cdn);
+        calculate_stock_qty_received(frm, cdt, cdn);
+    },
+    
+    uom: function(frm, cdt, cdn) {
 
-// // Auto-fill item name when item code is selected
-// frappe.ui.form.on("WMS Inbound Task", {
-//     item_code: function(frm, cdt, cdn) {
-//         let row = locals[cdt][cdn];
-//         if (row.item_code) {
-//             frappe.call({
-//                 method: 'frappe.client.get_value',
-//                 args: {
-//                     doctype: 'Item',
-//                     filters: { name: row.item_code },
-//                     fieldname: ['item_name', 'stock_uom']
-//                 },
-//                 callback: function(r) {
-//                     if (r.message) {
-//                         frappe.model.set_value(cdt, cdn, "item_name", r.message.item_name);
-//                         frappe.model.set_value(cdt, cdn, "stock_uom", r.message.stock_uom);
-//                     }
-//                 }
-//             });
-//         } else {
-//             frappe.model.set_value(cdt, cdn, "item_name", "");
-//             frappe.model.set_value(cdt, cdn, "stock_uom", "");
-//         }
-//     }
-// });
+        let row = locals[cdt][cdn];
+
+        if (row.uom && row.stock_uom) {
+
+            frappe.call({
+                method: 'wmspro.wmspro.doctype.wms_goods_receipt_note.wms_goods_receipt_note.get_uom_conversion',
+                args: {
+                    from_uom: row.stock_uom,
+                    to_uom: row.uom
+                },
+                callback: function(r) {
+                    if (r.message && r.message.conversion_factor) {
+                        frappe.model.set_value(cdt, cdn, 'conversion_factor', r.message.conversion_factor);
+                    } else {
+                        frappe.model.set_value(cdt, cdn, 'conversion_factor', 1);
+                    }
+                },
+                error: function() {
+                    frappe.model.set_value(cdt, cdn, 'conversion_factor', 1);
+                }
+            });
+        }
+    }
+});
+
+
+function calculate_totals(frm) {
+    let total_received = 0;
+    let total_accepted = 0;
+    let total_rejected = 0;
+    
+    for (let item of frm.doc.wms_grn_item || []) {
+        total_received += parseFloat(item.qty_received || 0);
+        total_accepted += parseFloat(item.qty_accepted || 0);
+        total_rejected += parseFloat(item.qty_rejected || 0);
+    }
+    
+    frm.set_value('total_qty_received', total_received);
+    frm.set_value('total_qty_accepted', total_accepted);
+    frm.set_value('total_qty_rejected', total_rejected);
+}
+
+function calculate_stock_qty_accepted(frm, cdt, cdn) {
+    let row = locals[cdt][cdn];
+    let qty_accepted = parseFloat(row.qty_accepted) || 0;
+    let conversion_factor = parseFloat(row.conversion_factor) || 1;
+
+    let stock_qty_accepted = qty_accepted * conversion_factor;
+
+    frappe.model.set_value(cdt, cdn, 'stock_qty_accepted', stock_qty_accepted);
+}
+
+function calculate_stock_qty_received(frm, cdt, cdn) {
+    let row = locals[cdt][cdn];
+    let qty_received = parseFloat(row.qty_received) || 0;
+    let conversion_factor = parseFloat(row.conversion_factor) || 1;
+
+    let stock_qty_received = qty_received * conversion_factor;
+
+    frappe.model.set_value(cdt, cdn, 'stock_qty_received', stock_qty_received);
+}

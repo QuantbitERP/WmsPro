@@ -1,0 +1,174 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-03-29 14:02:54.572939",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "operation_type",
+  "charges_by",
+  "column_break_uaux",
+  "storage_type",
+  "section_break_lsuf",
+  "initial_column",
+  "initial_charge",
+  "initial_pallet",
+  "initial_cbm",
+  "initial_quantity",
+  "initial_weight",
+  "initial_bin",
+  "initial_fix_charge",
+  "initial_period_every",
+  "recurring_column",
+  "recuurring_charge",
+  "recurring_pallet",
+  "recurring_cbm",
+  "recuurring_quantity",
+  "recurring_weight",
+  "recurring_bin",
+  "recuurring_period_every"
+ ],
+ "fields": [
+  {
+   "fieldname": "charges_by",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Charges By",
+   "options": "Days\nMonth\nYear"
+  },
+  {
+   "fieldname": "column_break_uaux",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "storage_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Storage Type",
+   "options": "Pallet\nCBM\nQuantity\nWeight\nBin\nFix Charge"
+  },
+  {
+   "fieldname": "section_break_lsuf",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "initial_column",
+   "fieldtype": "Column Break",
+   "label": "Initial "
+  },
+  {
+   "fieldname": "initial_charge",
+   "fieldtype": "Float",
+   "label": "Charge"
+  },
+  {
+   "depends_on": "eval:doc.storage_type == \"Quantity\"",
+   "fieldname": "initial_quantity",
+   "fieldtype": "Float",
+   "label": "Quantity"
+  },
+  {
+   "fieldname": "initial_period_every",
+   "fieldtype": "Float",
+   "label": "Period Every"
+  },
+  {
+   "fieldname": "recurring_column",
+   "fieldtype": "Column Break",
+   "label": "Recurring"
+  },
+  {
+   "fieldname": "recuurring_charge",
+   "fieldtype": "Float",
+   "label": "Charge"
+  },
+  {
+   "depends_on": "eval:doc.storage_type == \"Quantity\"",
+   "fieldname": "recuurring_quantity",
+   "fieldtype": "Float",
+   "label": "Quantity"
+  },
+  {
+   "fieldname": "recuurring_period_every",
+   "fieldtype": "Float",
+   "label": "Period Every"
+  },
+  {
+   "depends_on": "eval:doc.storage_type == \"Pallet\"",
+   "fieldname": "initial_pallet",
+   "fieldtype": "Float",
+   "label": "Pallet"
+  },
+  {
+   "depends_on": "eval:doc.storage_type == \"CBM\"",
+   "fieldname": "initial_cbm",
+   "fieldtype": "Float",
+   "label": "CBM"
+  },
+  {
+   "depends_on": "eval:doc.storage_type == \"Weight\"",
+   "fieldname": "initial_weight",
+   "fieldtype": "Float",
+   "label": "Weight"
+  },
+  {
+   "depends_on": "eval:doc.storage_type == \"Bin\"",
+   "fieldname": "initial_bin",
+   "fieldtype": "Float",
+   "label": "Bin"
+  },
+  {
+   "depends_on": "eval:doc.storage_type == \"Fix Charge\"",
+   "fieldname": "initial_fix_charge",
+   "fieldtype": "Select",
+   "label": "Strategy"
+  },
+  {
+   "depends_on": "eval:doc.storage_type == \"Pallet\"",
+   "fieldname": "recurring_pallet",
+   "fieldtype": "Float",
+   "label": "Pallet"
+  },
+  {
+   "depends_on": "eval:doc.storage_type == \"CBM\"",
+   "fieldname": "recurring_cbm",
+   "fieldtype": "Float",
+   "label": "CBM"
+  },
+  {
+   "depends_on": "eval:doc.storage_type == \"Weight\"",
+   "fieldname": "recurring_weight",
+   "fieldtype": "Float",
+   "label": "Weight"
+  },
+  {
+   "depends_on": "eval:doc.storage_type == \"Bin\"",
+   "fieldname": "recurring_bin",
+   "fieldtype": "Float",
+   "label": "Bin"
+  },
+  {
+   "fieldname": "operation_type",
+   "fieldtype": "Data",
+   "label": "Operation Type"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-04-04 17:03:30.105275",
+ "modified_by": "Administrator",
+ "module": "WmsPro",
+ "name": "Tarrif Storing Charges",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

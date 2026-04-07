@@ -7,41 +7,46 @@
  "engine": "InnoDB",
  "field_order": [
   "section_break_coat",
-  "supplier",
   "naming_series",
-  "supplier_name",
-  "purchase_order",
+  "shipment_date",
+  "actual_arrival_date",
   "column_break_oxta",
   "company",
-  "warehouse",
-  "mode_of_transport",
-  "dock_assignment",
-  "column_break_cqvp",
-  "shipment_date",
   "expected_arrival_date",
+  "mode_of_transport",
+  "column_break_cqvp",
+  "warehouse",
   "expected_arrival_time",
-  "actual_arrival_date",
-  "section_break_jxjx",
-  "carrier",
-  "edi_856_reference",
-  "total_line_items",
-  "temperature_controlled",
-  "column_break_jtpr",
+  "dock_assignment",
+  "section_break_iyvq",
+  "party",
+  "column_break_dock",
+  "party_name",
+  "column_break_bsdc",
+  "supplier_name",
+  "customer",
+  "column_break_yoxg",
+  "purchase_order",
+  "column_break_wkqa",
   "supplier_asn_number",
-  "total_qty",
-  "status",
-  "hazmat",
-  "column_break_gyie",
-  "tracking_number",
-  "vehicle_number",
-  "seal_number",
-  "created_from_api",
-  "vehicle_details_section",
-  "bill_of_lading__awb",
-  "column_break_zfly",
-  "cold_chain_required",
   "section_break_ofyv",
   "advanced_shipment_notice_details",
+  "section_break_jxjx",
+  "total_qty",
+  "carrier",
+  "temperature_controlled",
+  "column_break_jtpr",
+  "bill_of_lading__awb",
+  "tracking_number",
+  "hazmat",
+  "column_break_gyie",
+  "edi_856_reference",
+  "vehicle_number",
+  "cold_chain_required",
+  "column_break_ythv",
+  "seal_number",
+  "asn_status",
+  "created_from_api",
   "amended_from"
  ],
  "fields": [
@@ -50,20 +55,14 @@
    "fieldtype": "Section Break"
   },
   {
-   "fieldname": "supplier",
-   "fieldtype": "Link",
-   "in_filter": 1,
-   "in_list_view": 1,
-   "in_standard_filter": 1,
-   "label": "Supplier",
-   "link_filters": "[[\"Supplier\",\"disabled\",\"=\",0]]",
-   "options": "Supplier",
-   "reqd": 1
-  },
-  {
+   "depends_on": "eval:doc.party==\"Supplier\"",
    "fetch_from": "supplier.supplier_name",
    "fieldname": "supplier_name",
    "fieldtype": "Data",
+   "in_filter": 1,
+   "in_list_view": 1,
+   "in_preview": 1,
+   "in_standard_filter": 1,
    "label": "Supplier Name"
   },
   {
@@ -87,18 +86,9 @@
    "options": "\nRoad\nRail\nAir\nSea"
   },
   {
-   "fieldname": "vehicle_details_section",
-   "fieldtype": "Section Break",
-   "label": "Vehicle Details"
-  },
-  {
    "fieldname": "bill_of_lading__awb",
    "fieldtype": "Data",
    "label": "Bill of Lading / AWB"
-  },
-  {
-   "fieldname": "column_break_zfly",
-   "fieldtype": "Column Break"
   },
   {
    "default": "0",
@@ -117,16 +107,6 @@
    "options": "Advanced Shipment Notice Details"
   },
   {
-   "fieldname": "amended_from",
-   "fieldtype": "Link",
-   "label": "Amended From",
-   "no_copy": 1,
-   "options": "Advanced Shipment Notice",
-   "print_hide": 1,
-   "read_only": 1,
-   "search_index": 1
-  },
-  {
    "default": "ASN-.YYYY.-.#####",
    "fieldname": "naming_series",
    "fieldtype": "Select",
@@ -136,6 +116,7 @@
    "reqd": 1
   },
   {
+   "depends_on": "eval:doc.party==\"Supplier\"",
    "fieldname": "purchase_order",
    "fieldtype": "Link",
    "in_filter": 1,
@@ -151,6 +132,7 @@
    "label": "Expected Arrival Time"
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "actual_arrival_date",
    "fieldtype": "Date",
    "label": "Actual Arrival Date"
@@ -167,7 +149,8 @@
   },
   {
    "fieldname": "section_break_jxjx",
-   "fieldtype": "Section Break"
+   "fieldtype": "Section Break",
+   "label": "Vehicle Details"
   },
   {
    "fieldname": "carrier",
@@ -207,6 +190,7 @@
    "label": "Hazmat"
   },
   {
+   "depends_on": "eval:doc.party==\"Supplier\"",
    "fieldname": "supplier_asn_number",
    "fieldtype": "Data",
    "label": "Supplier ASN Number"
@@ -228,18 +212,6 @@
    "label": "Total QTY"
   },
   {
-   "fieldname": "total_line_items",
-   "fieldtype": "Int",
-   "label": "Total Line Items"
-  },
-  {
-   "fieldname": "status",
-   "fieldtype": "Select",
-   "label": "Status",
-   "options": "Draft\nConfirmed\nPartially Received\nReceived\nCancelled",
-   "reqd": 1
-  },
-  {
    "fieldname": "company",
    "fieldtype": "Link",
    "label": "Company",
@@ -249,6 +221,10 @@
   {
    "fieldname": "dock_assignment",
    "fieldtype": "Link",
+   "in_filter": 1,
+   "in_list_view": 1,
+   "in_preview": 1,
+   "in_standard_filter": 1,
    "label": "Dock Assignment",
    "options": "WMS Dock",
    "reqd": 1
@@ -256,13 +232,83 @@
   {
    "fieldname": "column_break_gyie",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "party",
+   "fieldtype": "Link",
+   "label": "Party",
+   "options": "DocType"
+  },
+  {
+   "fieldname": "party_name",
+   "fieldtype": "Dynamic Link",
+   "label": "Party Name ",
+   "options": "party"
+  },
+  {
+   "fieldname": "section_break_iyvq",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_dock",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval:doc.party==\"Customer\"",
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "in_filter": 1,
+   "in_list_view": 1,
+   "in_preview": 1,
+   "in_standard_filter": 1,
+   "label": "Customer",
+   "options": "Customer"
+  },
+  {
+   "fieldname": "column_break_ythv",
+   "fieldtype": "Column Break"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "asn_status",
+   "fieldtype": "Select",
+   "label": "ASN Status",
+   "options": "Draft\nConfirmed\nPartially Received\nReceived\nCancelled",
+   "reqd": 1
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Advanced Shipment Notice",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "column_break_bsdc",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_yoxg",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_wkqa",
+   "fieldtype": "Column Break"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
- "links": [],
- "modified": "2026-03-11 16:02:22.747692",
+ "links": [
+  {
+   "link_doctype": "WMS Goods Receipt Note",
+   "link_fieldname": "doc_link"
+  }
+ ],
+ "modified": "2026-04-02 17:51:50.577058",
  "modified_by": "Administrator",
  "module": "WmsPro",
  "name": "Advanced Shipment Notice",

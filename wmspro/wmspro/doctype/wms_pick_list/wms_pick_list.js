@@ -93,5 +93,57 @@ frappe.ui.form.on("WMS Pick List", {
 
             }, "Actions");
         }
+    },
+
+    // Auto-fill to_warehouse when to_bin_location changes
+    to_bin_location(frm) {
+        if (frm.doc.to_bin_location) {
+            frappe.call({
+                method: "wmspro.wmspro.doctype.wms_pick_list.wms_pick_list.get_warehouse_from_bin",
+                args: {
+                    bin_location: frm.doc.to_bin_location
+                },
+                callback(r) {
+                    if (r.message) {
+                        frm.set_value("to_warehouse", r.message);
+                    } else {
+                        frappe.show_alert({
+                            message: "Warehouse not found for selected bin location",
+                            indicator: "red"
+                        });
+                    }
+                }
+            });
+        } else {
+            frm.set_value("to_warehouse", "");
+        }
+    }
+});
+
+// Item table events for to_bin_location
+frappe.ui.form.on("WMS Pick List Item", {
+    to_bin_location(frm, cdt, cdn) {
+        let row = locals[cdt][cdn];
+        
+        if (row.to_bin_location) {
+            frappe.call({
+                method: "wmspro.wmspro.doctype.wms_pick_list.wms_pick_list.get_warehouse_from_bin",
+                args: {
+                    bin_location: row.to_bin_location
+                },
+                callback(r) {
+                    if (r.message) {
+                        frappe.model.set_value(cdt, cdn, "to_warehouse", r.message);
+                    } else {
+                        frappe.show_alert({
+                            message: "Warehouse not found for selected bin location",
+                            indicator: "red"
+                        });
+                    }
+                }
+            });
+        } else {
+            frappe.model.set_value(cdt, cdn, "to_warehouse", "");
+        }
     }
 });

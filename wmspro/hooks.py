@@ -47,6 +47,9 @@ app_license = "mit"
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
+# doctype_list_js = {
+#     "WMS Putaway Task": "wmspro/doctype/wms_putaway_task/wms_putaway_list.js"
+# }
 
 # Svg Icons
 # ------------------
@@ -184,7 +187,20 @@ fixtures = [
     },
     {
         "doctype": "Insights Data Source"
-    }
+    },
+    {
+        "doctype": "Property Setter",
+        "filters": [
+            ["module", "=", "WMSPro"]
+        ]
+    },
+    {
+        "doctype": "Custom Field",
+        "filters": [
+            ["module", "=", "WMSPro"]
+        ]
+    },
+
 ]
 
 # Scheduled Tasks

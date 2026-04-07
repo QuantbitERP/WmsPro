@@ -6,6 +6,13 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "party_type",
+  "column_break_nfbb",
+  "party",
+  "column_break_onyk",
+  "supplier",
+  "customer",
+  "section_break_heqh",
   "grn_reference",
   "naming_series",
   "uom",
@@ -33,7 +40,11 @@
   "priority",
   "assigned_to",
   "completed_at",
-  "stock_entry"
+  "stock_entry",
+  "other_info_tab",
+  "doc_link_doctype",
+  "doc_link",
+  "amended_from"
  ],
  "fields": [
   {
@@ -63,6 +74,9 @@
   {
    "fieldname": "from_warehouse",
    "fieldtype": "Link",
+   "in_filter": 1,
+   "in_preview": 1,
+   "in_standard_filter": 1,
    "label": "From Warehouse",
    "options": "Warehouse",
    "reqd": 1
@@ -70,12 +84,18 @@
   {
    "fieldname": "from_bin",
    "fieldtype": "Link",
+   "in_filter": 1,
+   "in_preview": 1,
+   "in_standard_filter": 1,
    "label": "From BIn",
    "options": "WMS Bin"
   },
   {
    "fieldname": "actual_bin",
    "fieldtype": "Link",
+   "in_filter": 1,
+   "in_preview": 1,
+   "in_standard_filter": 1,
    "label": "Actual BIn",
    "options": "WMS Bin"
   },
@@ -120,6 +140,9 @@
   {
    "fieldname": "task_status",
    "fieldtype": "Select",
+   "in_filter": 1,
+   "in_preview": 1,
+   "in_standard_filter": 1,
    "label": "Task Status",
    "options": "\nDraft\nAssigned\nIn Progress\nCompleted\nCancelled"
   },
@@ -179,6 +202,9 @@
   {
    "fieldname": "assigned_to",
    "fieldtype": "Link",
+   "in_filter": 1,
+   "in_preview": 1,
+   "in_standard_filter": 1,
    "label": "Assigned To",
    "options": "User"
   },
@@ -196,16 +222,94 @@
   {
    "fieldname": "to_warehouse",
    "fieldtype": "Link",
+   "in_filter": 1,
+   "in_preview": 1,
+   "in_standard_filter": 1,
    "label": "To Warehouse",
    "options": "Warehouse",
    "reqd": 1
+  },
+  {
+   "depends_on": "eval:doc.party_type==\"Customer\"",
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "label": "Customer",
+   "options": "Customer"
+  },
+  {
+   "fieldname": "section_break_heqh",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "other_info_tab",
+   "fieldtype": "Tab Break",
+   "label": "Other Info"
+  },
+  {
+   "fieldname": "doc_link_doctype",
+   "fieldtype": "Link",
+   "label": "Doc Link Doctype",
+   "options": "DocType"
+  },
+  {
+   "fieldname": "doc_link",
+   "fieldtype": "Dynamic Link",
+   "label": "Doc Link",
+   "options": "doc_link_doctype"
+  },
+  {
+   "fieldname": "party_type",
+   "fieldtype": "Link",
+   "label": "Party Type",
+   "options": "DocType"
+  },
+  {
+   "fieldname": "column_break_nfbb",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_onyk",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "party",
+   "fieldtype": "Dynamic Link",
+   "label": "Party ",
+   "options": "party_type"
+  },
+  {
+   "depends_on": "eval:doc.party_type==\"Supplier\"",
+   "fieldname": "supplier",
+   "fieldtype": "Link",
+   "label": "Supplier ",
+   "options": "Supplier"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "WMS Putaway Task",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
- "links": [],
- "modified": "2026-02-26 17:44:46.211383",
- "modified_by": "sahil.sawant@erpdata.in",
+ "is_submittable": 1,
+ "links": [
+  {
+   "link_doctype": "Stock Entry",
+   "link_fieldname": "custom_doc_link"
+  },
+  {
+   "link_doctype": "WMS Bin Ledger",
+   "link_fieldname": "doc_link"
+  }
+ ],
+ "modified": "2026-04-02 18:15:42.453068",
+ "modified_by": "Administrator",
  "module": "WmsPro",
  "name": "WMS Putaway Task",
  "naming_rule": "By \"Naming Series\" field",

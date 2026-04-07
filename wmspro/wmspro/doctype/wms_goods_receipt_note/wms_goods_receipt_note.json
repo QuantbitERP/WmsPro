@@ -7,63 +7,66 @@
  "engine": "InnoDB",
  "field_order": [
   "section_break_cxfu",
-  "company",
   "naming_series",
   "asn_reference",
   "warehouse",
-  "has_discrepancy",
-  "discrepancy_type",
-  "discrepancy_notes",
-  "discrepancy_photo",
-  "created_offline",
-  "offline_device_id",
-  "scynced_on",
   "status",
   "column_break_ehyt",
   "posting_date",
-  "posting_time",
+  "company",
   "purchace_order",
   "received_by",
+  "column_break_hhwz",
+  "posting_time",
+  "receipt_type",
+  "purchase_receipt",
+  "section_break_gqnu",
+  "party_type",
+  "column_break_qofz",
+  "party_name",
+  "column_break_guev",
+  "supplier_name",
+  "customer",
+  "column_break_aarf",
+  "supplier_delivery_note",
+  "section_break_zxon",
+  "has_discrepancy",
+  "discrepancy_type",
+  "discrepancy_photo",
+  "discrepancy_notes",
+  "column_break_qdyf",
   "quality_inspection_required",
   "quality_inspection",
   "quarantine_warehouse",
-  "temperature_recorded",
+  "approval_notes",
+  "column_break_ousw",
   "temperature_compliant",
-  "auto_create_putaway",
-  "putaway_strategy",
-  "total_qty_received",
-  "total_qty_accepted",
-  "total_qty_rejected",
-  "amended_from",
-  "column_break_hhwz",
-  "receipt_type",
-  "supplier",
-  "supplier_name",
-  "supplier_delivery_note",
+  "temperature_recorded",
   "supervisor_approval_required",
   "supervisor_approval",
-  "approval_notes",
+  "putaway_strategy",
+  "column_break_qxmy",
+  "created_offline",
+  "offline_device_id",
   "overall_variance_pct",
-  "purchase_receipt",
-  "purchase_order",
-  "stock_entry",
+  "scynced_on",
   "section_break_ihnr",
-  "wms_grn_item"
+  "wms_grn_item",
+  "section_break_vcbl",
+  "total_qty_received",
+  "column_break_iawa",
+  "total_qty_accepted",
+  "column_break_qxbv",
+  "total_qty_rejected",
+  "amended_from",
+  "other_info_tab",
+  "doc_link_doctype",
+  "doc_link"
  ],
  "fields": [
   {
    "fieldname": "section_break_cxfu",
    "fieldtype": "Section Break"
-  },
-  {
-   "fieldname": "amended_from",
-   "fieldtype": "Link",
-   "label": "Amended From",
-   "no_copy": 1,
-   "options": "WMS Goods Receipt Note",
-   "print_hide": 1,
-   "read_only": 1,
-   "search_index": 1
   },
   {
    "default": "GRN-.YYYY.-.#####",
@@ -112,18 +115,17 @@
    "options": "Advanced Shipment Notice"
   },
   {
-   "fieldname": "supplier",
-   "fieldtype": "Link",
-   "label": "Supplier",
-   "options": "Supplier"
-  },
-  {
+   "depends_on": "eval:doc.party_type==\"Supplier\"",
    "fetch_from": "supplier.supplier_name",
    "fieldname": "supplier_name",
    "fieldtype": "Data",
+   "in_filter": 1,
+   "in_preview": 1,
+   "in_standard_filter": 1,
    "label": "Supplier Name"
   },
   {
+   "depends_on": "eval:doc.party_type==\"Supplier\"",
    "fieldname": "supplier_delivery_note",
    "fieldtype": "Data",
    "label": "Supplier Delivery Note"
@@ -215,12 +217,6 @@
    "label": "Approval Notes"
   },
   {
-   "default": "0",
-   "fieldname": "auto_create_putaway",
-   "fieldtype": "Check",
-   "label": "Auto Create Putaway"
-  },
-  {
    "fieldname": "putaway_strategy",
    "fieldtype": "Select",
    "label": "Putaway Strategy",
@@ -247,12 +243,6 @@
    "label": "Overall Variance Pct."
   },
   {
-   "fieldname": "stock_entry",
-   "fieldtype": "Link",
-   "label": "Stock Entry",
-   "options": "Stock Entry"
-  },
-  {
    "default": "0",
    "fieldname": "created_offline",
    "fieldtype": "Check",
@@ -272,7 +262,7 @@
    "fieldname": "status",
    "fieldtype": "Select",
    "label": "Status",
-   "options": "Draft\nReceived\nQC Pending\nPartially Accepted\nCompleted\nRejected",
+   "options": "Draft\nReceived\nQC Pending\nPartially Accepted\nRejected",
    "reqd": 1
   },
   {
@@ -290,24 +280,127 @@
    "options": "WMS Inbound Task"
   },
   {
-   "fieldname": "purchase_order",
-   "fieldtype": "Link",
-   "label": "Purchase Order",
-   "options": "Purchase Order"
-  },
-  {
    "fieldname": "purchase_receipt",
    "fieldtype": "Link",
    "label": "Purchase Receipt",
    "options": "Purchase Receipt"
+  },
+  {
+   "depends_on": "eval:doc.party_type==\"Customer\"",
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "in_filter": 1,
+   "in_preview": 1,
+   "in_standard_filter": 1,
+   "label": "Customer",
+   "options": "Customer"
+  },
+  {
+   "fieldname": "section_break_zxon",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_qdyf",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_ousw",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_qxmy",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_gqnu",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "party_type",
+   "fieldtype": "Link",
+   "label": "Party Type",
+   "options": "DocType"
+  },
+  {
+   "fieldname": "party_name",
+   "fieldtype": "Dynamic Link",
+   "label": "Party Name ",
+   "options": "party_type"
+  },
+  {
+   "fieldname": "column_break_qofz",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_vcbl",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_iawa",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_qxbv",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "WMS Goods Receipt Note",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "other_info_tab",
+   "fieldtype": "Tab Break",
+   "label": "other info",
+   "read_only": 1
+  },
+  {
+   "fieldname": "doc_link_doctype",
+   "fieldtype": "Link",
+   "label": "Doc Link Doctype",
+   "options": "DocType",
+   "read_only": 1
+  },
+  {
+   "fieldname": "doc_link",
+   "fieldtype": "Dynamic Link",
+   "label": "Doc Link",
+   "options": "doc_link_doctype",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_guev",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_aarf",
+   "fieldtype": "Column Break"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
- "links": [],
- "modified": "2026-02-26 12:39:27.977788",
- "modified_by": "sourabh.yelpale@erpdata.in",
+ "links": [
+  {
+   "link_doctype": "Stock Entry",
+   "link_fieldname": "custom_doc_link"
+  },
+  {
+   "link_doctype": "WMS Putaway Task",
+   "link_fieldname": "doc_link"
+  },
+  {
+   "link_doctype": "WMS Bin Ledger",
+   "link_fieldname": "doc_link"
+  }
+ ],
+ "modified": "2026-04-03 16:32:22.643776",
+ "modified_by": "Administrator",
  "module": "WmsPro",
  "name": "WMS Goods Receipt Note",
  "naming_rule": "By \"Naming Series\" field",

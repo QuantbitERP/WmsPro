@@ -11,6 +11,7 @@
   "vehicle",
   "source_warehouse",
   "column_break_sral",
+  "customer",
   "route_date",
   "driver",
   "section_break_xnwa",
@@ -204,14 +205,20 @@
    "print_hide": 1,
    "read_only": 1,
    "search_index": 1
+  },
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "label": "Customer",
+   "options": "Customer"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-03-13 12:42:59.650556",
- "modified_by": "sanket.lohar@erpdata.in",
+ "modified": "2026-03-27 10:55:40.794431",
+ "modified_by": "Administrator",
  "module": "WmsPro",
  "name": "OMS Delivery Route",
  "naming_rule": "By \"Naming Series\" field",

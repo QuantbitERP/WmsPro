@@ -46,6 +46,7 @@
   "is_reserve_location",
   "is_pick_location",
   "is_active",
+  "is_storage",
   "section_break_zdkk",
   "blocked_reason",
   "section_break_eaot",
@@ -294,13 +295,19 @@
   {
    "fieldname": "column_break_hikv",
    "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_storage",
+   "fieldtype": "Check",
+   "label": "Is Storage"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-03-14 10:10:37.065638",
- "modified_by": "sanket.lohar@erpdata.in",
+ "modified": "2026-04-03 09:37:55.291686",
+ "modified_by": "Administrator",
  "module": "WmsPro",
  "name": "WMS Bin",
  "naming_rule": "By \"Naming Series\" field",
