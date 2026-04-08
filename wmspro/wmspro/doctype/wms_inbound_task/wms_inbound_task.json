@@ -74,14 +74,6 @@
    "options": "WMS Bin"
   },
   {
-   "fetch_from": "staging_bin.warehouse",
-   "fetch_if_empty": 1,
-   "fieldname": "warehouse",
-   "fieldtype": "Link",
-   "label": "Warehouse",
-   "options": "Warehouse"
-  },
-  {
    "fieldname": "column_break_mlfk",
    "fieldtype": "Column Break"
   },
