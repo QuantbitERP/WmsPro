@@ -139,6 +139,7 @@
   {
    "fieldname": "warehouse",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Warehouse",
    "options": "Warehouse"
   },
@@ -262,7 +263,7 @@
    "fieldname": "status",
    "fieldtype": "Select",
    "label": "Status",
-   "options": "Draft\nReceived\nQC Pending\nPartially Accepted\nRejected",
+   "options": "Draft\nReceived\nQC Pending\nPartially Accepted\nCompleted\nRejected",
    "reqd": 1
   },
   {
@@ -397,9 +398,13 @@
   {
    "link_doctype": "WMS Bin Ledger",
    "link_fieldname": "doc_link"
+  },
+  {
+   "link_doctype": "Storage Leadger",
+   "link_fieldname": "reference_name"
   }
  ],
- "modified": "2026-04-03 16:32:22.643776",
+ "modified": "2026-04-14 14:39:05.761126",
  "modified_by": "Administrator",
  "module": "WmsPro",
  "name": "WMS Goods Receipt Note",

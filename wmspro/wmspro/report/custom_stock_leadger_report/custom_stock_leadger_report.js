@@ -119,7 +119,19 @@ frappe.query_reports["Custom Stock leadger Report"] = {
 			fieldname: "project",
 			label: __("Project"),
 			fieldtype: "Link",
-			options: "Project",
+			"options": "Project",
+		},
+		{
+			fieldname: "customer",
+			label: __("Customer"),
+			fieldtype: "Link",
+			"options": "Customer",
+		},
+		{
+			fieldname: "supplier",
+			label: __("Supplier"),
+			fieldtype: "Link",
+			"options": "Supplier",
 		},
 		{
 			fieldname: "include_uom",

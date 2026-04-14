@@ -6,6 +6,13 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "party_type",
+  "column_break_aiqd",
+  "party_name",
+  "column_break_klac",
+  "supplier_name",
+  "customer",
+  "section_break_xyfu",
   "posting_date",
   "posting_time",
   "posting_datetime",
@@ -15,7 +22,6 @@
   "is_cancelled",
   "naming_series",
   "column_break_wuqj",
-  "customer",
   "item_code",
   "item_name",
   "bin_location",
@@ -171,12 +177,6 @@
    "label": "Available Qty"
   },
   {
-   "fieldname": "customer",
-   "fieldtype": "Link",
-   "label": "Customer",
-   "options": "Customer"
-  },
-  {
    "fieldname": "other_info_tab",
    "fieldtype": "Tab Break",
    "label": "Other Info"
@@ -192,12 +192,48 @@
    "fieldtype": "Dynamic Link",
    "label": "Doc Link",
    "options": "doc_link_doctype"
+  },
+  {
+   "fieldname": "party_type",
+   "fieldtype": "Link",
+   "label": "Party Type ",
+   "options": "DocType"
+  },
+  {
+   "fieldname": "column_break_aiqd",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_klac",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval:doc.party_type==\"Supplier\"",
+   "fieldname": "supplier_name",
+   "fieldtype": "Data",
+   "label": "Supplier Name "
+  },
+  {
+   "fieldname": "section_break_xyfu",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "party_name",
+   "fieldtype": "Dynamic Link",
+   "label": "Party Name",
+   "options": "party_type"
+  },
+  {
+   "depends_on": "eval:doc.party_type==\"customer\"",
+   "fieldname": "customer",
+   "fieldtype": "Data",
+   "label": "Customer"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-04-02 18:13:42.357350",
+ "modified": "2026-04-08 17:44:51.999727",
  "modified_by": "Administrator",
  "module": "WmsPro",
  "name": "WMS Bin Ledger",

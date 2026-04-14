@@ -43,7 +43,11 @@ def create_bin_ledger_entry(
     is_reservation=0,
     to_check_balance=False,
     doc_link_doctype=None,
-    doc_link=None
+    doc_link=None,
+    party_type=None,
+    party_name=None,
+    supplier_name=None,
+    customer=None
 ):
 
     if not qty_change:
@@ -80,6 +84,10 @@ def create_bin_ledger_entry(
         "is_reservation": is_reservation,
         "doc_link_doctype": doc_link_doctype,
         "doc_link": doc_link,
+        "party_type": party_type,
+        "party_name": party_name,
+        "supplier_name": supplier_name,
+        "data_uldd": customer,
     })
     frappe.log_error(message=str(frappe.as_json(entry)), title="Bin Ledger Entry")
 

@@ -50,6 +50,7 @@ class OMSFulfillmentOrder(Document):
                         )
 
 
+
     @frappe.whitelist()
     def create_pick_list_button(self):
 
@@ -94,18 +95,20 @@ class OMSFulfillmentOrder(Document):
             bins = frappe.db.sql(
                 """
                 SELECT
-                    bin_location,
-                    balance_qty,
-                    IFNULL(reserved_qty,0) AS reserved_qty,
-                    available_qty
-                FROM `tabWMS Bin Ledger`
-                WHERE item_code = %s
-                AND warehouse = %s
-                AND available_qty > 0
-                AND is_cancelled = 0
-                ORDER BY posting_datetime ASC
+                    bl.bin_location,
+                    bl.balance_qty,
+                    IFNULL(bl.reserved_qty,0) AS reserved_qty,
+                    bl.available_qty
+                FROM `tabWMS Bin Ledger` bl
+                INNER JOIN `tabWMS Bin` b ON bl.bin_location = b.name
+                WHERE bl.item_code = %s
+                AND bl.warehouse = %s
+                AND b.warehouse = %s
+                AND bl.available_qty > 0
+                AND bl.is_cancelled = 0
+                ORDER BY bl.posting_datetime ASC
                 """,
-                (item.item_code, self.source_warehouse),
+                (item.item_code, self.source_warehouse, self.source_warehouse),
                 as_dict=True
             )
 
@@ -178,35 +181,25 @@ class OMSFulfillmentOrder(Document):
 
         sle_balance = sle[0].qty_after_transaction if sle else 0
 
+        # Create reservation entry in WMS Bin Ledger
         frappe.get_doc({
             "doctype": "WMS Bin Ledger",
-
             "posting_date": nowdate(),
             "posting_time": nowtime(),
             "posting_datetime": now_datetime(),
-
             "warehouse": self.source_warehouse,
             "bin_location": row.bin_location,
-
             "item_code": item_code,
             "item_name": item_name,
-
-            "quantity_change": 0,
-
+            "quantity_change": 0,  # Reservation doesn't change quantity
             "balance_qty": sle_balance,
-
             "reserved_qty": (row.reserved_qty or 0) + qty,
-
             "available_qty": max(sle_balance - ((row.reserved_qty or 0) + qty), 0),
-
             "stock_uom": stock_uom,
-
             "voucher_type": "OMS Fulfillment Order",
             "voucher_no": self.name,
-
             "is_reservation": 1,
             "is_cancelled": 0
-
         }).insert(ignore_permissions=True)
 
 
@@ -233,12 +226,52 @@ class OMSFulfillmentOrder(Document):
             "pick_date": nowdate(),
             "warehouse": self.source_warehouse,
             "customer": self.customer,
-            "to_warehouse": self.destination_facility,
+            # "to_warehouse": self.destination_facility,  # COMMENTED
             "zone": zone,
             "status": "Released",
             "fulfillment_order": self.name,
             "items": []
         })
+        
+        # Additional fields from fulfillment order
+        if hasattr(self, 'contract') and self.contract:
+            pick_list.contract = self.contract
+        if hasattr(self, 'required_by_date') and self.required_by_date:
+            pick_list.pick_date = self.required_by_date
+        if hasattr(self, 'priority') and self.priority:
+            pick_list.picking_strategy = "FEFO" if self.priority == "Emergency" else "FIFO"
+        
+        # Set to_bin_location to a bin from the same warehouse
+        staging_bin = frappe.db.get_value(
+            "WMS Bin",
+            {
+                "warehouse": self.source_warehouse,
+                "is_staging": 1,
+                "is_active": 1
+            },
+            "name"
+        )
+        
+        if staging_bin:
+            pick_list.to_bin_location = staging_bin
+            frappe.logger().info(f"Pick List: Set to_bin_location to staging bin: {staging_bin}")
+        else:
+            # If no staging bin, get any active bin from the same warehouse
+            any_bin = frappe.db.get_value(
+                "WMS Bin",
+                {
+                    "warehouse": self.source_warehouse,
+                    "is_active": 1
+                },
+                "name"
+            )
+            if any_bin:
+                pick_list.to_bin_location = any_bin
+                frappe.logger().info(f"Pick List: Set to_bin_location to active bin: {any_bin}")
+            else:
+                frappe.logger().warning(f"Pick List: No active bin found for warehouse: {self.source_warehouse}")
+        
+        frappe.logger().info(f"Pick List created with to_bin_location: {pick_list.to_bin_location}")
 
         item_qty_map = {}
         bin_map = {}
@@ -261,6 +294,33 @@ class OMSFulfillmentOrder(Document):
                 ["item_name", "stock_uom"]
             )
 
+            # Get fulfillment item data for additional fields
+            fulfillment_item = None
+            for item in self.items:
+                if item.item_code == item_code:
+                    fulfillment_item = item
+                    break
+            
+            # Filter bin locations to show only bins from source warehouse
+            all_bins = list(set(bin_map[item_code]))
+            filtered_bins = []
+            
+            frappe.logger().info(f"Item {item_code}: All bins found: {all_bins}")
+            frappe.logger().info(f"Source warehouse: {self.source_warehouse}")
+            
+            # Compare each bin's warehouse with source warehouse
+            for bin_loc in all_bins:
+                bin_warehouse = frappe.db.get_value("WMS Bin", bin_loc, "warehouse")
+                frappe.logger().info(f"Checking bin {bin_loc} -> warehouse: {bin_warehouse}")
+                
+                if bin_warehouse == self.source_warehouse:
+                    filtered_bins.append(bin_loc)
+                    frappe.logger().info(f"✅ MATCH: Bin {bin_loc} from {bin_warehouse}")
+                else:
+                    frappe.logger().info(f"❌ SKIP: Bin {bin_loc} from {bin_warehouse}")
+            
+            frappe.logger().info(f"Final filtered bins for {item_code}: {filtered_bins}")
+            
             pick_list.append("items", {
                 "sequence": seq,
                 "item_code": item_code,
@@ -268,7 +328,14 @@ class OMSFulfillmentOrder(Document):
                 "warehouse": self.source_warehouse,
                 "qty_ordered": total_qty,
                 "uom": stock_uom,
-                "bin_location": ", ".join(set(bin_map[item_code]))
+                "bin_location": ", ".join(filtered_bins) if filtered_bins else "",
+                # Additional fields from fulfillment order item
+                "cbm_per_unit": fulfillment_item.cbm_per_unit if fulfillment_item and fulfillment_item.cbm_per_unit else 0,
+                "weight_per_unit": fulfillment_item.weight_per_unit if fulfillment_item and fulfillment_item.weight_per_unit else 0,
+                "pallet": fulfillment_item.pallet if fulfillment_item and fulfillment_item.pallet else None,
+                "batch_no": fulfillment_item.batch_no if fulfillment_item and fulfillment_item.batch_no else None,
+                "expiry_name": fulfillment_item.expiry_date if fulfillment_item and fulfillment_item.expiry_date else None,
+                "notes": f"From Fulfillment Order: {self.name}"
             })
 
             seq += 1

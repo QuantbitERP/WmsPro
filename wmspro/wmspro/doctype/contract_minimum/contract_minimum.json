@@ -1,0 +1,74 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-04-09 16:23:37.351671",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "charge_type",
+  "minimum_amount",
+  "column_break_dlmk",
+  "billing_basis",
+  "period",
+  "column_break_ktsl",
+  "minimum_qty"
+ ],
+ "fields": [
+  {
+   "fieldname": "charge_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Charge Type",
+   "options": "Storage\nHandling\nFixed\nSetu"
+  },
+  {
+   "fieldname": "column_break_dlmk",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "billing_basis",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Billing Basis",
+   "options": "Pallet\nCBM\nWeight\nFixed"
+  },
+  {
+   "fieldname": "column_break_ktsl",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "minimum_qty",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Minimum Qty"
+  },
+  {
+   "fieldname": "minimum_amount",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Minimum Amount"
+  },
+  {
+   "fieldname": "period",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Rate Period"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-04-11 17:25:05.601347",
+ "modified_by": "Administrator",
+ "module": "WmsPro",
+ "name": "Contract Minimum",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

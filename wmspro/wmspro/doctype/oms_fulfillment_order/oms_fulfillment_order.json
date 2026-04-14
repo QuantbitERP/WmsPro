@@ -17,10 +17,11 @@
   "required_by_date",
   "column_break_kqig",
   "delivery_address",
-  "destination_facility",
-  "column_break_eude",
-  "requisition_order",
+  "contract",
   "distribution_order",
+  "column_break_eude",
+  "destination_facility",
+  "requisition_order",
   "section_break_fghg",
   "items",
   "section_break_pbco",
@@ -94,23 +95,20 @@
    "fieldtype": "Link",
    "label": "Source Warehouse",
    "options": "Warehouse",
-   "read_only": 1,
    "reqd": 1
   },
   {
    "fieldname": "destination_facility",
    "fieldtype": "Link",
    "label": "Destination Facility",
-   "options": "Warehouse",
-   "reqd": 1
+   "options": "Warehouse"
   },
   {
    "fieldname": "delivery_address",
    "fieldtype": "Link",
    "label": "Delivery Address",
    "options": "Address",
-   "read_only": 1,
-   "reqd": 1
+   "read_only": 1
   },
   {
    "fieldname": "required_by_date",
@@ -284,13 +282,19 @@
    "fieldtype": "Link",
    "label": "Customer",
    "options": "Customer"
+  },
+  {
+   "fieldname": "contract",
+   "fieldtype": "Link",
+   "label": "Contract",
+   "options": "Contract"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-03-27 10:50:20.242815",
+ "modified": "2026-04-14 13:48:59.109841",
  "modified_by": "Administrator",
  "module": "WmsPro",
  "name": "OMS Fulfillment Order",

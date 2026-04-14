@@ -1,0 +1,134 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "Bill- .###",
+ "creation": "2026-04-09 16:43:18.589269",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "run_date",
+  "frequency",
+  "column_break_ntxr",
+  "period_from",
+  "billing_mode",
+  "approved_by",
+  "column_break_fvdh",
+  "period_to",
+  "status",
+  "work_flow_state",
+  "section_break_gkbw",
+  "billing_run_line",
+  "total_amount",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "run_date",
+   "fieldtype": "Date",
+   "label": "Run Date"
+  },
+  {
+   "fieldname": "frequency",
+   "fieldtype": "Select",
+   "label": "Frequency ",
+   "options": "Daily\nWeekly\nMonthly\nQuarterly"
+  },
+  {
+   "fieldname": "total_amount",
+   "fieldtype": "Currency",
+   "label": "Total Amount"
+  },
+  {
+   "fieldname": "column_break_ntxr",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "period_from",
+   "fieldtype": "Date",
+   "label": "Period From"
+  },
+  {
+   "fieldname": "billing_mode",
+   "fieldtype": "Select",
+   "label": "Billing Mode",
+   "options": "Contract-wise\nCustomer-wise\nBoth"
+  },
+  {
+   "fieldname": "approved_by",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Approved By",
+   "options": "User"
+  },
+  {
+   "fieldname": "column_break_fvdh",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "period_to",
+   "fieldtype": "Date",
+   "label": "Period To"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Draft\nPending Approval\nApproved\nInvoiced"
+  },
+  {
+   "fieldname": "work_flow_state",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Work Flow State"
+  },
+  {
+   "fieldname": "section_break_gkbw",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "billing_run_line",
+   "fieldtype": "Table",
+   "label": "Billing Run Line",
+   "options": "Billing Run Line"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Billing Run",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2026-04-13 10:39:07.513937",
+ "modified_by": "Administrator",
+ "module": "WmsPro",
+ "name": "Billing Run",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

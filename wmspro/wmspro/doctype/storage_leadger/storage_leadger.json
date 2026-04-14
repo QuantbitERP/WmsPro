@@ -1,0 +1,206 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "CUST-.YYYY.-.LOC.-.#####",
+ "creation": "2026-04-09 17:34:39.684670",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "posting_date",
+  "warehouse",
+  "reference_name",
+  "pallet",
+  "uom",
+  "column_break_mwbo",
+  "customer",
+  "movement_type",
+  "item_code",
+  "cbm_per_unit",
+  "direction",
+  "column_break_azed",
+  "contract",
+  "reference_doctype",
+  "qty",
+  "weight_per_unit",
+  "other_info_tab",
+  "doc_link_doctype",
+  "column_break_jlio",
+  "doc_link"
+ ],
+ "fields": [
+  {
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Posting Date",
+   "read_only": 1
+  },
+  {
+   "fieldname": "warehouse",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Warehouse",
+   "options": "Warehouse",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_mwbo",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Customer",
+   "options": "Customer",
+   "read_only": 1
+  },
+  {
+   "fieldname": "movement_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Movement Type",
+   "options": "Inbound\nOutbound",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_azed",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "contract",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Contract",
+   "options": "Contract",
+   "read_only": 1
+  },
+  {
+   "fieldname": "reference_doctype",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Reference Doctype",
+   "options": "DocType",
+   "read_only": 1
+  },
+  {
+   "fieldname": "reference_name",
+   "fieldtype": "Dynamic Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Reference Name ",
+   "options": "reference_doctype",
+   "read_only": 1
+  },
+  {
+   "fieldname": "item_code",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Item Code",
+   "options": "Item",
+   "read_only": 1
+  },
+  {
+   "fieldname": "qty",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Qty",
+   "read_only": 1
+  },
+  {
+   "fieldname": "pallet",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Pallet",
+   "read_only": 1
+  },
+  {
+   "fieldname": "cbm_per_unit",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "CBM Per Unit",
+   "read_only": 1
+  },
+  {
+   "fieldname": "weight_per_unit",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Weight Per Unit",
+   "read_only": 1
+  },
+  {
+   "fieldname": "other_info_tab",
+   "fieldtype": "Tab Break",
+   "label": "Other info"
+  },
+  {
+   "fieldname": "doc_link_doctype",
+   "fieldtype": "Link",
+   "label": "Doc Link Doctype",
+   "options": "DocType"
+  },
+  {
+   "fieldname": "column_break_jlio",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "doc_link",
+   "fieldtype": "Dynamic Link",
+   "label": "Doc Link",
+   "options": "doc_link_doctype"
+  },
+  {
+   "fieldname": "uom",
+   "fieldtype": "Link",
+   "label": "UOM",
+   "options": "UOM",
+   "read_only": 1
+  },
+  {
+   "fieldname": "direction",
+   "fieldtype": "Select",
+   "label": "Direction",
+   "options": "Inbound\noutbound\nBoth",
+   "read_only": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-04-11 15:16:59.727582",
+ "modified_by": "Administrator",
+ "module": "WmsPro",
+ "name": "Storage Leadger",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

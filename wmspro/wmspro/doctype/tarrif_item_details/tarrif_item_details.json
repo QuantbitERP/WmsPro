@@ -32,7 +32,7 @@
    "fieldname": "lp",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "LP"
+   "label": "Pallet"
   },
   {
    "fieldname": "quantity",
@@ -100,7 +100,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-04-04 17:49:23.951039",
+ "modified": "2026-04-11 10:45:13.983838",
  "modified_by": "Administrator",
  "module": "WmsPro",
  "name": "Tarrif Item Details",

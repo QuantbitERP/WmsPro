@@ -28,7 +28,10 @@
   "batch_no",
   "serial_no",
   "picjed_at",
-  "picked_by"
+  "picked_by",
+  "pallet",
+  "cbm_per_unit",
+  "weight_per_unit"
  ],
  "fields": [
   {
@@ -206,14 +209,29 @@
    "in_standard_filter": 1,
    "label": "Picked By",
    "options": "User"
+  },
+  {
+   "fieldname": "pallet",
+   "fieldtype": "Data",
+   "label": "Pallet"
+  },
+  {
+   "fieldname": "cbm_per_unit",
+   "fieldtype": "Float",
+   "label": "CBM Per Unit"
+  },
+  {
+   "fieldname": "weight_per_unit",
+   "fieldtype": "Float",
+   "label": "Weight Per Unit"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-03-14 11:17:48.522461",
- "modified_by": "sanket.lohar@erpdata.in",
+ "modified": "2026-04-14 14:09:25.548445",
+ "modified_by": "Administrator",
  "module": "WmsPro",
  "name": "WMS Pick List Item",
  "owner": "sourabh.yelpale@erpdata.in",

@@ -26,7 +26,7 @@ app_license = "mit"
 
 # include js, css files in header of desk.html
 # app_include_css = "/assets/wmspro/css/wmspro.css"
-# app_include_js = "/assets/wmspro/js/wmspro.js"
+app_include_js = "/assets/wmspro/js/stock_ledger_override.js"
 
 # include js, css files in header of web template
 # web_include_css = "/assets/wmspro/css/wmspro.css"
@@ -43,6 +43,11 @@ app_license = "mit"
 # page_js = {"page" : "public/js/file.js"}
 
 # include js in doctype views
+doctype_js = {
+    "Item" : "public/js/custom_item.js",
+    "WMS Goods Receipt Note" : "public/js/custom_grn.js",
+    "Contract" : "public/js/custom_contract.js"
+}
 # doctype_js = {"doctype" : "public/js/doctype.js"}
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
@@ -296,7 +301,30 @@ fixtures = [
 # Automatically update python controller files with type annotations for this app.
 # export_python_type_annotations = True
 
+# Override stock ledger entry class to include custom_3pl_customer
+override_doctype_class = {
+    "Stock Ledger Entry": "wmspro.overrides.stock_ledger_entry.CustomStockLedgerEntry"
+}
+
+# Hook to modify stock ledger entry arguments before creation
+before_insert = {
+    "Stock Ledger Entry": "wmspro.utils.stock_ledger_utils.set_custom_3pl_customer"
+}
+
 # default_log_clearing_doctypes = {
 # 	"Logging DocType Name": 30  # days to retain logs
 # }
+
+# Add custom fields to doctypes
+custom_fields = {
+    "Contract": [
+        {
+            "fieldname": "warehouse",
+            "fieldtype": "Link",
+            "label": "Warehouse",
+            "options": "Warehouse",
+            "insert_after": "party_name"
+        }
+    ]
+}
 

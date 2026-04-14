@@ -6,6 +6,15 @@ frappe.ui.form.on('WMS Goods Receipt Note', {
         // Calculate totals on form refresh
         calculate_totals(frm);
         
+        // Make status field read-only when GRN is submitted
+        if (frm.doc.docstatus === 1) {
+            frm.set_df_property('status', 'read_only', 1);
+            frm.set_df_property('status', 'description', 'Status cannot be changed when GRN is submitted');
+        } else {
+            frm.set_df_property('status', 'read_only', 0);
+            frm.set_df_property('status', 'description', '');
+        }
+        
         // Add custom query for party_type field
         frm.set_query('party_type', function() {
             return {

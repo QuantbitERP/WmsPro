@@ -34,6 +34,10 @@ class WMSPutawayTask(Document):
         se.custom_doc_link_doctype_ = self.doctype
         se.custom_doc_link = self.name
         se.custom_reference_doc = self.grn_reference
+        
+        # Set customer if party_type is Customer
+        if self.party_type == "Customer" and self.party:
+            se.custom_3pl_customer = self.party
 
         se.append("items", {
             "item_code": self.item_code,
@@ -43,12 +47,31 @@ class WMSPutawayTask(Document):
             "t_warehouse": self.to_warehouse,
             "wms_bin": self.from_bin,
             "to_wms_bin": self.actual_bin,
-            # Remove batch_no to avoid duplicate Serial and Batch Bundle error
-            # "batch_no": self.batch_no
+            # Don't include batch_no - it's already tracked from Material Receipt
+            # Pass batch number through custom field for reference only
+            "wms_batch_no": self.batch_no
         })
 
-        se.insert(ignore_permissions=True)
-        se.submit()
+        # Set flag to ignore Serial and Batch Bundle validation for putaway tasks
+        frappe.flags.ignore_serial_batch_bundle_validation = True
+        
+        try:
+            se.insert(ignore_permissions=True)
+            se.submit()
+        except Exception as e:
+            # If there's still a batch error, try without batch number
+            if "Serial and Batch Bundle" in str(e):
+                frappe.msgprint("Batch conflict detected, trying without batch number...")
+                # Remove batch number and try again
+                for item in se.items:
+                    item.wms_batch_no = None
+                se.insert(ignore_permissions=True)
+                se.submit()
+            else:
+                raise e
+        
+        # Clear the flag after submission
+        frappe.flags.ignore_serial_batch_bundle_validation = False
 
         self.stock_entry_reference = se.name
         frappe.msgprint(f"Stock Entry {se.name} created successfully")
@@ -65,6 +88,15 @@ class WMSPutawayTask(Document):
     def update_bin_ledger(self):
         """Update Bin Ledger with three entries: FROM bin OUT, TO bin IN, FROM bin balance"""
         
+        # Prepare party values for bin ledger
+        supplier_name = None
+        customer = None
+        
+        if self.party_type == "Supplier":
+            supplier_name = self.supplier
+        elif self.party_type == "Customer":
+            customer = self.customer
+        
         # 1. FROM Bin OUT - Quantity leaving source bin
         create_bin_ledger_entry(
             bin_location=self.from_bin,
@@ -75,7 +107,11 @@ class WMSPutawayTask(Document):
             voucher_no=self.name,
             to_check_balance=True,
             doc_link_doctype=self.doctype,
-            doc_link=self.name
+            doc_link=self.name,
+            party_type=self.party_type,
+            party_name=self.party,
+            supplier_name=supplier_name,
+            customer=customer
         )
         
         # 2. TO Bin IN - Quantity arriving at destination bin
@@ -88,7 +124,11 @@ class WMSPutawayTask(Document):
             voucher_no=self.name,
             to_check_balance=False,
             doc_link_doctype=self.doctype,
-            doc_link=self.name
+            doc_link=self.name,
+            party_type=self.party_type,
+            party_name=self.party,
+            supplier_name=supplier_name,
+            customer=customer
         )
         
         # 3. FROM Bin Balance - Show current balance after transfer
@@ -103,7 +143,11 @@ class WMSPutawayTask(Document):
             voucher_no=self.name,
             to_check_balance=False,
             doc_link_doctype=self.doctype,
-            doc_link=self.name
+            doc_link=self.name,
+            party_type=self.party_type,
+            party_name=self.party,
+            supplier_name=supplier_name,
+            customer=customer
         )
 
         

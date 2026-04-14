@@ -11,11 +11,13 @@
   "stock_uom",
   "qty_received",
   "stock_qty_received",
+  "pallet",
   "mrp",
   "barcode_scan",
   "damage_type",
   "rejection_reason",
   "column_break_mlfk",
+  "warehouse",
   "item_code",
   "batch_no",
   "uom",
@@ -24,16 +26,19 @@
   "rate",
   "qc_status",
   "column_break_tqrd",
+  "customer",
   "item_name",
   "expiry_date",
+  "weight_per_unit",
   "conversion_factor",
   "qty_rejected",
   "storage_location",
   "amount",
   "started_on",
   "column_break_hhuc",
-  "warehouse",
+  "contract",
   "assigned_to",
+  "cbm_per_unit",
   "qty_excepted",
   "stock_qty_accepted",
   "manufacturing_date",
@@ -234,13 +239,40 @@
   {
    "fieldname": "column_break_hhuc",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "weight_per_unit",
+   "fieldtype": "Float",
+   "label": "Weight Per Unit"
+  },
+  {
+   "fieldname": "cbm_per_unit",
+   "fieldtype": "Float",
+   "label": "CBM Per Unit"
+  },
+  {
+   "fieldname": "pallet",
+   "fieldtype": "Data",
+   "label": "Pallet"
+  },
+  {
+   "fieldname": "contract",
+   "fieldtype": "Link",
+   "label": "Contract",
+   "options": "Contract"
+  },
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "label": "Customer",
+   "options": "Customer"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-04-02 10:14:10.954932",
+ "modified": "2026-04-10 11:35:02.371795",
  "modified_by": "Administrator",
  "module": "WmsPro",
  "name": "WMS Inbound Task",

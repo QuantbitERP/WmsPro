@@ -98,10 +98,10 @@ class WMSPickList(Document):
         # Create Stock Entry
         self.stock_entry = self._create_stock_entry()
 
-        # Create Outbound Shipment
-        outbound_name = self._create_outbound_shipment()
-
-        self.outbound_shipment = outbound_name
+        # Create Outbound Shipment - COMMENTED OUT (outbound shipment disabled)
+        # outbound_name = self._create_outbound_shipment()
+        # self.outbound_shipment = outbound_name
+        self.outbound_shipment = None  # Set to None since outbound shipment is disabled
         self.material_request = self._get_material_request()
 
         for row in self.items:
@@ -184,19 +184,50 @@ class WMSPickList(Document):
     # Get Staging Bin
     # ---------------------------------------------------------
     def _get_staging_bin(self):
-
+        # Get warehouse from the first item instead of pick list header
+        if self.items and len(self.items) > 0:
+            warehouse = self.items[0].warehouse
+        else:
+            warehouse = self.warehouse  # Fallback to pick list warehouse
+        
+        frappe.logger().info(f"Looking for bins in warehouse: {warehouse} (from item: {self.items[0].warehouse if self.items else 'None'})")
+        
         staging_bin = frappe.db.get_value(
             "WMS Bin",
             {
-                "warehouse": self.warehouse,
+                "warehouse": warehouse,
                 "is_staging": 1,
                 "is_active": 1
             },
             "name"
         )
 
+        frappe.logger().info(f"Staging bin found: {staging_bin}")
+
         if not staging_bin:
-            frappe.throw("No staging bin found for this warehouse")
+            # If no staging bin, get any active bin from the same warehouse
+            any_bin = frappe.db.get_value(
+                "WMS Bin",
+                {
+                    "warehouse": warehouse,
+                    "is_active": 1
+                },
+                "name"
+            )
+            
+            frappe.logger().info(f"Any active bin found: {any_bin}")
+            
+            if any_bin:
+                return any_bin
+            else:
+                # Check what bins exist in this warehouse
+                all_bins = frappe.db.get_all(
+                    "WMS Bin",
+                    {"warehouse": warehouse},
+                    ["name", "is_active", "is_staging"]
+                )
+                frappe.logger().error(f"No active bins found. All bins in warehouse {warehouse}: {all_bins}")
+                frappe.throw(f"No active bin found for warehouse '{warehouse}'. Please create at least one active bin.")
 
         return staging_bin
 
@@ -240,12 +271,13 @@ class WMSPickList(Document):
 
                 source_bin = row.bin_location
                 target_bin = self.to_bin_location or self._get_staging_bin()
+                target_bin_warehouse = frappe.db.get_value("WMS Bin", target_bin, "warehouse")
 
                 se.append("items", {
                     "item_code": row.item_code,
                     "qty": row.qty_picked,
                     "s_warehouse": row.warehouse,
-                    "t_warehouse": self.warehouse,
+                    "t_warehouse": target_bin_warehouse,  # Use target bin's warehouse
                     "uom": row.uom,
                     "batch_no": row.batch_no,
 
@@ -274,8 +306,15 @@ class WMSPickList(Document):
         source_bin = row.bin_location
         target_bin = self.to_bin_location or self._get_staging_bin()
 
-        # Source bin balance
+        # Check if items are available in source bin before transfer
         source_balance = self._get_bin_balance(row.item_code, source_bin)
+        
+        if source_balance < row.qty_picked:
+            frappe.throw(f"Insufficient quantity in bin {source_bin}. Available: {source_balance}, Required: {row.qty_picked}")
+        
+        frappe.logger().info(f"Transferring {row.qty_picked} items of {row.item_code} from {source_bin} to {target_bin}")
+        frappe.logger().info(f"Source bin {source_bin} balance before: {source_balance}")
+        frappe.logger().info(f"Source bin {source_bin} balance after: {source_balance - row.qty_picked}")
 
         frappe.get_doc({
             "doctype": "WMS Bin Ledger",
@@ -293,24 +332,27 @@ class WMSPickList(Document):
             "voucher_no": self.name
         }).insert(ignore_permissions=True)
 
-        # Target bin balance
-        target_balance = self._get_bin_balance(row.item_code, target_bin)
-
-        frappe.get_doc({
-            "doctype": "WMS Bin Ledger",
-            "posting_date": nowdate(),
-            "posting_time": nowtime(),
-            "warehouse": self.warehouse,
-            "bin_location": target_bin,
-            "item_code": row.item_code,
-            "quantity_change": row.qty_picked,
-            "balance_qty": target_balance + row.qty_picked,
-            "reserved_qty": 0,
-            "available_qty": target_balance + row.qty_picked,
-            "stock_uom": row.uom,
-            "voucher_type": "WMS Pick List",
-            "voucher_no": self.name
-        }).insert(ignore_permissions=True)
+        # Only create source bin ledger (outgoing quantity)
+        # Target bin movement is handled by stock entry s_bin/t_bin fields
+        
+        # Commented out target bin ledger creation
+        # target_balance = self._get_bin_balance(row.item_code, target_bin)
+        # target_bin_warehouse = frappe.db.get_value("WMS Bin", target_bin, "warehouse")
+        # frappe.get_doc({
+        #     "doctype": "WMS Bin Ledger",
+        #     "posting_date": nowdate(),
+        #     "posting_time": nowtime(),
+        #     "warehouse": target_bin_warehouse,
+        #     "bin_location": target_bin,
+        #     "item_code": row.item_code,
+        #     "quantity_change": row.qty_picked,
+        #     "balance_qty": target_balance + row.qty_picked,
+        #     "reserved_qty": 0,
+        #     "available_qty": target_balance + row.qty_picked,
+        #     "stock_uom": row.uom,
+        #     "voucher_type": "WMS Pick List",
+        #     "voucher_no": self.name
+        # }).insert(ignore_permissions=True)
 
 
     # ---------------------------------------------------------

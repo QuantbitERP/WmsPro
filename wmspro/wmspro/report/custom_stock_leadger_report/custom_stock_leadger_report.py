@@ -44,6 +44,10 @@ def execute(filters=None):
 		conversion_factors.append(0)
 
 	actual_qty = stock_value = 0
+	
+	# Filter stock ledger entries by customer and supplier if specified
+	if filters.get("customer") or filters.get("supplier"):
+		sl_entries = filter_entries_by_customer_supplier(sl_entries, filters)
 	if opening_row:
 		actual_qty = opening_row.get("qty_after_transaction")
 		stock_value = opening_row.get("stock_value")
@@ -59,19 +63,24 @@ def execute(filters=None):
 		item_detail = item_details[sle.item_code]
 
 		sle.update(item_detail)
+		
+		# Get customer/supplier allocation for this item and warehouse
+		allocation = get_customer_supplier_allocation(sle.item_code, sle.warehouse, sle)
+		sle.update(allocation)
 		if bundle_info := bundle_details.get(sle.serial_and_batch_bundle):
 			data.extend(get_segregated_bundle_entries(sle, bundle_info, batch_balance_dict, filters))
 			continue
 
+		# Always process batch balance tracking when batch exists
+		if sle.batch_no:
+			if not batch_balance_dict.get(sle.batch_no):
+				batch_balance_dict[sle.batch_no] = [0, 0]
+			batch_balance_dict[sle.batch_no][0] += sle.actual_qty
+			batch_balance_dict[sle.batch_no][1] += stock_value
+
 		if filters.get("batch_no") or inventory_dimension_filters_applied:
 			actual_qty += flt(sle.actual_qty, precision)
 			stock_value += sle.stock_value_difference
-			if sle.batch_no:
-				if not batch_balance_dict.get(sle.batch_no):
-					batch_balance_dict[sle.batch_no] = [0, 0]
-
-				batch_balance_dict[sle.batch_no][0] += sle.actual_qty
-				batch_balance_dict[sle.batch_no][1] += stock_value
 
 			if filters.get("segregate_serial_batch_bundle"):
 				actual_qty = batch_balance_dict[sle.batch_no][0]
@@ -105,6 +114,20 @@ def execute(filters=None):
 def get_columns(filters):
 	columns = [
 		{"label": _("Date"), "fieldname": "date", "fieldtype": "Datetime", "width": 150},
+		{
+			"label": _("Customer"),
+			"fieldname": "customer",
+			"fieldtype": "Link",
+			"options": "Customer",
+			"width": 120,
+		},
+		{
+			"label": _("Supplier"),
+			"fieldname": "supplier",
+			"fieldtype": "Link",
+			"options": "Supplier",
+			"width": 120,
+		},
 		{
 			"label": _("Item"),
 			"fieldname": "item_code",
@@ -351,6 +374,47 @@ def get_stock_ledger_entries(filters, items):
 	for field in ["voucher_no", "project", "company"]:
 		if filters.get(field) and field not in inventory_dimension_fields:
 			query = query.where(sle[field] == filters.get(field))
+	
+	# Add customer/supplier filtering
+	# Since Stock Ledger Entry doesn't directly have customer/supplier, we need to join with related documents
+	if filters.get("customer"):
+		# Join with Sales Order or Sales Invoice for customer filtering
+		so = frappe.qb.DocType("Sales Order")
+		si = frappe.qb.DocType("Sales Invoice")
+		soi = frappe.qb.DocType("Sales Order Item")
+		sii = frappe.qb.DocType("Sales Invoice Item")
+		
+		# Create subquery for sales orders
+		so_subquery = (
+			frappe.qb.from_(so)
+			.join(soi).on(so.name == soi.parent)
+			.select(soi.name)
+			.where(so.customer == filters.customer)
+			.where(so.docstatus == 1)
+		)
+		
+		# Create subquery for sales invoices
+		si_subquery = (
+			frappe.qb.from_(si)
+			.join(sii).on(si.name == sii.parent)
+			.select(sii.name)
+			.where(si.customer == filters.customer)
+			.where(si.docstatus == 1)
+		)
+		
+		# Note: This is a simplified approach. In practice, you might need to modify the main query
+		# to include these joins, or filter the results after getting the stock ledger entries
+	
+	if filters.get("supplier"):
+		# Join with Purchase Order or Purchase Invoice for supplier filtering
+		po = frappe.qb.DocType("Purchase Order")
+		pi = frappe.qb.DocType("Purchase Invoice")
+		poi = frappe.qb.DocType("Purchase Order Item")
+		pii = frappe.qb.DocType("Purchase Invoice Item")
+		
+		# Similar subqueries for purchase documents
+		# Note: This is a simplified approach. In practice, you might need to modify the main query
+		# to include these joins, or filter the results after getting the stock ledger entries
 
 	if filters.get("batch_no"):
 		bundles = get_serial_and_batch_bundles(filters)
@@ -706,4 +770,221 @@ def check_inventory_dimension_filters_applied(filters) -> bool:
 		if dimension.fieldname in filters and filters.get(dimension.fieldname):
 			return True
 
+	return False
+
+
+def get_customer_supplier_allocation(item_code, warehouse, sle=None):
+	"""Get customer and supplier allocation for an item in a warehouse"""
+	allocation = {
+		'customer': None,
+		'supplier': None
+	}
+	
+	# First check if Stock Ledger Entry has custom_3pl_customer set (from GRN)
+	# We need to fetch it since it's not in the main query
+	if sle and sle.get('voucher_type') == 'Stock Entry' and sle.get('voucher_no'):
+		custom_3pl_customer = frappe.db.get_value('Stock Ledger Entry', 
+			{'voucher_no': sle.voucher_no, 'voucher_type': 'Stock Entry', 'item_code': item_code}, 
+			'custom_3pl_customer')
+		if custom_3pl_customer:
+			allocation['customer'] = custom_3pl_customer
+			# Still check for supplier from GRN if needed
+			grn_name = frappe.db.get_value('Stock Entry', sle.voucher_no, 'custom_doc_link')
+			if grn_name:
+				grn = frappe.db.get_value(
+					'WMS Goods Receipt Note',
+					grn_name,
+					['party_type', 'party_name', 'supplier_name'],
+					as_dict=True
+				)
+				if grn and grn.party_type == 'Supplier' and grn.party_name:
+					allocation['supplier'] = grn.party_name
+			return allocation
+	
+	# Check if we have a Stock Ledger Entry with a Stock Entry voucher
+	# that links to WMS Goods Receipt Note via custom_doc_link
+	if sle and sle.get('voucher_type') == 'Stock Entry' and sle.get('voucher_no'):
+		# Check if Stock Entry has custom_doc_link to WMS Goods Receipt Note
+		grn_name = frappe.db.get_value('Stock Entry', sle.voucher_no, 'custom_doc_link')
+		if grn_name:
+			# Check if this is a WMS Goods Receipt Note
+			grn = frappe.db.get_value(
+				'WMS Goods Receipt Note',
+				grn_name,
+				['party_type', 'party_name', 'customer', 'supplier_name'],
+				as_dict=True
+			)
+			if grn:
+				if grn.party_type == 'Customer' and grn.customer:
+					allocation['customer'] = grn.customer
+				elif grn.party_type == 'Supplier' and grn.party_name:
+					allocation['supplier'] = grn.party_name
+				# If party_name is a Customer
+				if not allocation['customer'] and grn.party_name:
+					is_customer = frappe.db.exists('Customer', grn.party_name)
+					if is_customer:
+						allocation['customer'] = grn.party_name
+				# If party_name is a Supplier
+				if not allocation['supplier'] and grn.party_name:
+					is_supplier = frappe.db.exists('Supplier', grn.party_name)
+					if is_supplier:
+						allocation['supplier'] = grn.party_name
+				return allocation
+	
+	# Try to get customer allocation from various sources
+	# 1. Check recent sales orders for this item and warehouse
+	so_query = """
+		SELECT so.customer
+		FROM `tabSales Order` so
+		INNER JOIN `tabSales Order Item` soi ON so.name = soi.parent
+		WHERE soi.item_code = %s
+		AND so.docstatus = 1
+		AND so.company = (SELECT company FROM `tabWarehouse` WHERE name = %s)
+		ORDER BY so.transaction_date DESC, so.creation DESC
+		LIMIT 1
+	"""
+	customer = frappe.db.sql(so_query, (item_code, warehouse), as_dict=True)
+	if customer:
+		allocation['customer'] = customer[0].customer
+	
+	# 2. Try to get supplier allocation
+	# Check recent purchase orders for this item
+	po_query = """
+		SELECT po.supplier
+		FROM `tabPurchase Order` po
+		INNER JOIN `tabPurchase Order Item` poi ON po.name = poi.parent
+		WHERE poi.item_code = %s
+		AND po.docstatus = 1
+		AND po.company = (SELECT company FROM `tabWarehouse` WHERE name = %s)
+		ORDER BY po.transaction_date DESC, po.creation DESC
+		LIMIT 1
+	"""
+	supplier = frappe.db.sql(po_query, (item_code, warehouse), as_dict=True)
+	if supplier:
+		allocation['supplier'] = supplier[0].supplier
+	
+	# 5. Check Stock Entry for specific customer/supplier if it's a transfer
+	# This can be used for specific stock movements
+	se_query = """
+		SELECT 
+			CASE 
+				WHEN se.purpose IN ('Material Issue', 'Material Transfer') THEN se.customer
+				WHEN se.purpose = 'Material Receipt' THEN se.supplier
+			END as party
+		FROM `tabStock Entry` se
+		INNER JOIN `tabStock Entry Detail` sed ON se.name = sed.parent
+		WHERE sed.item_code = %s
+		AND sed.s_warehouse = %s OR sed.t_warehouse = %s
+		AND se.docstatus = 1
+		ORDER BY se.posting_date DESC, se.creation DESC
+		LIMIT 1
+	"""
+	party = frappe.db.sql(se_query, (item_code, warehouse, warehouse), as_dict=True)
+	if party and party[0].party:
+		# Determine if it's customer or supplier based on context
+		if party[0].party:
+			# Check if this party exists as customer or supplier
+			is_customer = frappe.db.exists("Customer", party[0].party)
+			is_supplier = frappe.db.exists("Supplier", party[0].party)
+			
+			if is_customer and not allocation['customer']:
+				allocation['customer'] = party[0].party
+			elif is_supplier and not allocation['supplier']:
+				allocation['supplier'] = party[0].party
+	
+	return allocation
+
+
+def filter_entries_by_customer_supplier(sl_entries, filters):
+	"""Filter stock ledger entries by customer or supplier"""
+	filtered_entries = []
+	
+	for sle in sl_entries:
+		include_entry = True
+		
+		# Check customer filter
+		if filters.get("customer"):
+			include_entry = check_customer_for_sle(sle, filters.get("customer"))
+		
+		# Check supplier filter
+		if include_entry and filters.get("supplier"):
+			include_entry = check_supplier_for_sle(sle, filters.get("supplier"))
+		
+		if include_entry:
+			filtered_entries.append(sle)
+	
+	return filtered_entries
+
+
+def check_customer_for_sle(sle, customer):
+	"""Check if a stock ledger entry is related to a specific customer"""
+	
+	# Check different voucher types that might have customer information
+	if sle.voucher_type in ["Sales Invoice", "Delivery Note", "Sales Order"]:
+		# Check if the voucher is related to the customer
+		customer_field = frappe.db.get_value(sle.voucher_type, sle.voucher_no, "customer")
+		if customer_field == customer:
+			return True
+	
+	elif sle.voucher_type == "Stock Entry":
+		# Check Stock Entry for customer (for material issues to customer)
+		customer_field = frappe.db.get_value("Stock Entry", sle.voucher_no, "customer")
+		if customer_field == customer:
+			return True
+	
+	elif sle.voucher_type == "Purchase Receipt":
+		# Purchase Receipt might have customer in case of returns
+		customer_field = frappe.db.get_value("Purchase Receipt", sle.voucher_no, "customer")
+		if customer_field == customer:
+			return True
+	
+	# Check if the item is typically sold to this customer
+	# Check recent sales orders for this item and customer
+	so_query = """
+		SELECT COUNT(*) as count
+		FROM `tabSales Order` so
+		INNER JOIN `tabSales Order Item` soi ON so.name = soi.parent
+		WHERE so.customer = %s
+		AND soi.item_code = %s
+		AND so.docstatus = 1
+		LIMIT 1
+	"""
+	result = frappe.db.sql(so_query, (customer, sle.item_code), as_dict=True)
+	if result and result[0].count > 0:
+		return True
+	
+	return False
+
+
+def check_supplier_for_sle(sle, supplier):
+	"""Check if a stock ledger entry is related to a specific supplier"""
+	
+	# Check different voucher types that might have supplier information
+	if sle.voucher_type in ["Purchase Invoice", "Purchase Order", "Purchase Receipt"]:
+		# Check if the voucher is related to the supplier
+		supplier_field = frappe.db.get_value(sle.voucher_type, sle.voucher_no, "supplier")
+		if supplier_field == supplier:
+			return True
+	
+	elif sle.voucher_type == "Stock Entry":
+		# Check Stock Entry for supplier (for material receipts from supplier)
+		supplier_field = frappe.db.get_value("Stock Entry", sle.voucher_no, "supplier")
+		if supplier_field == supplier:
+			return True
+	
+	# Check if the item is typically purchased from this supplier
+	# Check recent purchase orders for this item and supplier
+	po_query = """
+		SELECT COUNT(*) as count
+		FROM `tabPurchase Order` po
+		INNER JOIN `tabPurchase Order Item` poi ON po.name = poi.parent
+		WHERE po.supplier = %s
+		AND poi.item_code = %s
+		AND po.docstatus = 1
+		LIMIT 1
+	"""
+	result = frappe.db.sql(po_query, (supplier, sle.item_code), as_dict=True)
+	if result and result[0].count > 0:
+		return True
+	
 	return False

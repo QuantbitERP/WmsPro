@@ -21,14 +21,12 @@ class AdvancedShipmentNotice(Document):
 
         if not self.company:
             frappe.throw("Company is required to create GRN")
-
-        if not self.warehouse:
-            frappe.throw("Warehouse is required to create GRN")
-
-        if not self.advanced_shipment_notice_details:
-            frappe.throw("No items found in ASN to create GRN")
-
+        
         try:
+            # ---- Validate Party Information ----
+            if not self.party or not self.party_name:
+                frappe.throw("Party Type and Party Name are required to create GRN")
+            
             # ---- Create GRN Header ----
             grn = frappe.get_doc({
                 "doctype": "WMS Goods Receipt Note",
@@ -36,8 +34,8 @@ class AdvancedShipmentNotice(Document):
                 "purchace_order": self.purchase_order,
                 "party_type": self.party,
                 "party_name": self.party_name,
-                "supplier_name": self.supplier_name,
-                "customer": self.customer,
+                "supplier_name": self.supplier_name if self.party == "Supplier" else "",
+                "customer": self.customer if self.party == "Customer" else "",
                 "company": self.company,
                 "warehouse": self.warehouse,
                 "posting_date": today(),
@@ -46,6 +44,8 @@ class AdvancedShipmentNotice(Document):
                 "doc_link_doctype": self.doctype,
                 "doc_link": self.name
             })
+            
+            frappe.msgprint(f"Creating GRN for {self.party}: {self.party_name}", indicator="blue")
 
             # ---- Append Items ----
             for row in self.advanced_shipment_notice_details:
@@ -125,7 +125,10 @@ class AdvancedShipmentNotice(Document):
                     "qty": qty,
                     "conversion_factor": row.conversion_factor or 1,  # Use conversion_factor from ASN
                     "stock_uom": row.stock_uom,
-                    "warehouse": self.warehouse
+                    "warehouse": self.warehouse,
+                    
+                    # Pass customer from main GRN to child table
+                    "customer": self.customer if self.party == "Customer" else self.party_name
                 })
                 frappe.msgprint(f"Added item to GRN: {item_code}, qty_excepted: {row.expected_qty or row.ordered_qty}")
             

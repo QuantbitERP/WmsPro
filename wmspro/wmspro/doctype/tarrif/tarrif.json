@@ -7,14 +7,19 @@
  "engine": "InnoDB",
  "field_order": [
   "tarrif_code",
-  "warehouse",
+  "calculation_start_date",
+  "active",
   "column_break_iflx",
   "tarrif_name",
-  "calculation_start_date",
+  "billing_frequency",
   "column_break_jzmw",
   "storer",
-  "billing_frequency",
-  "active",
+  "currency",
+  "column_break_qbqx",
+  "warehouse",
+  "description",
+  "section_break_ialh",
+  "tarrif_line",
   "charge_details_section",
   "tarrif_receiving",
   "receiving_tab",
@@ -141,7 +146,7 @@
    "fieldname": "billing_frequency",
    "fieldtype": "Select",
    "label": "Billing Frequency",
-   "options": "\nDaily"
+   "options": "Daily\nWeekly\nMonthly\nQuarterly\nYearly"
   },
   {
    "fieldname": "charge_details_section",
@@ -158,32 +163,39 @@
   {
    "fieldname": "receiving_tab",
    "fieldtype": "Tab Break",
+   "hidden": 1,
    "label": "Receiving "
   },
   {
    "fieldname": "shipment_tab",
    "fieldtype": "Tab Break",
+   "hidden": 1,
    "label": "Shipment"
   },
   {
    "fieldname": "storage_tab",
    "fieldtype": "Tab Break",
-   "label": "Storage"
+   "hidden": 1,
+   "label": "Storage",
+   "options": "Storage\nHandling\nFixed\nSetup"
   },
   {
    "fieldname": "vas_tab",
    "fieldtype": "Tab Break",
-   "label": "Vas"
+   "hidden": 1,
+   "label": "Vas",
+   "options": "Storage\nHandling\nFixed\nSetup"
   },
   {
    "fieldname": "recurring_tab",
    "fieldtype": "Tab Break",
-   "label": "Recurring "
+   "hidden": 1,
+   "label": "Recurring ",
+   "options": "Storage\nHandling\nFixed\nSetup"
   },
   {
    "fieldname": "charge_on_section",
-   "fieldtype": "Section Break",
-   "label": "Charge On"
+   "fieldtype": "Section Break"
   },
   {
    "fieldname": "column_break_hsga",
@@ -214,7 +226,8 @@
   {
    "fieldname": "recurring_charge_calculation_type",
    "fieldtype": "Select",
-   "label": "Charge Calculation Type"
+   "label": "Charge Calculation Type",
+   "options": "Storage\nHandling\nFixed\nSetup"
   },
   {
    "fieldname": "recurring_unit",
@@ -226,7 +239,7 @@
    "fieldname": "recurring_charge_on",
    "fieldtype": "Select",
    "label": "Charge On",
-   "options": "Per Item\nPer Unit\nPer Item & Unit\nPer LP\nPer CBM\nFix Charge"
+   "options": "Per Item\nPer Unit\nPer Item & Unit\nPer Pallet\nPer CBM\nFix Charge"
   },
   {
    "fieldname": "recurring_minimum_charges",
@@ -303,7 +316,8 @@
   {
    "fieldname": "vas_charge_calculation_type_copy",
    "fieldtype": "Select",
-   "label": "Charge Calculation Type "
+   "label": "Charge Calculation Type ",
+   "options": "Storage\nHandling\nFixed\nSetup"
   },
   {
    "fieldname": "vas_minimum_charges",
@@ -319,7 +333,7 @@
    "fieldname": "vas_charge_on",
    "fieldtype": "Select",
    "label": "Charge On ",
-   "options": "Per Item\nPer Unit\nPer Item & Unit\nPer LP\nPer CBM\nFix Charge"
+   "options": "Per Item\nPer Unit\nPer Item & Unit\nPer Pallet\nPer CBM\nFix Charge"
   },
   {
    "fieldname": "vas_unit",
@@ -346,7 +360,8 @@
   {
    "fieldname": "receiving_charge_calculation_type",
    "fieldtype": "Select",
-   "label": "Charge Calculation Type  "
+   "label": "Charge Calculation Type  ",
+   "options": "Storage\nHandling\nFixed\nSetup"
   },
   {
    "fieldname": "receiving_minimum_charges",
@@ -361,7 +376,7 @@
    "fieldname": "receiving_charge_on",
    "fieldtype": "Select",
    "label": "Charge On  ",
-   "options": "Per Item\nPer Unit\nPer Item & Unit\nPer LP\nPer CBM\nFix Charge"
+   "options": "Per Item\nPer Unit\nPer Item & Unit\nPer Pallet\nPer CBM\nFix Charge"
   },
   {
    "fieldname": "receiving_maximun_charges",
@@ -387,7 +402,8 @@
   {
    "fieldname": "shipment_charge_calculation_type",
    "fieldtype": "Select",
-   "label": "Charge Calculation Type  "
+   "label": "Charge Calculation Type  ",
+   "options": "Storage\nHandling\nFixed\nSetup"
   },
   {
    "fieldname": "shipment_minimum_charges",
@@ -402,7 +418,7 @@
    "fieldname": "shipment_charge_on",
    "fieldtype": "Select",
    "label": "Charge On  ",
-   "options": "Per Item\nPer Unit\nPer Item & Unit\nPer LP\nPer CBM\nFix Charge"
+   "options": "Per Item\nPer Unit\nPer Item & Unit\nPer Pallet\nPer CBM\nFix Charge"
   },
   {
    "fieldname": "shipment_maximun_charges",
@@ -428,7 +444,8 @@
   {
    "fieldname": "storage_charge_calculation_type",
    "fieldtype": "Select",
-   "label": "Charge Calculation Type  "
+   "label": "Charge Calculation Type  ",
+   "options": "Storage\nHandling\nFixed\nSetup"
   },
   {
    "fieldname": "storage_minimum_charges",
@@ -443,7 +460,7 @@
    "fieldname": "storage_charge_on",
    "fieldtype": "Select",
    "label": "Charge On  ",
-   "options": "Per Item\nPer Unit\nPer Item & Unit\nPer LP\nPer CBM\nFix Charge"
+   "options": "Per Item\nPer Unit\nPer Item & Unit\nPer Pallet\nPer CBM\nFix Charge"
   },
   {
    "fieldname": "storage_maximun_charges",
@@ -539,12 +556,37 @@
    "fieldtype": "Table",
    "label": "Tarrif Item Details  ",
    "options": "Tarrif Item Details"
+  },
+  {
+   "fieldname": "currency",
+   "fieldtype": "Link",
+   "label": "Currency ",
+   "options": "Currency"
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Small Text",
+   "label": "Description"
+  },
+  {
+   "fieldname": "section_break_ialh",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "tarrif_line",
+   "fieldtype": "Table",
+   "label": "Tarrif Line",
+   "options": "Tariff Line"
+  },
+  {
+   "fieldname": "column_break_qbqx",
+   "fieldtype": "Column Break"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-04-04 17:47:58.982866",
+ "modified": "2026-04-11 11:25:11.998429",
  "modified_by": "Administrator",
  "module": "WmsPro",
  "name": "Tarrif",

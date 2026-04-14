@@ -23,7 +23,10 @@
   "qty_allocated",
   "qty_delivered",
   "qty_short",
-  "line_status"
+  "line_status",
+  "pallet",
+  "cbm_per_unit",
+  "weight_per_unit"
  ],
  "fields": [
   {
@@ -134,13 +137,28 @@
    "fieldtype": "Link",
    "label": "Stock UOM",
    "options": "UOM"
+  },
+  {
+   "fieldname": "pallet",
+   "fieldtype": "Data",
+   "label": "Pallet"
+  },
+  {
+   "fieldname": "cbm_per_unit",
+   "fieldtype": "Float",
+   "label": "CBM Per Unit"
+  },
+  {
+   "fieldname": "weight_per_unit",
+   "fieldtype": "Float",
+   "label": "Weight Per Unit"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-03-14 12:55:01.199024",
+ "modified": "2026-04-14 13:22:54.948459",
  "modified_by": "sanket.lohar@erpdata.in",
  "module": "WmsPro",
  "name": "OMS Requisition Item",

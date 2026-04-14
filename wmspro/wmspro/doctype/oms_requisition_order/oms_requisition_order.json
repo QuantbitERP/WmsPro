@@ -10,6 +10,7 @@
   "naming_series",
   "customer",
   "requisition_type",
+  "contract",
   "column_break_euzf",
   "requesting_facility",
   "company",
@@ -93,6 +94,7 @@
   {
    "fieldname": "delivery_estimate",
    "fieldtype": "Date",
+   "hidden": 1,
    "label": "Delivery Estimate"
   },
   {
@@ -105,9 +107,9 @@
   {
    "fieldname": "requesting_facility",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Requesting Facility",
-   "options": "Facility",
-   "reqd": 1
+   "options": "Facility"
   },
   {
    "fieldname": "requesting_user",
@@ -129,9 +131,9 @@
   {
    "fieldname": "delivery_address",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Delivery Address",
-   "options": "Address",
-   "reqd": 1
+   "options": "Address"
   },
   {
    "fieldname": "cost_center",
@@ -283,14 +285,20 @@
    "fieldtype": "Link",
    "label": "Customer",
    "options": "Customer"
+  },
+  {
+   "fieldname": "contract",
+   "fieldtype": "Link",
+   "label": "Contract",
+   "options": "Contract"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-03-27 10:49:29.229305",
- "modified_by": "Administrator",
+ "modified": "2026-04-14 11:47:26.715618",
+ "modified_by": "sanket.lohar@erpdata.in",
  "module": "WmsPro",
  "name": "OMS Requisition Order",
  "naming_rule": "Expression",

@@ -11,7 +11,6 @@
   "outbound_shipment",
   "pick_date",
   "zone",
-  "warehouse",
   "column_break_wpbd",
   "sales_order",
   "delivery_note",
@@ -21,10 +20,11 @@
   "picking_strategy",
   "wave_number",
   "to_bin_location",
+  "contract",
   "column_break_slau",
   "customer",
   "customer_name",
-  "to_warehouse",
+  "source_warehouse",
   "section_break_hpjo",
   "items",
   "section_break_sotf",
@@ -249,24 +249,23 @@
    "search_index": 1
   },
   {
-   "fieldname": "to_warehouse",
+   "fieldname": "source_warehouse",
    "fieldtype": "Link",
-   "label": "To Warehouse",
-   "options": "Warehouse",
-   "reqd": 1
+   "label": "Source Warehouse",
+   "options": "Warehouse"
   },
   {
-   "fieldname": "warehouse",
+   "fieldname": "contract",
    "fieldtype": "Link",
-   "label": "Warehouse",
-   "options": "Warehouse"
+   "label": "Contract",
+   "options": "Contract"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-04-02 11:18:47.402506",
+ "modified": "2026-04-14 14:07:48.375218",
  "modified_by": "Administrator",
  "module": "WmsPro",
  "name": "WMS Pick List",

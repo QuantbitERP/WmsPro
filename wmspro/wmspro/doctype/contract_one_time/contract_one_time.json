@@ -1,0 +1,76 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-04-09 16:32:24.016445",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "charge_description",
+  "billed_on",
+  "column_break_jife",
+  "amount",
+  "billing_run_ref",
+  "column_break_irry",
+  "is_billed"
+ ],
+ "fields": [
+  {
+   "fieldname": "charge_description",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Charge Description"
+  },
+  {
+   "fieldname": "column_break_jife",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "amount",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Amount"
+  },
+  {
+   "fieldname": "column_break_irry",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_billed",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Is Billed",
+   "read_only": 1
+  },
+  {
+   "fieldname": "billed_on",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Billed On",
+   "read_only": 1
+  },
+  {
+   "fieldname": "billing_run_ref",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Billing Run Ref",
+   "options": "Billing Run"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-04-09 17:28:17.895940",
+ "modified_by": "Administrator",
+ "module": "WmsPro",
+ "name": "Contract One-Time",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
