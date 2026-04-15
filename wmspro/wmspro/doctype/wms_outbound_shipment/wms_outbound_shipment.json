@@ -11,10 +11,11 @@
   "naming_series",
   "sales_order",
   "customer",
-  "to_warehouse",
   "carrier_service",
   "total_qty_packed",
   "status",
+  "source_warehouse",
+  "stock_entry",
   "column_break_vmpp",
   "shipmenr_date",
   "priority",
@@ -26,10 +27,11 @@
   "column_break_wwxo",
   "required_delivery_date",
   "material_request",
-  "from_warehouse",
   "carrier_no",
   "total_qty_picked",
   "delivery_note",
+  "contract",
+  "to_bin_location",
   "section_break_vhct",
   "items",
   "section_break_uhpm",
@@ -62,13 +64,6 @@
    "fieldtype": "Link",
    "label": "Customer",
    "options": "Customer"
-  },
-  {
-   "fieldname": "to_warehouse",
-   "fieldtype": "Link",
-   "label": "To Warehouse",
-   "options": "Warehouse",
-   "read_only": 1
   },
   {
    "fieldname": "carrier_service",
@@ -156,14 +151,6 @@
    "read_only": 1
   },
   {
-   "fieldname": "from_warehouse",
-   "fieldtype": "Link",
-   "label": "From Warehouse",
-   "options": "Warehouse",
-   "read_only": 1,
-   "reqd": 1
-  },
-  {
    "fieldname": "carrier_no",
    "fieldtype": "Data",
    "label": "Tracking No."
@@ -215,13 +202,37 @@
   {
    "fieldname": "column_break_lxwb",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "contract",
+   "fieldtype": "Link",
+   "label": "Contract",
+   "options": "Contract"
+  },
+  {
+   "fieldname": "to_bin_location",
+   "fieldtype": "Link",
+   "label": "To Bin Location",
+   "options": "WMS Bin"
+  },
+  {
+   "fieldname": "source_warehouse",
+   "fieldtype": "Link",
+   "label": "Source Warehouse",
+   "options": "Warehouse"
+  },
+  {
+   "fieldname": "stock_entry",
+   "fieldtype": "Link",
+   "label": "Stock Entry",
+   "options": "Stock Entry"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-04-14 16:34:29.668445",
+ "modified": "2026-04-15 17:05:58.768143",
  "modified_by": "Administrator",
  "module": "WmsPro",
  "name": "WMS Outbound Shipment",

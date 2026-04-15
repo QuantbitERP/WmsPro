@@ -9,14 +9,16 @@
   "section_break_vnbn",
   "company",
   "naming_series",
+  "customer",
   "column_break_pdru",
   "outbound_shipment",
   "pick_list",
   "column_break_cjjy",
   "packing_station",
-  "warehouse",
+  "source_warehouse",
   "column_break_zwpb",
   "packing_date",
+  "contract",
   "section_break_uhtj",
   "items",
   "section_break_rysi",
@@ -88,14 +90,6 @@
    "fieldname": "packing_station",
    "fieldtype": "Data",
    "label": "Packing Station"
-  },
-  {
-   "fieldname": "warehouse",
-   "fieldtype": "Link",
-   "label": "Warehouse",
-   "options": "Warehouse",
-   "read_only": 1,
-   "reqd": 1
   },
   {
    "fieldname": "section_break_uhtj",
@@ -187,14 +181,34 @@
   {
    "fieldname": "column_break_zwpb",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "label": "Customer",
+   "options": "Customer"
+  },
+  {
+   "fieldname": "contract",
+   "fieldtype": "Link",
+   "label": "Contract",
+   "options": "Contract"
+  },
+  {
+   "fieldname": "source_warehouse",
+   "fieldtype": "Link",
+   "label": "Source Warehouse",
+   "options": "Warehouse",
+   "read_only": 1,
+   "reqd": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-03-14 11:24:55.154172",
- "modified_by": "sanket.lohar@erpdata.in",
+ "modified": "2026-04-15 14:28:45.230336",
+ "modified_by": "Administrator",
  "module": "WmsPro",
  "name": "WMS Packing List",
  "naming_rule": "By \"Naming Series\" field",

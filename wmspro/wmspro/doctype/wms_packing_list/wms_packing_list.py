@@ -22,8 +22,8 @@ class WMSPackingList(Document):
             )
 
             # Auto warehouse
-            if not self.warehouse:
-                self.warehouse = shipment.from_warehouse
+            if not self.source_warehouse:
+                self.source_warehouse = shipment.source_warehouse
 
             # Auto pick list
             if hasattr(shipment, "pick_list") and shipment.pick_list:

@@ -22,6 +22,11 @@ def get_warehouse_from_bin(bin_location):
 
 class WMSPickList(Document):
 
+    def validate(self):
+        # Auto-fetch customer_name if customer is set but customer_name is empty
+        if self.customer and not self.customer_name:
+            self.customer_name = frappe.db.get_value("Customer", self.customer, "customer_name")
+
     # ---------------------------------------------------------
     # Assign Picker
     # ---------------------------------------------------------
@@ -98,10 +103,9 @@ class WMSPickList(Document):
         # Create Stock Entry
         self.stock_entry = self._create_stock_entry()
 
-        # Create Outbound Shipment - COMMENTED OUT (outbound shipment disabled)
-        # outbound_name = self._create_outbound_shipment()
-        # self.outbound_shipment = outbound_name
-        self.outbound_shipment = None  # Set to None since outbound shipment is disabled
+        # Create Outbound Shipment
+        outbound_name = self._create_outbound_shipment()
+        self.outbound_shipment = outbound_name
         self.material_request = self._get_material_request()
 
         for row in self.items:
@@ -120,6 +124,7 @@ class WMSPickList(Document):
         self.completed_at = now_datetime()
 
         self.save(ignore_permissions=True)
+        self.submit()
 
         return True
 
@@ -178,6 +183,22 @@ class WMSPickList(Document):
         )
 
         return last[0].balance_qty if last else 0
+
+
+    # ---------------------------------------------------------
+    # Validate To Bin (must be staging or storage)
+    # ---------------------------------------------------------
+    def _validate_to_bin(self, bin_location):
+        if not bin_location:
+            return True
+        
+        is_staging = frappe.db.get_value("WMS Bin", bin_location, "is_staging")
+        is_storage = frappe.db.get_value("WMS Bin", bin_location, "is_storage")
+        
+        if not (is_staging or is_storage):
+            frappe.throw(f"Selected bin '{bin_location}' must be either a staging bin or storage bin")
+        
+        return True
 
 
     # ---------------------------------------------------------
@@ -271,6 +292,10 @@ class WMSPickList(Document):
 
                 source_bin = row.bin_location
                 target_bin = self.to_bin_location or self._get_staging_bin()
+                
+                # Validate that target_bin is either staging or storage
+                self._validate_to_bin(target_bin)
+                
                 target_bin_warehouse = frappe.db.get_value("WMS Bin", target_bin, "warehouse")
 
                 se.append("items", {
@@ -305,6 +330,9 @@ class WMSPickList(Document):
 
         source_bin = row.bin_location
         target_bin = self.to_bin_location or self._get_staging_bin()
+        
+        # Validate that target_bin is either staging or storage
+        self._validate_to_bin(target_bin)
 
         # Check if items are available in source bin before transfer
         source_balance = self._get_bin_balance(row.item_code, source_bin)
@@ -332,27 +360,24 @@ class WMSPickList(Document):
             "voucher_no": self.name
         }).insert(ignore_permissions=True)
 
-        # Only create source bin ledger (outgoing quantity)
-        # Target bin movement is handled by stock entry s_bin/t_bin fields
-        
-        # Commented out target bin ledger creation
-        # target_balance = self._get_bin_balance(row.item_code, target_bin)
-        # target_bin_warehouse = frappe.db.get_value("WMS Bin", target_bin, "warehouse")
-        # frappe.get_doc({
-        #     "doctype": "WMS Bin Ledger",
-        #     "posting_date": nowdate(),
-        #     "posting_time": nowtime(),
-        #     "warehouse": target_bin_warehouse,
-        #     "bin_location": target_bin,
-        #     "item_code": row.item_code,
-        #     "quantity_change": row.qty_picked,
-        #     "balance_qty": target_balance + row.qty_picked,
-        #     "reserved_qty": 0,
-        #     "available_qty": target_balance + row.qty_picked,
-        #     "stock_uom": row.uom,
-        #     "voucher_type": "WMS Pick List",
-        #     "voucher_no": self.name
-        # }).insert(ignore_permissions=True)
+        # Create target bin ledger (incoming quantity)
+        target_balance = self._get_bin_balance(row.item_code, target_bin)
+        target_bin_warehouse = frappe.db.get_value("WMS Bin", target_bin, "warehouse")
+        frappe.get_doc({
+            "doctype": "WMS Bin Ledger",
+            "posting_date": nowdate(),
+            "posting_time": nowtime(),
+            "warehouse": target_bin_warehouse,
+            "bin_location": target_bin,
+            "item_code": row.item_code,
+            "quantity_change": row.qty_picked,
+            "balance_qty": target_balance + row.qty_picked,
+            "reserved_qty": 0,
+            "available_qty": target_balance + row.qty_picked,
+            "stock_uom": row.uom,
+            "voucher_type": "WMS Pick List",
+            "voucher_no": self.name
+        }).insert(ignore_permissions=True)
 
 
     # ---------------------------------------------------------
@@ -383,12 +408,12 @@ class WMSPickList(Document):
 
         material_request = self._get_material_request()
 
-        to_warehouse = None
+        # warehouse = None
 
         fulfillment = frappe.db.get_value(
             "OMS Fulfillment Order",
             {"pick_list": self.name},
-            "requisition_order"
+            "name"
         )
 
         if fulfillment:
@@ -398,23 +423,20 @@ class WMSPickList(Document):
                 "requesting_facility"
             )
 
-            if requesting_facility:
-                to_warehouse = frappe.db.get_value(
-                    "Facility",
-                    requesting_facility,
-                    "warehouse"
-                )
-
         shipment = frappe.get_doc({
             "doctype": "WMS Outbound Shipment",
             "shipmenr_date": nowdate(),
             "required_delivery_date": nowdate(),
-            "from_warehouse": self.warehouse,
             "customer": self.customer,
-            "to_warehouse": to_warehouse,
+            "customer_name": self.customer_name,
             "pick_list": self.name,
             "material_request": material_request,
+            "source_warehouse": self.source_warehouse,
+            "contract": self.contract,
+            "Customer": self.customer,
+            "to_bin_location": self.to_bin_location,
             "status": "Picking",
+            "fulfillment_order": fulfillment,
             "items": []
         })
 
@@ -431,9 +453,65 @@ class WMSPickList(Document):
                 "qty_short": ordered - picked,
                 "warehouse": row.warehouse,
                 "uom": row.uom,
-                "batch_no": row.batch_no
+                "batch_no": row.batch_no,
+                "pallet": row.pallet,
+                "cbm_per_unit": row.cbm_per_unit,
+                "weight_per_unit": row.weight_per_unit
             })
 
         shipment.insert(ignore_permissions=True)
 
         return shipment.name
+
+
+    # ---------------------------------------------------------
+    # Update Fulfillment Order
+    # ---------------------------------------------------------
+    def _update_fulfillment_order(self):
+
+        # Get fulfillment order linked to this pick list
+        fulfillment_order = frappe.db.get_value(
+            "OMS Fulfillment Order",
+            {"pick_list": self.name},
+            "name"
+        )
+
+        if not fulfillment_order:
+            return
+
+        # Update total_qty_dispatched with total picked quantity
+        frappe.db.set_value(
+            "OMS Fulfillment Order",
+            fulfillment_order,
+            "total_qty_dispatched",
+            self.total_qty_picked or 0
+        )
+
+        # Update fulfillment order status
+        frappe.db.set_value(
+            "OMS Fulfillment Order",
+            fulfillment_order,
+            "status",
+            "Picking"
+        )
+
+        # Update qty_dispatched for each fulfillment item
+        for pick_item in self.items:
+
+            # Find matching fulfillment item
+            fulfillment_item = frappe.db.get_value(
+                "OMS Fulfillment Item",
+                {
+                    "parent": fulfillment_order,
+                    "item_code": pick_item.item_code
+                },
+                "name"
+            )
+
+            if fulfillment_item:
+                frappe.db.set_value(
+                    "OMS Fulfillment Item",
+                    fulfillment_item,
+                    "qty_dispatched",
+                    pick_item.qty_picked or 0
+                )

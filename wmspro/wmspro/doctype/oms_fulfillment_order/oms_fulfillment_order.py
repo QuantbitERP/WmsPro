@@ -6,6 +6,46 @@ from frappe.model.document import Document
 from frappe.utils import nowdate, nowtime, now_datetime
 
 
+@frappe.whitelist()
+def get_bin_locations_for_item(doctype, txt, searchfield, start, page_len, filters):
+    """
+    Get bin locations that contain the specific item in the selected warehouse
+    based on WMS Bin Ledger entries, ordered by most recent operation.
+    Returns WMS Bin document names for the Link field, with bin_code as description.
+    """
+    item_code = filters.get('item_code') if filters else None
+    warehouse = filters.get('warehouse') if filters else None
+
+    if not item_code or not warehouse:
+        return []
+
+    # Get unique bins ordered by their most recent operation
+    # Return bin name (document name) and bin_code for display
+    query = """
+        SELECT b.name, b.bin_code
+        FROM `tabWMS Bin Ledger` bl
+        INNER JOIN `tabWMS Bin` b ON bl.bin_location = b.name
+        WHERE bl.item_code = %s
+        AND bl.warehouse = %s
+        AND b.warehouse = %s
+        AND bl.docstatus != 2
+        AND bl.available_qty > 0
+        AND (b.name LIKE %s OR b.bin_code LIKE %s)
+        GROUP BY b.name, b.bin_code
+        ORDER BY MAX(bl.posting_datetime) DESC
+        LIMIT %s
+    """
+
+    try:
+        bins = frappe.db.sql(query, (item_code, warehouse, warehouse, f'%{txt}%', f'%{txt}%', page_len), as_dict=True)
+        # Return format: [value, description] for Link field autocomplete
+        result = [[bin.name, bin.bin_code] for bin in bins]
+        return result
+    except Exception as e:
+        frappe.log_error(f"Query error in get_bin_locations_for_item: {str(e)}")
+        return []
+
+
 class OMSFulfillmentOrder(Document):
 
     # ---------------------------------------------------------
@@ -86,6 +126,7 @@ class OMSFulfillmentOrder(Document):
 
             qty_required = item.qty_required or 0
             new_qty_allocated = item.qty_allocated or 0
+            
 
             if new_qty_allocated <= 0:
                 continue
@@ -221,12 +262,17 @@ class OMSFulfillmentOrder(Document):
         if not zone:
             frappe.throw("No active WMS Zone found")
 
+        # Get customer name
+        customer_name = frappe.db.get_value("Customer", self.customer, "customer_name") if self.customer else None
+
         pick_list = frappe.get_doc({
             "doctype": "WMS Pick List",
             "pick_date": nowdate(),
             "warehouse": self.source_warehouse,
             "customer": self.customer,
+            "customer_name": customer_name,
             # "to_warehouse": self.destination_facility,  # COMMENTED
+            'source_warehouse': self.source_warehouse,
             "zone": zone,
             "status": "Released",
             "fulfillment_order": self.name,

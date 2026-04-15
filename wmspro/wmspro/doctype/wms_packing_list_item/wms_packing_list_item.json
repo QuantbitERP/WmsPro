@@ -8,12 +8,15 @@
  "field_order": [
   "item_code",
   "qty_packed",
+  "pallet",
   "column_break_zbjy",
   "batch_no",
   "uom",
+  "cbm_per_unit",
   "column_break_rlwn",
   "qty_to_pack",
   "package_no",
+  "weight_per_unit",
   "section_break_kjng",
   "serial_numbers"
  ],
@@ -82,14 +85,29 @@
    "fieldtype": "Text",
    "in_list_view": 1,
    "label": "Serial Numbers"
+  },
+  {
+   "fieldname": "pallet",
+   "fieldtype": "Data",
+   "label": "Pallet"
+  },
+  {
+   "fieldname": "cbm_per_unit",
+   "fieldtype": "Float",
+   "label": "CBM Per Unit"
+  },
+  {
+   "fieldname": "weight_per_unit",
+   "fieldtype": "Float",
+   "label": "Weight Per Unit"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-03-14 11:24:04.747920",
- "modified_by": "sanket.lohar@erpdata.in",
+ "modified": "2026-04-15 13:02:20.075233",
+ "modified_by": "Administrator",
  "module": "WmsPro",
  "name": "WMS Packing List Item",
  "owner": "atharv.jadhav@erpdata.in",

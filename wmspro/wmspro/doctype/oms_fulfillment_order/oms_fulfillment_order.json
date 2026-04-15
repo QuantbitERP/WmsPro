@@ -36,10 +36,8 @@
   "section_break_akii",
   "optimal_source_evaluated",
   "pick_list",
-  "outbound_shipment",
   "column_break_aoux",
   "allocation_complete",
-  "stock_entry",
   "delivery_note",
   "column_break_uxec",
   "short_fulfil_approved_by",
@@ -174,22 +172,10 @@
    "read_only": 1
   },
   {
-   "fieldname": "outbound_shipment",
-   "fieldtype": "Link",
-   "label": "Outbound Shipment",
-   "options": "WMS Outbound Shipment"
-  },
-  {
    "fieldname": "delivery_note",
    "fieldtype": "Link",
    "label": "Delivery Note",
    "options": "Delivery Note"
-  },
-  {
-   "fieldname": "stock_entry",
-   "fieldtype": "Link",
-   "label": "Stock Entry",
-   "options": "Stock Entry"
   },
   {
    "default": "0",
@@ -294,7 +280,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-04-14 13:48:59.109841",
+ "modified": "2026-04-15 15:10:48.319418",
  "modified_by": "Administrator",
  "module": "WmsPro",
  "name": "OMS Fulfillment Order",

@@ -16,17 +16,17 @@
   "stock_qty_requested",
   "available_stock",
   "is_available",
-  "batch_preference",
   "column_break_bamu",
   "expiry_date_required_min",
   "estimated_value",
   "qty_allocated",
   "qty_delivered",
   "qty_short",
+  "batch_preference",
   "line_status",
   "pallet",
-  "cbm_per_unit",
-  "weight_per_unit"
+  "weight_per_unit",
+  "cbm_per_unit"
  ],
  "fields": [
   {
@@ -140,26 +140,26 @@
   },
   {
    "fieldname": "pallet",
-   "fieldtype": "Data",
+   "fieldtype": "Date",
    "label": "Pallet"
-  },
-  {
-   "fieldname": "cbm_per_unit",
-   "fieldtype": "Float",
-   "label": "CBM Per Unit"
   },
   {
    "fieldname": "weight_per_unit",
    "fieldtype": "Float",
    "label": "Weight Per Unit"
+  },
+  {
+   "fieldname": "cbm_per_unit",
+   "fieldtype": "Float",
+   "label": "CBM Per Unit"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-04-14 13:22:54.948459",
- "modified_by": "sanket.lohar@erpdata.in",
+ "modified": "2026-04-15 09:54:39.161913",
+ "modified_by": "Administrator",
  "module": "WmsPro",
  "name": "OMS Requisition Item",
  "owner": "sahil.sawant@erpdata.in",

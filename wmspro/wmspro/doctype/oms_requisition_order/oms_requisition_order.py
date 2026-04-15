@@ -3,12 +3,13 @@
 
 import frappe
 from frappe.model.document import Document
-from frappe.utils import today
+from frappe.utils import today, flt
 
 
 # -------------------------
 # GET WAREHOUSE FROM FACILITY (Optimized)
 # -------------------------
+@frappe.whitelist()
 def get_warehouse_from_facility(facility):
 
     if not facility:
@@ -68,6 +69,34 @@ def get_packaging_volume(item_code):
     )
     
     return volume or 0
+
+
+
+
+
+# -------------------------
+# GET AVAILABLE STOCK FROM STOCK LEDGER ENTRY
+# -------------------------
+@frappe.whitelist()
+def get_available_stock(item_code, warehouse):
+    """Get available stock (qty_after_transaction) from Stock Ledger Entry for specific item and warehouse"""
+    if not item_code or not warehouse:
+        return 0
+    
+    sle = frappe.db.sql(
+        """
+        SELECT qty_after_transaction
+        FROM `tabStock Ledger Entry`
+        WHERE item_code=%s
+        AND warehouse=%s
+        ORDER BY posting_date DESC, posting_time DESC, creation DESC
+        LIMIT 1
+        """,
+        (item_code, warehouse),
+        as_dict=True
+    )
+    
+    return sle[0].qty_after_transaction if sle else 0
 
 
 # -------------------------
