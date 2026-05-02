@@ -117,3 +117,25 @@ function refresh_bin_location_filters(frm) {
         }
     });
 }
+
+// Helper function to calculate pallet quantity
+function calculate_pallet_quantity(cdt, cdn, item_code, qty_requested) {
+    if (!item_code || !qty_requested || qty_requested <= 0) {
+        frappe.model.set_value(cdt, cdn, "pallet", 0);
+        console.log("Pallet set to 0 (no item_code or qty_requested)");
+        return;
+    }
+    
+    // Get custom_pallet_capacity from Item
+    frappe.db.get_value("Item", item_code, "custom_pallet_capacity", function(r) {
+        console.log("Custom pallet capacity response:", r);
+        if (r && r.custom_pallet_capacity && r.custom_pallet_capacity > 0) {
+            var pallet_qty = r.custom_pallet_capacity * qty_requested;
+            frappe.model.set_value(cdt, cdn, "pallet", pallet_qty);
+            console.log("Calculated pallet:", pallet_qty, "(capacity:", r.custom_pallet_capacity, "* qty:", qty_requested, ")");
+        } else {
+            frappe.model.set_value(cdt, cdn, "pallet", 0);
+            console.log("Set pallet to 0 (custom_pallet_capacity not found or is 0)");
+        }
+    });
+}

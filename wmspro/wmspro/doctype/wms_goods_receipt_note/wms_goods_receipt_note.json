@@ -58,7 +58,8 @@
   "total_qty_accepted",
   "column_break_qxbv",
   "total_qty_rejected",
-  "amended_from",
+  "column_break_ynei",
+  "total_pallet_qty",
   "other_info_tab",
   "doc_link_doctype",
   "doc_link"
@@ -239,6 +240,12 @@
    "label": "Total Qty Rejected"
   },
   {
+   "fieldname": "total_pallet_qty",
+   "fieldtype": "Float",
+   "label": "Total Pallet Qty",
+   "read_only": 1
+  },
+  {
    "fieldname": "overall_variance_pct",
    "fieldtype": "Percent",
    "label": "Overall Variance Pct."
@@ -345,16 +352,6 @@
    "fieldtype": "Column Break"
   },
   {
-   "fieldname": "amended_from",
-   "fieldtype": "Link",
-   "label": "Amended From",
-   "no_copy": 1,
-   "options": "WMS Goods Receipt Note",
-   "print_hide": 1,
-   "read_only": 1,
-   "search_index": 1
-  },
-  {
    "fieldname": "other_info_tab",
    "fieldtype": "Tab Break",
    "label": "other info",
@@ -381,6 +378,15 @@
   {
    "fieldname": "column_break_aarf",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_ynei",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "total_pallet_qty",
+   "fieldtype": "Data",
+   "label": "Total Pallet Qty "
   }
  ],
  "grid_page_length": 50,
@@ -404,7 +410,7 @@
    "link_fieldname": "reference_name"
   }
  ],
- "modified": "2026-04-14 14:39:05.761126",
+ "modified": "2026-04-21 12:42:16.351875",
  "modified_by": "Administrator",
  "module": "WmsPro",
  "name": "WMS Goods Receipt Note",

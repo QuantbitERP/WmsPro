@@ -95,12 +95,16 @@ frappe.ui.form.on('WMS Goods Receipt Note', {
 
 
 frappe.ui.form.on("WMS Inbound Task", {
-
     
 
     qty_accepted: function(frm, cdt, cdn) {
         calculate_stock_qty_accepted(frm, cdt, cdn);
+        calculate_pallets(frm, cdt, cdn);
         calculate_totals(frm);
+    },
+    
+    item_code: function(frm, cdt, cdn) {
+        calculate_pallets(frm, cdt, cdn);
     },
     
     qty_received: function(frm, cdt, cdn) {
@@ -149,16 +153,19 @@ function calculate_totals(frm) {
     let total_received = 0;
     let total_accepted = 0;
     let total_rejected = 0;
+    let total_pallets = 0;
     
     for (let item of frm.doc.wms_grn_item || []) {
         total_received += parseFloat(item.qty_received || 0);
         total_accepted += parseFloat(item.qty_accepted || 0);
         total_rejected += parseFloat(item.qty_rejected || 0);
+        total_pallets += parseFloat(item.pallet || 0);
     }
     
     frm.set_value('total_qty_received', total_received);
     frm.set_value('total_qty_accepted', total_accepted);
     frm.set_value('total_qty_rejected', total_rejected);
+    frm.set_value('total_pallet_qty', total_pallets.toFixed(2));
 }
 
 function calculate_stock_qty_accepted(frm, cdt, cdn) {
@@ -179,4 +186,28 @@ function calculate_stock_qty_received(frm, cdt, cdn) {
     let stock_qty_received = qty_received * conversion_factor;
 
     frappe.model.set_value(cdt, cdn, 'stock_qty_received', stock_qty_received);
+}
+
+function calculate_pallets(frm, cdt, cdn) {
+    let row = locals[cdt][cdn];
+    
+    if (row.item_code && row.qty_accepted) {
+        frappe.db.get_value('Item', row.item_code, 'custom_pallet_capacity', function(r) {
+            if (r && r.custom_pallet_capacity) {
+                let capacity = parseFloat(r.custom_pallet_capacity);
+                let qty_accepted = parseFloat(row.qty_accepted) || 0;
+                
+                if (capacity > 0 && qty_accepted > 0) {
+                    let calculated_pallets = qty_accepted / capacity;
+                    frappe.model.set_value(cdt, cdn, 'pallet', calculated_pallets.toFixed(2));
+                } else {
+                    frappe.model.set_value(cdt, cdn, 'pallet', 0);
+                }
+            } else {
+                frappe.model.set_value(cdt, cdn, 'pallet', 0);
+            }
+        });
+    } else {
+        frappe.model.set_value(cdt, cdn, 'pallet', 0);
+    }
 }

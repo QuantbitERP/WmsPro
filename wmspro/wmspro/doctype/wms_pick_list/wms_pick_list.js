@@ -3,6 +3,16 @@
 
 
 frappe.ui.form.on("WMS Pick List", {
+    setup(frm) {
+        frm.set_query("to_bin_location", function() {
+            return {
+                filters: {
+                    is_staging: 1
+                }
+            };
+        });
+    },
+
     refresh(frm) {
 
         frm.clear_custom_buttons();

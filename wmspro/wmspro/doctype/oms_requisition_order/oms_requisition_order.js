@@ -187,6 +187,50 @@ frappe.ui.form.on("OMS Requisition Item", {
             frappe.model.set_value(cdt, cdn, "is_available", 0);
             console.log("No source facility selected, set available_stock to 0");
         }
+    },
+    
+    // Auto-fill estimated_unit_price when qty_requested is entered
+    qty_requested: function(frm, cdt, cdn) {
+        var row = locals[cdt][cdn];
+        console.log("Qty Requested Changed:", row.qty_requested);
+        console.log("Row data:", row);
+        
+        // Validate that qty_requested cannot be greater than available_stock
+        if (row.qty_requested && row.available_stock && row.qty_requested > row.available_stock) {
+            frappe.show_alert({
+                message: "Requested quantity (" + row.qty_requested + ") exceeds available stock (" + row.available_stock + ") for item " + (row.item_code || ""),
+                indicator: "orange"
+            });
+            // Don't reset automatically, just warn the user
+            console.log("Warning: qty_requested exceeds available_stock");
+            // Continue with processing instead of returning
+        }
+        
+        if (row.item_code && row.qty_requested && row.qty_requested > 0) {
+            console.log("Getting valuation rate for item:", row.item_code);
+            // Get valuation_rate from Item and set as estimated_unit_price
+            frappe.db.get_value("Item", row.item_code, "valuation_rate", function(r) {
+                console.log("Valuation rate response:", r);
+                if (r && r.valuation_rate) {
+                    frappe.model.set_value(cdt, cdn, "estimated_unit_price", r.valuation_rate);
+                    console.log("Successfully set estimated_unit_price:", r.valuation_rate);
+                    // Also calculate estimated_value
+                    var estimated_value = row.qty_requested * r.valuation_rate;
+                    frappe.model.set_value(cdt, cdn, "estimated_value", estimated_value);
+                    console.log("Set estimated_value:", estimated_value);
+                } else {
+                    frappe.model.set_value(cdt, cdn, "estimated_unit_price", 0);
+                    frappe.model.set_value(cdt, cdn, "estimated_value", 0);
+                    console.log("Set estimated_unit_price and estimated_value to 0 (valuation_rate not found)");
+                }
+            });
+        } else {
+            frappe.model.set_value(cdt, cdn, "estimated_unit_price", 0);
+            frappe.model.set_value(cdt, cdn, "estimated_value", 0);
+            console.log("Set estimated_unit_price and estimated_value to 0 (no item_code or qty_requested)");
+        }
+        
+        // Note: Pallet will be calculated on save
     }
 });
 
@@ -278,4 +322,27 @@ function fill_cbm_and_weight(frm, child_docname, item_code) {
         }
     );
 }
+
+// // Helper function to calculate pallet quantity
+// function calculate_pallet_quantity(cdt, cdn, item_code, qty_requested) {
+//     if (!item_code || !qty_requested || qty_requested <= 0) {
+//         frappe.model.set_value(cdt, cdn, "pallet", 0);
+//         console.log("Pallet set to 0 (no item_code or qty_requested)");
+//         return;
+//     }
+    
+//     // Get custom_pallet_capacity from Item
+//     frappe.db.get_value("Item", item_code, "custom_pallet_capacity", function(r) {
+//         console.log("Custom pallet capacity response:", r);
+//         if (r && r.custom_pallet_capacity && r.custom_pallet_capacity > 0) {
+//             var pallet_qty = r.custom_pallet_capacity * qty_requested;
+//             frappe.model.set_value(cdt, cdn, "pallet", pallet_qty);
+//             console.log("Calculated pallet:", pallet_qty, "(capacity:", r.custom_pallet_capacity, "* qty:", qty_requested, ")");
+//         } else {
+//             frappe.model.set_value(cdt, cdn, "pallet", 0);
+//             console.log("Set pallet to 0 (custom_pallet_capacity not found or is 0)");
+//         }
+//     });
+// }
+
 

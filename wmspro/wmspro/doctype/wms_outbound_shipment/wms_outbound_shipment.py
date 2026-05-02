@@ -16,6 +16,14 @@ class WMSOutboundShipment(Document):
 
         if not self.items:
             frappe.throw("Shipment must have at least one item")
+        
+        # Validate that qty_packed cannot be greater than qty_picked for any item
+        for row in self.items:
+            if row.qty_packed and row.qty_picked:
+                if row.qty_packed > row.qty_picked:
+                    frappe.throw(
+                        f"Packed quantity ({row.qty_packed}) cannot be greater than picked quantity ({row.qty_picked}) for item {row.item_code}"
+                    )
 
         # --------------------------------------------------
         # Calculate totals
@@ -81,7 +89,8 @@ class WMSOutboundShipment(Document):
                     "uom": row.uom,
                     "stock_uom": row.uom,
                     "transfer_qty": row.qty_picked,
-                    "conversion_factor": 1
+                    "conversion_factor": 1,
+                    "wms_bin": self.to_bin_location
                 })
 
         if not se.items:

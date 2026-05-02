@@ -8,14 +8,19 @@
  "field_order": [
   "run_date",
   "frequency",
+  "customer",
+  "approved_by",
   "column_break_ntxr",
   "period_from",
   "billing_mode",
-  "approved_by",
+  "work_flow_state",
+  "contract",
   "column_break_fvdh",
   "period_to",
   "status",
-  "work_flow_state",
+  "section_break_tdey",
+  "billing_details",
+  "wms_bill_tab",
   "section_break_gkbw",
   "billing_run_line",
   "total_amount",
@@ -100,13 +105,42 @@
    "print_hide": 1,
    "read_only": 1,
    "search_index": 1
+  },
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Customer ",
+   "options": "Customer"
+  },
+  {
+   "fieldname": "contract",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Contract",
+   "options": "Contract"
+  },
+  {
+   "fieldname": "wms_bill_tab",
+   "fieldtype": "Tab Break",
+   "label": "WMS Bill"
+  },
+  {
+   "fieldname": "section_break_tdey",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "billing_details",
+   "fieldtype": "Table",
+   "label": "Billing Details",
+   "options": "Billing Details"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-04-13 10:39:07.513937",
+ "modified": "2026-05-02 12:33:28.148839",
  "modified_by": "Administrator",
  "module": "WmsPro",
  "name": "Billing Run",

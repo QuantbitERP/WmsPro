@@ -146,6 +146,17 @@ class OMSRequisitionOrder(Document):
         # if not dest_wh:
         #     frappe.throw(f"Requesting Facility {self.requesting_facility} has no linked Warehouse")
 
+        # Validate that qty_requested cannot be greater than available_stock for each item
+        for item in self.items:
+            qty_requested = item.qty_requested or 0
+            available_stock = item.available_stock or 0
+            
+            if qty_requested > available_stock:
+                frappe.throw(
+                    f"Requested quantity ({qty_requested}) cannot be greater than available stock ({available_stock}) "
+                    f"for item {item.item_code}. Please adjust the requested quantity."
+                )
+
         # self.autofill_company_from_requesting_facility()
         self.set_request_date()
         self.calculate_item_values()
@@ -205,6 +216,36 @@ class OMSRequisitionOrder(Document):
                 ) or 0
 
                 row.estimated_value = row.qty_requested * valuation_rate
+
+    # -------------------------
+    # CALCULATE PALLET FOR ITEMS
+    # -------------------------
+    # def calculate_pallet_for_items(self):
+    #     """Calculate pallet quantity: custom_pallet_capacity / qty_requested"""
+        
+    #     for row in self.items:
+    #         if row.item_code and row.qty_requested:
+    #             # Get custom_pallet_capacity from Item and convert to float
+    #             custom_pallet_capacity = flt(frappe.db.get_value(
+    #                 "Item",
+    #                 row.item_code,
+    #                 "custom_pallet_capacity"
+    #             ) or 0)
+                
+    #             # Calculate pallet = custom_pallet_capacity / qty_requested
+    #             if custom_pallet_capacity > 0:
+    #                 row.pallet = flt(custom_pallet_capacity / row.qty_requested, 2)
+    #                 frappe.logger().info(
+    #                     f"Calculated pallet for {row.item_code}: "
+    #                     f"{custom_pallet_capacity} / {row.qty_requested} = {row.pallet}"
+    #                 )
+    #             else:
+    #                 row.pallet = 0
+    #                 frappe.logger().info(
+    #                     f"No custom_pallet_capacity found for {row.item_code}, pallet set to 0"
+    #                 )
+    #         else:
+    #             row.pallet = 0
 
     # -------------------------
     # TOTAL CALCULATIONS
@@ -289,7 +330,7 @@ class OMSRequisitionOrder(Document):
                 "weight_per_unit": r.weight_per_unit or 0,
                 "requisition_item_ref": r.name,
                 # Additional fields from requisition item
-                "pallet": r.pallet if hasattr(r, 'pallet') else None,
+                # "pallet": r.pallet if hasattr(r, 'pallet') else None,
                 "batch_preference": r.batch_preference if hasattr(r, 'batch_preference') else None,
                 "expiry_date_required_min": r.expiry_date_required_min if hasattr(r, 'expiry_date_required_min') else None
             })

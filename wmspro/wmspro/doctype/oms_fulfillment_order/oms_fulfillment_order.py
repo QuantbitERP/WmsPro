@@ -3,7 +3,7 @@
 
 import frappe
 from frappe.model.document import Document
-from frappe.utils import nowdate, nowtime, now_datetime
+from frappe.utils import nowdate, nowtime, now_datetime, flt
 
 
 @frappe.whitelist()
@@ -30,6 +30,7 @@ def get_bin_locations_for_item(doctype, txt, searchfield, start, page_len, filte
         AND b.warehouse = %s
         AND bl.docstatus != 2
         AND bl.available_qty > 0
+        AND b.is_storage = 1
         AND (b.name LIKE %s OR b.bin_code LIKE %s)
         GROUP BY b.name, b.bin_code
         ORDER BY MAX(bl.posting_datetime) DESC
@@ -53,15 +54,22 @@ class OMSFulfillmentOrder(Document):
     # ---------------------------------------------------------
     def validate(self):
 
-        # Validate that qty_allocated cannot be greater than qty_required for each item
+        # Validate that qty_allocated cannot be greater than qty_required and qty_short for each item
         for item in self.items:
             qty_required = item.qty_required or 0
             qty_allocated = item.qty_allocated or 0
+            qty_short = item.qty_short or 0
             
             if qty_allocated > qty_required:
                 frappe.throw(
                     f"Allocated quantity ({qty_allocated}) cannot be greater than required quantity ({qty_required}) "
                     f"for item {item.item_code}. Please adjust the allocation."
+                )
+            
+            if qty_short > 0 and qty_allocated > qty_short:
+                frappe.throw(
+                    f"Allocated quantity ({qty_allocated}) cannot be greater than short quantity ({qty_short}) "
+                    f"for item {item.item_code}. You cannot allocate more than the shortfall."
                 )
 
         if (self.total_qty_allocated or 0) >= (self.total_qty_required or 0):
@@ -89,10 +97,48 @@ class OMSFulfillmentOrder(Document):
                             "Total required quantity already allocated. You cannot change qty_allocated."
                         )
 
+        self.calculate_pallet_for_items()
+
+
+
+    def calculate_pallet_for_items(self):
+        """Calculate pallet quantity for fulfillment items: qty_allocated / custom_pallet_capacity"""
+        for item in self.items:
+            if item.item_code and item.qty_allocated and item.qty_allocated > 0:
+                custom_pallet_capacity = flt(frappe.db.get_value(
+                    "Item",
+                    item.item_code,
+                    "custom_pallet_capacity"
+                ) or 0)
+
+                if custom_pallet_capacity > 0:
+                    item.pallet = flt(item.qty_allocated / custom_pallet_capacity, 2)
+                else:
+                    item.pallet = 0
+            else:
+                item.pallet = 0
 
 
     @frappe.whitelist()
     def create_pick_list_button(self):
+
+        # Validate that qty_allocated cannot be greater than qty_required and qty_short for each item before creating pick list
+        for item in self.items:
+            qty_required = item.qty_required or 0
+            qty_allocated = item.qty_allocated or 0
+            qty_short = item.qty_short or 0
+            
+            if qty_allocated > qty_required:
+                frappe.throw(
+                    f"Cannot create Pick List. Allocated quantity ({qty_allocated}) cannot be greater than required quantity ({qty_required}) "
+                    f"for item {item.item_code}. Please adjust the allocation first."
+                )
+            
+            if qty_short > 0 and qty_allocated > qty_short:
+                frappe.throw(
+                    f"Cannot create Pick List. Allocated quantity ({qty_allocated}) cannot be greater than short quantity ({qty_short}) "
+                    f"for item {item.item_code}. You cannot allocate more than the shortfall."
+                )
 
         # NEW CHECK
         if (self.total_qty_allocated or 0) >= (self.total_qty_required or 0):
@@ -107,6 +153,19 @@ class OMSFulfillmentOrder(Document):
 
         self.db_set("pick_list", pick_list.name)
         self.db_set("status", "Pick List Created")
+
+        # Check if total_qty_allocated equals total_qty_required after allocation
+        # Reload to get updated totals
+        self.reload()
+        
+        if (self.total_qty_allocated or 0) == (self.total_qty_required or 0):
+            # All quantity allocated, set allocation_complete and submit the fulfillment order
+            self.allocation_complete = 1
+            self.status = "Allocated"
+            self.submit()
+            frappe.msgprint(f"Fulfillment Order {self.name} has been automatically submitted as all required quantity has been allocated.")
+        else:
+            frappe.msgprint(f"Pick List {pick_list.name} created. Total allocated: {self.total_qty_allocated}, Total required: {self.total_qty_required}")
 
         return pick_list.name
 
@@ -147,6 +206,7 @@ class OMSFulfillmentOrder(Document):
                 AND b.warehouse = %s
                 AND bl.available_qty > 0
                 AND bl.is_cancelled = 0
+                AND b.is_storage = 1
                 ORDER BY bl.posting_datetime ASC
                 """,
                 (item.item_code, self.source_warehouse, self.source_warehouse),

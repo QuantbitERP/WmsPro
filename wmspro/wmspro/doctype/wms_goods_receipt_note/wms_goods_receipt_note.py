@@ -79,6 +79,9 @@ class WMSGoodsReceiptNote(Document):
         # Validate total quantities
         self.validate_total_quantities()
         
+        # Validate pallet quantities against item master custom_pallet_capacity
+        self.validate_pallet_capacity()
+        
         self.fetch_item_master_data()
 
     def validate_total_quantities(self):
@@ -150,6 +153,34 @@ class WMSGoodsReceiptNote(Document):
         if total_expected > 0:
             variance_percentage = ((total_expected - total_accepted) / total_expected) * 100
             self.overall_variance_pct = variance_percentage
+
+    def validate_pallet_capacity(self):
+        """Validate that pallet quantity (calculated as qty_accepted / custom_pallet_capacity) is within limits"""
+        for item in self.wms_grn_item:
+            if item.item_code:
+                # Get custom_pallet_capacity from item master
+                custom_pallet_capacity = frappe.db.get_value("Item", item.item_code, "custom_pallet_capacity")
+                
+                if custom_pallet_capacity:
+                    try:
+                        # Convert custom_pallet_capacity to float first
+                        capacity_qty = float(custom_pallet_capacity)
+                        qty_accepted = float(item.qty_accepted or 0)
+                        
+                        if capacity_qty > 0 and qty_accepted > 0:
+                            calculated_pallets = qty_accepted / capacity_qty
+                            
+                            # You can set a maximum pallet limit if needed, for example 100 pallets
+                            max_pallet_limit = 100
+                            
+                            if calculated_pallets > max_pallet_limit:
+                                frappe.throw(
+                                    f"Row {item.idx}: Item {item.item_name} requires {calculated_pallets:.2f} pallets "
+                                    f"(based on {qty_accepted} qty / {capacity_qty} capacity per pallet), "
+                                    f"which exceeds maximum limit of {max_pallet_limit} pallets"
+                                )
+                    except (ValueError, TypeError):
+                        frappe.throw(f"Row {item.idx}: Invalid quantity or capacity value for Item {item.item_name}")
 
     def before_save(self):
         if self.docstatus == 0:

@@ -26,6 +26,14 @@ class WMSPickList(Document):
         # Auto-fetch customer_name if customer is set but customer_name is empty
         if self.customer and not self.customer_name:
             self.customer_name = frappe.db.get_value("Customer", self.customer, "customer_name")
+        
+        # Validate that qty_picked cannot be greater than qty_ordered for any item
+        for row in self.items:
+            if row.qty_picked and row.qty_ordered:
+                if row.qty_picked > row.qty_ordered:
+                    frappe.throw(
+                        f"Picked quantity ({row.qty_picked}) cannot be greater than ordered quantity ({row.qty_ordered}) for item {row.item_code}"
+                    )
 
     # ---------------------------------------------------------
     # Assign Picker
@@ -308,7 +316,9 @@ class WMSPickList(Document):
 
                     # NEW BIN FIELDS
                     "s_bin": source_bin,
-                    "t_bin": target_bin
+                    "t_bin": target_bin,
+                    "wms_bin": source_bin,
+                    "to_wms_bin": target_bin
                 })
 
         if not se.items:
