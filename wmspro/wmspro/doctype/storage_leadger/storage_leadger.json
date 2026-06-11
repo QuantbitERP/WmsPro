@@ -20,6 +20,7 @@
   "column_break_azed",
   "contract",
   "reference_doctype",
+  "item_name",
   "qty",
   "weight_per_unit",
   "other_info_tab",
@@ -33,8 +34,7 @@
    "fieldtype": "Date",
    "in_list_view": 1,
    "in_standard_filter": 1,
-   "label": "Posting Date",
-   "read_only": 1
+   "label": "Posting Date"
   },
   {
    "fieldname": "warehouse",
@@ -173,12 +173,17 @@
    "label": "Direction",
    "options": "Inbound\noutbound\nBoth",
    "read_only": 1
+  },
+  {
+   "fieldname": "item_name",
+   "fieldtype": "Data",
+   "label": "Item Name "
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-04-11 15:16:59.727582",
+ "modified": "2026-06-10 18:27:59.219846",
  "modified_by": "Administrator",
  "module": "WmsPro",
  "name": "Storage Leadger",

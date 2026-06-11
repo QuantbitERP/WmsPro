@@ -222,8 +222,42 @@ class WMSGoodsReceiptNote(Document):
             if not qty or qty <= 0:
                 continue
 
+            # Auto-create batch if it does not exist
+            if item.batch_no:
+                if not frappe.db.exists("Batch", item.batch_no):
+                    try:
+                        batch = frappe.new_doc("Batch")
+                        batch.name = item.batch_no
+                        batch.batch_id = item.batch_no
+                        batch.item = item.item_code
+                        batch.insert(ignore_permissions=True)
+                    except Exception as e:
+                        frappe.log_error(f"Failed to auto-create batch {item.batch_no}: {str(e)}")
+
             suggested_bin = self.get_suggested_bin(item.item_code, item.warehouse)
             item_warehouse = getattr(item, 'warehouse', None) or self.warehouse
+
+            # Create Serial and Batch Bundle if tracked
+            bundle_name = None
+            if item.batch_no and frappe.db.get_value("Item", item.item_code, "has_batch_no"):
+                bundle = frappe.get_doc({
+                    "doctype": "Serial and Batch Bundle",
+                    "item_code": item.item_code,
+                    "warehouse": item_warehouse,
+                    "company": self.company,
+                    "posting_date": frappe.utils.nowdate(),
+                    "posting_time": frappe.utils.nowtime(),
+                    "voucher_type": "Stock Entry",
+                    "type_of_transaction": "Inward",
+                    "qty": qty,
+                    "entries": [{
+                        "batch_no": item.batch_no,
+                        "qty": qty,
+                        "warehouse": item_warehouse
+                    }]
+                })
+                bundle.insert(ignore_permissions=True)
+                bundle_name = bundle.name
 
             stock_entry.append("items", {
                 "item_code": item.item_code,
@@ -232,7 +266,7 @@ class WMSGoodsReceiptNote(Document):
                 "qty": qty,
                 "conversion_factor": item.conversion_factor or 1,
                 "stock_uom": item.stock_uom,
-                "batch_no": item.batch_no
+                "serial_and_batch_bundle": bundle_name
             })
 
         # Only submit if items were added
@@ -248,15 +282,26 @@ class WMSGoodsReceiptNote(Document):
         else:
             frappe.msgprint("No items found for Material Receipt Stock Entry")
 
-    def get_staging_bin_for_warehouse(self):
+    def get_staging_bin_for_warehouse(self, warehouse=None):
+        wh = warehouse or self.warehouse
+        if not wh:
+            # Fallback: check child rows
+            for item in self.wms_grn_item:
+                if item.warehouse:
+                    wh = item.warehouse
+                    break
+        
+        if not wh:
+            frappe.throw("No warehouse specified in the Goods Receipt Note or its items.")
+
         staging_bin = frappe.db.get_value(
             "WMS Bin",
-            {"warehouse": self.warehouse, "is_staging": 1},
+            {"warehouse": wh, "is_staging": 1},
             "name"
         )
 
         if not staging_bin:
-            frappe.throw(f"No staging bin configured for warehouse {self.warehouse}")
+            frappe.throw(f"No staging bin configured for warehouse {wh}")
 
         return staging_bin
 
@@ -313,20 +358,20 @@ class WMSGoodsReceiptNote(Document):
             entry.pallet = item.pallet or ""
             entry.reference_doctype = "WMS Goods Receipt Note"
             entry.reference_name = self.name
+            entry.item_name = item.item_name
+            entry.uom = item.stock_uom or item.uom
 
             entry.insert(ignore_permissions=True)
 
     def create_bin_ledger_entries(self):
         """Create bin ledger entries for each item in GRN"""
-        default_staging_bin = self.get_staging_bin_for_warehouse()
-        
         for item in self.wms_grn_item:
             qty = item.qty_accepted or item.qty_excepted
             
             if not qty:
                 continue
             
-            item_staging_bin = item.staging_bin or default_staging_bin
+            item_staging_bin = item.staging_bin or self.get_staging_bin_for_warehouse(item.warehouse)
             
             supplier_name = None
             customer = None
@@ -355,17 +400,15 @@ class WMSGoodsReceiptNote(Document):
         """Create putaway tasks for each item in GRN"""
         tasks_created = 0
         
-        staging_bin = getattr(self, 'staging_bin', None)
-        if not staging_bin:
-            staging_bin = self.get_staging_bin_for_warehouse()
-        
-        staging_bin_warehouse = frappe.db.get_value("WMS Bin", staging_bin, "warehouse")
-        
         for item in self.wms_grn_item:
             qty = item.qty_accepted or item.qty_excepted
             
             if not qty:
                 continue
+            
+            item_warehouse = item.warehouse or self.warehouse
+            item_staging_bin = getattr(item, 'staging_bin', None) or getattr(self, 'staging_bin', None) or self.get_staging_bin_for_warehouse(item_warehouse)
+            item_staging_bin_warehouse = frappe.db.get_value("WMS Bin", item_staging_bin, "warehouse")
             
             task = frappe.new_doc("WMS Putaway Task")
             task.naming_series = "PAT-.YYYY.-.####"
@@ -385,12 +428,9 @@ class WMSGoodsReceiptNote(Document):
             task.doc_link_doctype = self.doctype
             task.doc_link = self.name
             
-            item_staging_bin = getattr(item, 'staging_bin', None) or staging_bin
-            item_staging_bin_warehouse = frappe.db.get_value("WMS Bin", item_staging_bin, "warehouse")
-            
             task.from_warehouse = item_staging_bin_warehouse
             
-            suggested_bin = self.get_abc_suggested_bin(item.item_code, self.warehouse)
+            suggested_bin = self.get_abc_suggested_bin(item.item_code, item_warehouse)
             suggested_bin_warehouse = frappe.db.get_value("WMS Bin", suggested_bin, "warehouse")
             
             task.to_warehouse = suggested_bin_warehouse

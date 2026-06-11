@@ -1,8 +1,72 @@
-// // Copyright (c) 2026, Quantbit Technologies Private Limited  and contributors
-// // For license information, please see license.txt
+// Copyright (c) 2026, Quantbit Technologies Private Limited  and contributors
+// For license information, please see license.txt
 
+frappe.ui.form.on("Billing Run", {
+	refresh: function(frm) {
+		frm.trigger("toggle_contract_details_button");
+		frm.trigger("toggle_do_billing_button");
+		frm.trigger("toggle_export_button");
+	},
+	toggle_export_button: function(frm) {
+		if (frm.doc.docstatus === 1 && frm.doc.billing_run_line && frm.doc.billing_run_line.length > 0) {
+			frm.add_custom_button(__("Export"), function() {
+				let url = frappe.urllib.get_full_url(
+					'/api/method/wmspro.wmspro.doctype.billing_run.billing_run.export_billing_excel?name=' + 
+					encodeURIComponent(frm.doc.name)
+				);
+				window.open(url);
+			});
+		} else {
+			frm.remove_custom_button(__("Export"));
+		}
+	},
+	toggle_do_billing_button: function(frm) {
+		if (frm.doc.billing_details && frm.doc.billing_details.length > 0) {
+			frm.add_custom_button(__("Do Billing"), function() {
+				frm.call("calculate_bill").then(() => {
+					frm.refresh_field("billing_run_line");
+					frm.refresh_field("billing_summerize_data");
+					frm.refresh_field("total_amount");
+					frm.refresh_field("total_amt");
+					frappe.show_alert({message: __("Billing completed successfully."), indicator: 'green'});
+				});
+			});
+		} else {
+			frm.remove_custom_button(__("Do Billing"));
+		}
+	},
+	get_details: function(frm) {
+		if(frm.doc.period_from && frm.doc.period_to) {
+			frm.call("get_storage_details").then(() => {
+				frm.refresh_field("customer_details");
+				frm.trigger("toggle_contract_details_button");
+			});
+		} else {
+			frappe.msgprint(__("Please select Period From and Period To dates first."));
+		}
+	},
+	toggle_contract_details_button: function(frm) {
+		if (frm.doc.customer_details && frm.doc.customer_details.length > 0) {
+			frm.add_custom_button(__("Get Contract Details"), function() {
+				let selected_rows = (frm.doc.customer_details || []).filter(row => row.select);
+				if (selected_rows.length === 0) {
+					frappe.msgprint(__("Please select at least one row from Customer Details."));
+					return;
+				}
+				
+				frm.call("get_selected_contract_details").then(() => {
+					frm.refresh_field("billing_details");
+					frm.trigger("toggle_do_billing_button");
+					frappe.show_alert({message: __("Contract details fetched successfully."), indicator: 'green'});
+				});
+			});
+		} else {
+			frm.remove_custom_button(__("Get Contract Details"));
+		}
+	}
+});
 
-// // Main form contract selection event - Auto-fetch functionality
+// Main form contract selection event - Auto-fetch functionality
 // frappe.ui.form.on("Billing Run", {
 // 	customer: function (frm) {
 // 		// When customer changes, clear contract field and set contract query

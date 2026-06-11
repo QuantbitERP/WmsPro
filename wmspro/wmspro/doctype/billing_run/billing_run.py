@@ -6,725 +6,793 @@ from frappe.model.document import Document
 
 
 class BillingRun(Document):
-	pass
-	
-# 	# def validate(self):
-# 	# 	# Update total amount whenever document is validated/saved
-# 	# 	self.update_total_amount()
-	
-# 	@frappe.whitelist()
-# 	def auto_fetch_contract_data(self, contract):
-# 		"""Auto-fetch contract data and populate billing run fields when contract is selected"""
-# 		if not contract:
-# 			return {"success": False, "message": "Contract is required"}
+	@frappe.whitelist()
+	def get_storage_details(self):
+		self.set("customer_details", [])
+		if not self.period_from or not self.period_to:
+			return
 		
-# 		try:
-# 			# Get contract details
-# 			contract_doc = frappe.get_doc("Contract", contract)
-			
-# 			# Fetch and store contract tariff dictionary
-# 			tariff_dict = self.get_contract_tariff_dictionary(contract)
-# 			self.period_from = contract_doc.start_date
-# 			self.period_to = contract_doc.end_date
-# 			self.frequency = contract_doc.custom_billing_frequency
-# 			self.billing_run_line = []
-# 			if contract_doc.custom_contract_tarrif:
-# 				for tariff_item in contract_doc.custom_contract_tarrif:
-# 					self.append("billing_run_line", {
-# 						"contract": contract,
-# 						"customer": contract_doc.party_name,
-# 						"charge_type": tariff_item.charge_type,
-# 						"billing_basis": tariff_item.billing_basis,
-# 						"direction": tariff_item.direction,
-# 						"uom": tariff_item.uom,
-# 						"rate": tariff_item.rate,
-# 						"is_one_time": tariff_item.is_one_time,
-# 						"is_recurring": tariff_item.is_recurring
-# 					})
-			
-# 			# Store tariff dictionary
-# 			tariff_dict = self.get_contract_tariff_dictionary(contract)
-# 			if tariff_dict:
-# 				self.contract_tariff_data = frappe.as_json(tariff_dict)
-			
-# 			# Store storage ledger dictionary
-# 			storage_dict = self.get_storage_ledger_dictionary(contract)
-# 			if storage_dict:
-# 				self.storage_ledger_data = frappe.as_json(storage_dict)
-			
-# 			# Calculate billing quantities based on storage ledger data
-# 			calc_result = self.calculate_billing_quantities()
-# 			if not calc_result.get("success"):
-# 				frappe.log_error(f"Quantity calculation failed: {calc_result.get('message')}", "Billing Run Auto Fetch")
-# 			else:
-# 				frappe.msgprint(f"✅ Calculated quantities for {len(self.billing_run_line)} billing lines")
-			
-# 			# Calculate billing amounts based on contract tariff data
-# 			amount_result = self.calculate_billing_amounts()
-# 			if not amount_result.get("success"):
-# 				frappe.log_error(f"Amount calculation failed: {amount_result.get('message')}", "Billing Run Auto Fetch")
-# 			else:
-# 				frappe.msgprint(f"✅ Calculated amounts for billing. Total: {amount_result.get('total_amount', 0)}")
-
-# 			return {"success": True, "message": "Contract data auto-fetched successfully"}
-			
-# 		except Exception as e:
-# 			frappe.log_error(f"Error auto-fetching contract data: {str(e)}", "Billing Run Auto Fetch")
-# 			return {"success": False, "message": str(e)}
-	
-# 	@frappe.whitelist()
-# 	def get_contract_tariff_dictionary(self, contract):
-# 		"""Fetch contract tariff data and return as structured dictionary for reuse"""
-# 		if not contract:
-# 			return {}
+		# Fetch records from Storage Ledger between period_from and period_to
+		records = frappe.db.get_all("Storage Leadger", 
+			filters={
+				"posting_date": ["between", [self.period_from, self.period_to]]
+			},
+			fields=["customer", "contract"]
+		)
 		
-# 		try:
-# 			# Get contract details
-# 			contract_doc = frappe.get_doc("Contract", contract)
+		seen = set()
+		for record in records:
+			if not record.customer or not record.contract:
+				continue
 			
-# 			# Initialize tariff data list
-# 			tariff_data = []
-			
-# 			# Process contract tariff child table
-# 			if contract_doc.custom_contract_tarrif:
-# 				for tariff_item in contract_doc.custom_contract_tarrif:
-# 					tariff_data.append({
-# 						"charge_type": tariff_item.charge_type,
-# 						"rate": tariff_item.rate,
-# 						"billing_basis": tariff_item.billing_basis,
-# 						"direction": tariff_item.direction,
-# 						"uom": tariff_item.uom,
-# 						"frequency": tariff_item.frequency,
-# 						"is_one_time": tariff_item.is_one_time,
-# 						"is_recurring": tariff_item.is_recurring
-# 					})
-			
-# 			# Create structured dictionary
-# 			tariff_dict = {
-# 				"contract": contract,
-# 				"customer": contract_doc.party_name,
-# 				"tariff_data": tariff_data
-# 			}
-			
-# 			return tariff_dict
-			
-# 		except Exception as e:
-# 			frappe.log_error(f"Error getting contract tariff dictionary: {str(e)}", "Billing Run Tariff Dictionary")
-# 			return {}
-	
-# 	@frappe.whitelist()
-# 	def get_stored_tariff_dictionary(self):
-# 		"""Get stored tariff dictionary from document field"""
-# 		try:
-# 			if hasattr(self, 'contract_tariff_data') and self.contract_tariff_data:
-# 				tariff_dict = frappe.parse_json(self.contract_tariff_data)
-# 				return tariff_dict
-# 			else:
-# 				return {}
-# 		except Exception as e:
-# 			frappe.log_error(f"Error getting stored tariff dictionary: {str(e)}", "Billing Run Stored Tariff")
-# 			return {}
-	
-# 	@frappe.whitelist()
-# 	def get_storage_ledger_records(self, customer, contract, warehouse, from_date, to_date):
-# 		"""Fetch Storage Ledger records for billing calculation with pallet calculation"""
-# 		try:
-# 			if not all([customer, contract, warehouse, from_date, to_date]):
-# 				return {"success": False, "message": "All parameters are required"}
-			
-# 			# Fetch Storage Ledger records
-# 			records = frappe.db.sql("""
-# 				SELECT 
-# 					posting_date,
-# 					qty,
-# 					direction,
-# 					movement_type,
-# 					pallet,
-# 					item_code
-# 				FROM `tabStorage Leadger`
-# 				WHERE customer = %s
-# 				AND contract = %s
-# 				AND warehouse = %s
-# 				AND posting_date BETWEEN %s AND %s
-# 				ORDER BY posting_date ASC
-# 			""", (customer, contract, warehouse, from_date, to_date), as_dict=True)
-# 			frappe.msgprint(str(records))
-   
-			
-# 			# Process records to calculate pallets
-# 			updated_records = []
-# 			for record in records:
-# 				try:
-# 					# Get pallet capacity from Item Master
-# 					pallet_capacity = frappe.db.get_value("Item", record.item_code, "custom_pallet_capacity")
-					
-# 					# Calculate pallets
-# 					if pallet_capacity and pallet_capacity > 0 and record.qty:
-# 						calculated_pallets = record.qty / pallet_capacity
-# 					else:
-# 						calculated_pallets = record.pallet or 0  # Fallback to existing pallet field
-					
-# 					# Add pallet_qty to record
-# 					record['pallet_qty'] = calculated_pallets
-# 					record['pallet_capacity'] = pallet_capacity or 0
-					
-# 					updated_records.append(record)
-					
-# 				except Exception as e:
-# 					# Log error for individual record but continue processing
-# 					frappe.log_error(f"Error calculating pallets for item {record.item_code}: {str(e)}", "Billing Run Pallet Calculation")
-# 					# Add record with default pallet_qty
-# 					record['pallet_qty'] = record.pallet or 0
-# 					record['pallet_capacity'] = 0
-# 					updated_records.append(record)
-			
-# 			return {
-# 				"success": True,
-# 				"records": updated_records or [],
-# 				"total_records": len(updated_records) if updated_records else 0
-# 			}
-			
-# 		except Exception as e:
-# 			frappe.log_error(f"Error fetching storage ledger records: {str(e)}", "Billing Run Storage Ledger")
-# 			return {"success": False, "message": str(e)}
-	
-# 	@frappe.whitelist()
-# 	def calculate_daily_average_storage(self, customer, contract, warehouse, from_date, to_date):
-# 		"""Calculate Daily Average Method for storage billing"""
-# 		try:
-# 			from frappe.utils import flt
-			
-# 			# STEP 1: Fetch Contract Tariff
-# 			try:
-# 				tariffs = []
-# 				contract_doc = frappe.get_doc('Contract', contract)
-# 				if hasattr(contract_doc, 'custom_contract_tarrif') and contract_doc.custom_contract_tarrif:
-# 					for tariff_line in contract_doc.custom_contract_tarrif:
-# 						tariffs.append({
-# 							'charge_type': tariff_line.charge_type,
-# 							'direction': getattr(tariff_line, 'direction', ''),
-# 							'rate': flt(tariff_line.rate or 0)
-# 						})
-# 			except Exception as e:
-# 				return {"success": False, "message": f"Contract tariff error: {str(e)}"}
-			
-# 			# STEP 2: Fetch Storage Ledger Data
-# 			try:
-# 				records = frappe.db.sql("""
-# 					SELECT 
-# 						posting_date,
-# 						pallet,
-# 						direction,
-# 						movement_type,
-# 						qty,
-# 						item_code
-# 					FROM `tabStorage Leadger`
-# 					WHERE customer = %s
-# 					AND contract = %s
-# 					AND warehouse = %s
-# 					AND posting_date BETWEEN %s AND %s
-# 					ORDER BY posting_date ASC
-# 				""", (customer, contract, warehouse, from_date, to_date), as_dict=True)
-# 			except Exception as e:
-# 				return {"success": False, "message": f"Database query error: {str(e)}"}
-	
-# 			if not records:
-# 				return {"success": True, "message": "No records found", "average_pallets": 0, "total_pallet_days": 0, "total_days": 0}
-			
-# 			# STEP 3: Calculate Opening Balance
-# 			try:
-# 				opening_balance = 0
-# 				opening_records = frappe.db.sql("""
-# 					SELECT SUM(pallet) as total_pallets
-# 					FROM `tabStorage Leadger`
-# 					WHERE customer = %s
-# 					AND contract = %s
-# 					AND warehouse = %s
-# 					AND posting_date < %s
-# 				""", (customer, contract, warehouse, from_date), as_dict=True)
+			pair = (record.customer, record.contract)
+			if pair not in seen:
+				seen.add(pair)
+				self.append("customer_details", {
+					"customer": record.customer,
+					"contract": record.contract,
+					"select": 1
+				})
 				
-# 				if opening_records and opening_records[0].total_pallets:
-# 					opening_balance = flt(opening_records[0].total_pallets)
-# 			except Exception as e:
-# 				return {"success": False, "message": f"Opening balance error: {str(e)}"}
-			
-# 			# STEP 4: Group Movements by Date
-# 			try:
-# 				daily_movements = {}
-# 				inbound_total = 0
-# 				outbound_total = 0
-				
-# 				for record in records:
-# 					date_str = str(record.posting_date)
-# 					pallet_qty = flt(record.pallet or 0)
-					
-# 					# Calculate signed movement
-# 					if record.direction and record.direction.lower() == 'outbound':
-# 						signed_qty = -pallet_qty
-# 						outbound_total += pallet_qty
-# 					else:
-# 						signed_qty = pallet_qty
-# 						inbound_total += pallet_qty
-					
-# 					# Group by date
-# 					if date_str not in daily_movements:
-# 						daily_movements[date_str] = 0
-# 					daily_movements[date_str] += signed_qty
-# 			except Exception as e:
-# 				return {"success": False, "message": f"Daily grouping error: {str(e)}"}
-			
-# 			# STEP 5: Apply Range Logic (NO LOOP)
-# 			try:
-# 				from frappe.utils import date_diff
-# 				total_pallet_days = 0
-				
-# 				# Sort dates
-# 				sorted_dates = sorted(daily_movements.keys())
-				
-# 				# Initialize
-# 				previous_date = from_date
-# 				running_balance = opening_balance
-# 				total_days = date_diff(to_date, from_date) + 1
-				
-# 				# Calculate for each movement date
-# 				for movement_date in sorted_dates:
-# 					days = date_diff(movement_date, previous_date)
-# 					pallet_days = running_balance * days
-# 					total_pallet_days += pallet_days
-					
-# 					# Update running balance
-# 					net_movement = daily_movements[movement_date]
-# 					running_balance += net_movement
-# 					previous_date = movement_date
-				
-# 				# Add remaining days
-# 				remaining_days = date_diff(to_date, previous_date) + 1
-# 				pallet_days = running_balance * remaining_days
-# 				total_pallet_days += pallet_days
-# 			except Exception as e:
-# 				return {"success": False, "message": f"Range logic error: {str(e)}"}
-			
-# 			# STEP 6: Calculate Pallet Days (already done above)
-# 			# STEP 7: Calculate Average
-# 			try:
-# 				average_pallets = 0
-# 				if total_days > 0:
-# 					average_pallets = total_pallet_days / total_days
-# 			except Exception as e:
-# 				return {"success": False, "message": f"Average calculation error: {str(e)}"}
-			
-# 			# STEP 8: Calculate Handling Qty (already calculated above)
-# 			# inbound_total and outbound_total are calculated in STEP 4
-			
-# 			# STEP 9: Apply Contract Logic
-# 			try:
-# 				billing_lines = []
-# 				for tariff in tariffs:
-# 					qty = 0
-# 					amount = 0
-# 					charge_type = (tariff.get("charge_type") or "").lower()
-# 					direction = (tariff.get("direction") or "").lower()
-					
-# 					if charge_type == 'storage':
-# 						qty = average_pallets
-# 						amount = qty * tariff['rate']
-# 					elif charge_type == 'handling':
-# 						if direction == 'inbound':
-# 							qty = inbound_total
-# 						elif direction == 'outbound':
-# 							qty = outbound_total
-# 						amount = qty * tariff['rate']
-
-# 					billing_lines.append({
-# 						'charge_type': tariff['charge_type'],
-# 						# 'direction': tariff.get('direction', ''),
-#       			'direction': (tariff.get('direction') or '').title(),
-# 						'billed_qty': qty,
-# 						'rate': tariff['rate'],
-# 						'amount': amount
-# 					})
-     
-# 			except Exception as e:
-# 				return {"success": False, "message": f"Contract logic error: {str(e)}"}
-			
-# 			return {
-# 				"success": True,
-# 				"message": "Complete billing calculation successful!",
-# 				"calculation": {
-# 					"average_pallets": average_pallets,
-# 					"total_pallet_days": total_pallet_days,
-# 					"total_days": total_days,
-# 					"opening_balance": opening_balance,
-# 					"closing_balance": running_balance,
-# 					"inbound_qty": inbound_total,
-# 					"outbound_qty": outbound_total,
-# 					"daily_movements": daily_movements
-# 				},
-# 				"tariffs": tariffs,
-# 				"billing_lines": billing_lines
-# 			}
-# 		except Exception as e:
-# 			return {"success": False, "message": f"Method error: {str(e)}"}
-	
-# 	@frappe.whitelist()
-# 	def save_billing_lines(self, billing_run_name, billing_lines):
-# 		"""Save billing lines to billing run"""
-# 		try:
-# 			billing_run_doc = frappe.get_doc('Billing Run', billing_run_name)
-			
-# 			# Clear existing lines
-# 			billing_run_doc.billing_run_line = []
-			
-# 			# Add new billing lines
-# 			for line_data in billing_lines:
-# 				line = billing_run_doc.append('billing_run_line', {})
-# 				line.charge_type = line_data['charge_type']
-# 				line.billed_qty = line_data['billed_qty']
-# 				line.rate = line_data['rate']
-# 				line.amount = line_data['amount']
-# 				if line_data.get('direction'):
-# 					line.direction = line_data['direction']
-			
-# 			billing_run_doc.save(ignore_permissions=True)
-# 			billing_run_doc.reload()
-			
-# 			return {
-# 				"success": True,
-# 				"message": f"Saved {len(billing_lines)} billing lines",
-# 				"billing_run": billing_run_doc.name
-# 			}
-# 		except Exception as e:
-# 			return {"success": False, "message": f"Save error: {str(e)}"}
-	
-# 	@frappe.whitelist()
-# 	def test_daily_average_method(self):
-# 		"""Simple test method to verify method is working"""
-# 		try:
-# 			frappe.log_error("Test method called successfully", "Daily Average Test")
-# 			return {"success": True, "message": "Test method working", "timestamp": frappe.utils.now()}
-# 		except Exception as e:
-# 			frappe.log_error(f"Test method error: {str(e)}", "Daily Average Test")
-# 			return {"success": False, "message": str(e)}
-	
-# 	@frappe.whitelist()
-# 	def get_storage_ledger_dictionary(self, contract):
-# 		"""Fetch storage ledger data based on contract and return as structured dictionary"""
-# 		if not contract:
-# 			return {}
+	@frappe.whitelist()
+	def get_selected_contract_details(self):
+		self.set("billing_details", [])
+		if not self.period_from or not self.period_to:
+			return
 		
-# 		try:
-# 			# Fetch storage ledger records for the contract
-# 			storage_records = frappe.db.get_all("Storage Leadger",
-# 				filters={
-# 					"contract": contract
-# 				},
-# 				fields=[
-# 					"posting_date",
-# 					"warehouse", 
-# 					"movement_type",
-# 					"reference_doctype",
-# 					"reference_name",
-# 					"item_code",
-# 					"qty",
-# 					"cbm_per_unit",
-# 					"weight_per_unit",
-# 					"direction",
-# 					"pallet"
-# 				],
-# 				order_by="posting_date asc"
-# 			)
+		# Get selected customers and contracts
+		selected_pairs = []
+		if self.get("customer_details"):
+			for row in self.get("customer_details"):
+				if row.select:
+					selected_pairs.append((row.customer, row.contract))
+		
+		if not selected_pairs:
+			return
 			
-# 			# Create structured dictionary
-# 			storage_dict = {
-# 				"contract": contract,
-# 				"storage_data": storage_records
-# 			}
+		for customer, contract in selected_pairs:
+			records = frappe.db.get_all("Storage Leadger", 
+				filters={
+					"posting_date": ["between", [self.period_from, self.period_to]],
+					"customer": customer,
+					"contract": contract
+				},
+				fields=["customer", "warehouse", "reference_doctype", "reference_name", "item_code", "item_name", "pallet", "uom", "contract", "movement_type", "qty", "cbm_per_unit", "direction"]
+			)
 			
-# 			return storage_dict
-			
-# 		except Exception as e:
-# 			frappe.log_error(f"Error getting storage ledger dictionary: {str(e)}", "Billing Run Storage Ledger")
-# 			return {}
-	
-# 	@frappe.whitelist()
-# 	def get_stored_storage_ledger_dictionary(self):
-# 		"""Get stored storage ledger dictionary from document field"""
-# 		try:
-# 			if hasattr(self, 'storage_ledger_data') and self.storage_ledger_data:
-# 				storage_dict = frappe.parse_json(self.storage_ledger_data)
-# 				return storage_dict
-# 			else:
-# 				return {}
-# 		except Exception as e:
-# 			frappe.log_error(f"Error getting stored storage ledger dictionary: {str(e)}", "Billing Run Stored Storage Ledger")
-# 			return {}
-	
-# 	@frappe.whitelist()
-# 	def calculate_billing_quantities(self):
-# 		"""Calculate actual quantities for billing run lines based on storage ledger data"""
-# 		try:
-# 			# Get stored storage ledger data
-# 			storage_dict = self.get_stored_storage_ledger_dictionary()
-# 			if not storage_dict or not storage_dict.get('storage_data'):
-# 				return {"success": False, "message": "No storage ledger data found"}
-			
-# 			storage_records = storage_dict['storage_data']
-			
-# 			# Process each billing run line
-# 			for line in self.billing_run_line:
-# 				frappe.log_error(f"Processing line: {line.charge_type}, direction: {line.direction}, basis: {line.billing_basis}", "Quantity Debug")
-# 				if line.actual_qty:
-# 					continue
-				
-# 				if not line.billing_basis or not line.direction:
-# 					frappe.log_error("Skipping line - missing basis or direction", "Quantity Debug")
-# 					continue
-				
-# 				actual_qty = 0
-				
-# 				# Handle different charge types
-# 				if line.charge_type.lower() == 'storage':
-# 					frappe.log_error("Calculating storage quantity using daily average method", "Quantity Debug")
-# 					# For storage charges, use daily average method
-# 					actual_qty = self.calculate_storage_quantity(line)
-# 					frappe.log_error(f"Storage quantity calculated: {actual_qty}", "Quantity Debug")
-# 				else:
-# 					frappe.log_error("Calculating handling quantity using movement method", "Quantity Debug")
-# 					# For handling charges, use movement-based method
-# 					# Filter storage records based on direction
-# 					filtered_records = [
-# 						record for record in storage_records 
-# 						# if record.get('direction') == line.direction
-# 						if (record.get('direction') or '').strip().lower() ==
-#        					(line.direction or '').strip().lower()
-# 					]
+			for record in records:
+				item_name = record.item_name
+				if not item_name and record.item_code:
+					item_name = frappe.db.get_value("Item", record.item_code, "item_name")
 					
-# 					frappe.log_error(f"Found {len(filtered_records)} records for direction {line.direction}", "Quantity Debug")
-					
-# 					# Calculate quantity based on billing basis
-# 					if line.billing_basis.lower() == 'pallet':
-# 						# Sum pallet quantities
-# 						for record in filtered_records:
-# 							pallet_count = record.get('pallet', 0) or 0
-# 							# Try to extract numeric value from pallet field
-# 							if isinstance(pallet_count, str):
-# 								try:
-# 									pallet_count = float(pallet_count)
-# 								except:
-# 									pallet_count = 0
-# 							actual_qty += pallet_count
-					
-# 					elif line.billing_basis.lower() == 'cbm':
-# 						# Calculate CBM (cbm_per_unit × qty)
-# 						for record in filtered_records:
-# 							cbm_per_unit = record.get('cbm_per_unit', 0) or 0
-# 							qty = record.get('qty', 0) or 0
-# 							try:
-# 								actual_qty += float(cbm_per_unit) * float(qty)
-# 							except:
-# 								continue
-					
-# 					elif line.billing_basis.lower() == 'weight':
-# 						# Calculate weight (weight_per_unit × qty)
-# 						for record in filtered_records:
-# 							weight_per_unit = record.get('weight_per_unit', 0) or 0
-# 							qty = record.get('qty', 0) or 0
-# 							try:
-# 								actual_qty += float(weight_per_unit) * float(qty)
-# 							except:
-# 								continue
-					
-# 					frappe.log_error(f"Handling quantity calculated: {actual_qty}", "Quantity Debug")
+				self.append("billing_details", {
+					"customer": record.customer,
+					"warehouse": record.warehouse,
+					"reference_doctype": record.reference_doctype,
+					"reference_name": record.reference_name,
+					"item_code": record.item_code,
+					"item_name": item_name,
+					"pallet": record.pallet,
+					"uom": record.uom,
+					"contract": record.contract,
+					"movement_type": record.movement_type,
+					"qty": record.qty,
+					"cbm_per_unit": record.cbm_per_unit,
+					"direction": record.direction,
+					"check_rmeo": 1
+				})
 				
-# 				# Update the actual_qty field in billing run line
-# 				line.actual_qty = actual_qty
-# 				frappe.log_error(f"Updated line {line.charge_type} with actual_qty: {actual_qty}", "Quantity Debug")
+	def on_submit(self):
+		self.create_sales_invoices()
+
+	def create_sales_invoices(self):
+		customer_lines = {}
+		for line in self.billing_run_line:
+			if not line.customer:
+				continue
+			if line.customer not in customer_lines:
+				customer_lines[line.customer] = []
+			customer_lines[line.customer].append(line)
 			
-# 			return {"success": True, "message": "Billing quantities calculated successfully"}
+		for customer, lines in customer_lines.items():
+			si = frappe.new_doc("Sales Invoice")
+			si.customer = customer
+			si.posting_date = self.run_date or frappe.utils.today()
+			si.due_date = frappe.utils.add_days(si.posting_date, 30)
 			
-# 		except Exception as e:
-# 			frappe.log_error(f"Error calculating billing quantities: {str(e)}", "Billing Run Quantity Calculation")
-# 			return {"success": False, "message": str(e)}
-	
-# 	def calculate_storage_quantity(self, line):
-# 		"""Calculate storage quantity using daily average method"""
-# 		try:
-# 			frappe.log_error(f"Starting storage quantity calculation for contract: {self.contract}, customer: {self.customer}", "Storage Debug")
-			
-# 			# Get contract details
-# 			if not self.contract:
-# 				frappe.log_error("No contract found", "Storage Debug")
-# 				return 0
-			
-# 			# Get warehouse from contract
-# 			contract_doc = frappe.get_doc('Contract', self.contract)
-# 			warehouse = contract_doc.warehouse or contract_doc.custom_warehouse
-			
-# 			if not warehouse:
-# 				frappe.log_error("No warehouse found in contract", "Storage Debug")
-# 				return 0
-			
-# 			frappe.log_error(f"Using warehouse: {warehouse}, period: {self.period_from} to {self.period_to}", "Storage Debug")
-			
-# 			# Use the existing daily average calculation method
-# 			result = self.calculate_daily_average_storage(
-# 				self.customer, 
-# 				self.contract, 
-# 				warehouse, 
-# 				self.period_from, 
-# 				self.period_to
-# 			)
-			
-# 			frappe.log_error(f"Daily average result: {result}", "Storage Debug")
-			
-# 			if result.get('success') and result.get('calculation'):
-# 				# Return the average pallets for storage quantity
-# 				avg_pallets = result['calculation'].get('average_pallets', 0)
-# 				frappe.log_error(f"Average pallets calculated: {avg_pallets}", "Storage Debug")
-# 				return avg_pallets
-# 			else:
-# 				frappe.log_error(f"Daily average calculation failed: {result.get('message', 'Unknown error')}", "Storage Debug")
-# 				return 0
+			if si.meta.has_field("custom_billing_run"):
+				si.custom_billing_run = self.name
 				
-# 		except Exception as e:
-# 			frappe.log_error(f"Error calculating storage quantity: {str(e)}", "Storage Debug")
-# 			return 0
-	
-# 	@frappe.whitelist()
-# 	def calculate_billing_amounts(self):
-# 		"""Calculate billing amounts using stored contract tariff data and actual quantities"""
-# 		try:
-# 			# Get stored contract tariff data
-# 			tariff_dict = self.get_stored_tariff_dictionary()
-# 			if not tariff_dict or not tariff_dict.get('tariff_data'):
-# 				return {"success": False, "message": "No contract tariff data found"}
-			
-# 			tariff_records = tariff_dict['tariff_data']
-			
-# 			# Process each billing run line
-# 			for line in self.billing_run_line:
-# 				frappe.log_error(f"Processing amounts for line: {line.charge_type}, direction: {line.direction}, basis: {line.billing_basis}, qty: {line.actual_qty}", "Amount Debug")
+			for line in lines:
+				item_code = line.item_code
 				
-# 				if not line.actual_qty or not line.charge_type or not line.billing_basis:
-# 					frappe.log_error("Skipping amount calculation - missing qty, charge_type or basis", "Amount Debug")
-# 					continue
+				# Get HSN/SAC from Item
+				gst_hsn_code = None
+				if item_code:
+					gst_hsn_code = frappe.db.get_value("Item", item_code, "gst_hsn_code")
 				
-# 				# Find matching tariff record
-# 				matching_tariff = None
-# 				frappe.log_error(f"Available tariff records: {len(tariff_records)}", "Amount Debug")
+				# Get Warehouse from Contract
+				warehouse = None
+				if line.contract:
+					warehouse = frappe.db.get_value("Contract", line.contract, "custom_warehouse")
 				
-# 				for i, tariff in enumerate(tariff_records):
-# 					tariff_charge = tariff.get('charge_type')
-# 					tariff_basis = tariff.get('billing_basis') 
-# 					tariff_direction = tariff.get('direction')
-# 					tariff_rate = tariff.get('rate')
+				desc = f"{line.charge_type} charge"
+				actual_name = None
+				if line.item_code:
+					actual_name = frappe.db.get_value("Item", line.item_code, "item_name")
+					desc += f" for Item {line.item_code}"
+					if actual_name and actual_name != line.item_code:
+						desc += f" ({actual_name})"
+				if line.days:
+					desc += f" ({line.days} days)"
+				if line.direction:
+					desc += f" [{line.direction}]"
 					
-# 					frappe.log_error(f"Tariff {i}: {tariff_charge}, {tariff_direction}, {tariff_basis}, rate: {tariff_rate}", "Amount Debug")
-					
-# 					# if (tariff_charge == line.charge_type and 
-# 					# 	tariff_basis == line.billing_basis and
-# 					# 	tariff_direction == line.direction):
-# 					if (
-# 								(tariff_charge or '').strip().lower() == (line.charge_type or '').strip().lower()
-# 								and
-# 								(tariff_basis or '').strip().lower() == (line.billing_basis or '').strip().lower()
-# 								and
-# 								(tariff_direction or '').strip().lower() == (line.direction or '').strip().lower()
-# 						):
-# 						matching_tariff = tariff
-# 						frappe.log_error(f"Found matching tariff!", "Amount Debug")
-# 						break
+				si.append("items", {
+					"item_code": item_code,
+					"item_name": actual_name or item_code,
+					"description": desc,
+					"qty": line.billed_qty or 1.0,
+					"rate": line.rate or 0.0,
+					"amount": line.billied_amount or 0.0,
+					"warehouse": warehouse,
+					"gst_hsn_code": gst_hsn_code
+				})
 				
-# 				if matching_tariff:
-# 					# Calculate actual amount
-# 					rate = matching_tariff.get('rate', 0) or 0
-# 					actual_amount = float(line.actual_qty) * float(rate)
+			si.insert(ignore_permissions=True)
+			si.submit()
+			
+			for line in lines:
+				line.invoice = si.name
+				line.db_update()
+				
+		self.db_set("status", "Invoiced")
+
+	@frappe.whitelist()
+	def calculate_bill(self):
+		from frappe.utils import flt
+		
+		# Validation: Check if at least one row is checked
+		selected_details = [row for row in self.get("billing_details") if row.check_rmeo]
+		if not selected_details:
+			frappe.throw(frappe._("Select at least one contract"))
+			
+		self.set("billing_run_line", [])
+		
+		contracts = {}
+		for row in selected_details:
+			if row.contract not in contracts:
+				contracts[row.contract] = {"customer": row.customer, "rows": []}
+			contracts[row.contract]["rows"].append(row)
+				
+		for contract, data in contracts.items():
+			customer = data["customer"]
+			contract_doc = frappe.get_doc("Contract", contract)
+			
+			if not contract_doc.get("custom_contract_tarrif"):
+				continue
+				
+			for tariff in contract_doc.custom_contract_tarrif:
+				if tariff.charge_type == "Storage":
+					storage_lines = self.calculate_fifo_storage_qty_lines(
+						customer=customer,
+						contract=contract,
+						period_from=self.period_from,
+						period_to=self.period_to,
+						billing_basis=(tariff.billing_basis or "").lower(),
+						tariff_rate=tariff.rate or 0
+					)
+					for s_line in storage_lines:
+						self.append("billing_run_line", {
+							"contract": contract,
+							"customer": customer,
+							"charge_type": tariff.charge_type,
+							"billing_basis": tariff.billing_basis,
+							"direction": tariff.direction,
+							"rate": tariff.rate or 0,
+							"actual_qty": s_line["actual_qty"],
+							"billed_qty": s_line["billed_qty"],
+							"billied_amount": s_line["amount"],
+							"is_one_time": tariff.is_one_time,
+							"item_code": s_line["item_code"],
+							"item_name": s_line.get("item_name") or s_line["item_code"],
+							"days": s_line["days"]
+						})
+				else:
+					basis = (tariff.billing_basis or "").lower()
 					
-# 					frappe.log_error(f"Calculating amount: {line.actual_qty} × {rate} = {actual_amount}", "Amount Debug")
+					for row in data["rows"]:
+						dir_val = (row.direction or "").lower()
+						mov_val = (row.movement_type or "").lower()
+						
+						is_inbound = (dir_val == "inbound" or mov_val == "inbound")
+						is_outbound = (dir_val == "outbound" or mov_val == "outbound")
+						
+						# Apply tariff direction filter
+						if tariff.direction and tariff.direction != "Both":
+							t_dir = tariff.direction.lower()
+							if t_dir == "inbound" and not is_inbound:
+								continue
+							if t_dir == "outbound" and not is_outbound:
+								continue
+								
+						# Calculate row qty
+						if basis == "pallet":
+							row_qty = flt(row.pallet or 0)
+						elif basis == "cbm":
+							row_qty = flt(row.cbm_per_unit or 0) * flt(row.qty or 0)
+						else:
+							row_qty = flt(row.qty or 0)
+							
+						if tariff.charge_type == "Fixed" or tariff.billing_basis == "Fixed":
+							row_qty = 1.0
+							
+						rate = tariff.rate or 0
+						amount = row_qty * rate
+						
+						item_code = row.item_code
+						item_name = row.item_name
+						if not item_name and item_code:
+							item_name = frappe.db.get_value("Item", item_code, "item_name") or item_code
+							
+						self.append("billing_run_line", {
+							"contract": contract,
+							"customer": customer,
+							"charge_type": tariff.charge_type,
+							"billing_basis": tariff.billing_basis,
+							"direction": "Outbound" if is_outbound else ("Inbound" if is_inbound else (row.direction or tariff.direction)),
+							"rate": rate,
+							"actual_qty": row_qty,
+							"billed_qty": row_qty,
+							"billied_amount": amount,
+							"is_one_time": tariff.is_one_time,
+							"item_code": item_code,
+							"item_name": item_name,
+							"days": ""
+						})
+						
+					# Handle empty rows case for Fixed charges
+					if not data["rows"] and (tariff.charge_type == "Fixed" or tariff.billing_basis == "Fixed"):
+						rate = tariff.rate or 0
+						self.append("billing_run_line", {
+							"contract": contract,
+							"customer": customer,
+							"charge_type": tariff.charge_type,
+							"billing_basis": tariff.billing_basis,
+							"direction": tariff.direction or "Both",
+							"rate": rate,
+							"actual_qty": 1.0,
+							"billed_qty": 1.0,
+							"billied_amount": rate,
+							"is_one_time": tariff.is_one_time,
+							"item_code": "",
+							"item_name": "",
+							"days": ""
+						})
+							
+		# Populate billing_summerize_data
+		self.set("billing_summerize_data", [])
+		summary_groups = {}
+		for line in self.get("billing_run_line"):
+			key = (line.contract, line.customer, line.charge_type, line.billing_basis, line.direction, line.rate)
+			if key not in summary_groups:
+				summary_groups[key] = {
+					"contract": line.contract,
+					"customer": line.customer,
+					"charge_type": line.charge_type,
+					"billing_basis": line.billing_basis,
+					"direction": line.direction,
+					"rate": line.rate,
+					"actual_qty": 0.0,
+					"billed_qty": 0.0,
+					"billied_amount": 0.0,
+					"is_one_time": line.is_one_time,
+					"days_sum": 0.0
+				}
+				
+			if line.days:
+				try:
+					summary_groups[key]["days_sum"] += flt(line.days)
+				except Exception:
+					pass
+				
+			summary_groups[key]["actual_qty"] += flt(line.actual_qty or 0)
+			summary_groups[key]["billed_qty"] += flt(line.billed_qty or 0)
+			summary_groups[key]["billied_amount"] += flt(line.billied_amount or 0)
+			
+		for key, s_data in summary_groups.items():
+			days_val = ""
+			if s_data["days_sum"] > 0:
+				days_val = str(int(s_data["days_sum"])) if s_data["days_sum"].is_integer() else f"{s_data['days_sum']:.2f}"
+				
+			self.append("billing_summerize_data", {
+				"contract": s_data["contract"],
+				"customer": s_data["customer"],
+				"charge_type": s_data["charge_type"],
+				"billing_basis": s_data["billing_basis"],
+				"direction": s_data["direction"],
+				"rate": s_data["rate"],
+				"actual_qty": s_data["actual_qty"],
+				"billed_qty": s_data["billed_qty"],
+				"billied_amount": s_data["billied_amount"],
+				"is_one_time": s_data["is_one_time"],
+				"days": days_val
+			})
+			
+		total = 0
+		for line in self.get("billing_run_line"):
+			total += (line.billied_amount or 0)
+			
+		self.total_amount = total
+		self.total_amt = total
+
+	def calculate_fifo_storage_qty_lines(self, customer, contract, period_from, period_to, billing_basis, tariff_rate):
+		from frappe.utils import date_diff, getdate, flt
+		
+		records = frappe.db.get_all("Storage Leadger",
+			filters={
+				"customer": customer,
+				"contract": contract,
+				"posting_date": ["<=", period_to]
+			},
+			fields=["posting_date", "item_code", "qty", "pallet", "cbm_per_unit", "direction"],
+			order_by="posting_date asc, creation asc"
+		)
+		
+		if not records:
+			return []
+			
+		items_data = {}
+		for r in records:
+			item = r.item_code
+			if item not in items_data:
+				items_data[item] = {"inbounds": [], "outbounds": []}
+			
+			direction = (r.direction or "").lower()
+			if direction in ["inbound", "inward"]:
+				items_data[item]["inbounds"].append(r)
+			elif direction in ["outbound", "outward"]:
+				items_data[item]["outbounds"].append(r)
+				
+		total_days = date_diff(period_to, period_from) + 1
+		if total_days <= 0:
+			return []
+			
+		storage_lines = []
+		
+		for item_code, data in items_data.items():
+			inbounds = data["inbounds"]
+			outbounds = data["outbounds"]
+			
+			item_name = frappe.db.get_value("Item", item_code, "item_name") or item_code
+			
+			lots = []
+			for ib in inbounds:
+				qty = float(ib.qty or 0)
+				pallet = float(ib.pallet or 0)
+				cbm = float(ib.cbm_per_unit or 0) * qty
+				
+				lots.append({
+					"posting_date": getdate(ib.posting_date),
+					"qty": qty,
+					"pallet": pallet,
+					"cbm": cbm,
+					"remaining_qty": qty,
+					"remaining_pallet": pallet,
+					"remaining_cbm": cbm
+				})
+				
+			matches = []
+			for ob in outbounds:
+				ob_qty = float(ob.qty or 0)
+				ob_date = getdate(ob.posting_date)
+				
+				qty_to_match = ob_qty
+				for lot in lots:
+					if qty_to_match <= 0:
+						break
+					if lot["remaining_qty"] <= 0:
+						continue
 					
-# 					# Update fields in billing run line
-# 					line.actual_amount = actual_amount
-# 					line.billed_qty = line.actual_qty
-# 					line.billied_amount = actual_amount
-# 					line.rate = rate  # Also update the rate field
-# 				else:
-# 					frappe.log_error(f"No matching tariff found for {line.charge_type}, {line.direction}, {line.billing_basis}", "Amount Debug")
-# 					# Set amounts to 0 if no matching tariff found
-# 					line.actual_amount = 0
-# 					line.billed_qty = 0
-# 					line.billied_amount = 0
+					matched_qty = min(qty_to_match, lot["remaining_qty"])
+					
+					ratio = matched_qty / lot["qty"] if lot["qty"] > 0 else 0
+					matched_pallet = ratio * lot["pallet"]
+					matched_cbm = ratio * lot["cbm"]
+					
+					lot["remaining_qty"] -= matched_qty
+					lot["remaining_pallet"] -= matched_pallet
+					lot["remaining_cbm"] -= matched_cbm
+					
+					qty_to_match -= matched_qty
+					
+					stay_start = max(lot["posting_date"], getdate(period_from))
+					stay_end = min(ob_date, getdate(period_to))
+					
+					if stay_end >= stay_start:
+						days = date_diff(stay_end, stay_start) + 1
+						
+						if billing_basis == "pallet":
+							basis_qty = matched_pallet
+						elif billing_basis == "cbm":
+							basis_qty = matched_cbm
+						else:
+							basis_qty = matched_qty
+							
+						matches.append({
+							"days": days,
+							"actual_qty": basis_qty
+						})
+						
+			grouped_matches = {}
+			for m in matches:
+				days = m["days"]
+				if days not in grouped_matches:
+					grouped_matches[days] = 0.0
+				grouped_matches[days] += m["actual_qty"]
+				
+			for days, act_qty in grouped_matches.items():
+				billed_qty = flt((act_qty * days) / total_days, 4)
+				amount = flt(billed_qty * tariff_rate, 2)
+				storage_lines.append({
+					"item_code": item_code,
+					"item_name": item_name,
+					"days": str(days),
+					"actual_qty": act_qty,
+					"billed_qty": billed_qty,
+					"amount": amount
+				})
+				
+		return storage_lines
+
+	def calculate_fifo_storage_qty(self, customer, contract, period_from, period_to, billing_basis):
+		from frappe.utils import date_diff, getdate
+		
+		records = frappe.db.get_all("Storage Leadger",
+			filters={
+				"customer": customer,
+				"contract": contract,
+				"posting_date": ["<=", period_to]
+			},
+			fields=["posting_date", "item_code", "qty", "pallet", "cbm_per_unit", "direction"],
+			order_by="posting_date asc, creation asc"
+		)
+		
+		if not records:
+			return 0.0
 			
-# 			# Update total amount after calculating individual line amounts
-# 			total_result = self.update_total_amount()
-# 			total_amount = total_result.get('total_amount', 0)
+		items_data = {}
+		for r in records:
+			item = r.item_code
+			if item not in items_data:
+				items_data[item] = {"inbounds": [], "outbounds": []}
 			
-# 			return {"success": True, "message": "Billing amounts calculated successfully", "total_amount": total_amount}
+			direction = (r.direction or "").lower()
+			if direction in ["inbound", "inward"]:
+				items_data[item]["inbounds"].append(r)
+			elif direction in ["outbound", "outward"]:
+				items_data[item]["outbounds"].append(r)
+				
+		total_days = date_diff(period_to, period_from) + 1
+		if total_days <= 0:
+			return 0.0
 			
-# 		except Exception as e:
-# 			frappe.log_error(f"Error calculating billing amounts: {str(e)}", "Billing Run Amount Calculation")
-# 			return {"success": False, "message": str(e)}
-	
-# 	def update_total_amount(self):
-# 		"""Calculate and update total amount from all billing run lines"""
-# 		try:
-# 			total = 0
-# 			for line in self.billing_run_line:
-# 				total += float(line.billied_amount or 0)
+		total_basis_days = 0.0
+		
+		for item_code, data in items_data.items():
+			inbounds = data["inbounds"]
+			outbounds = data["outbounds"]
 			
-# 			self.total_amount = total
-# 			return {"success": True, "total_amount": total}
-			
-# 		except Exception as e:
-# 			frappe.log_error(f"Error updating total amount: {str(e)}", "Billing Run Total Amount")
-# 			return {"success": False, "message": str(e)}
-	
-# 	@frappe.whitelist()
-# 	def create_sales_invoice_from_billing_run(self):
-# 		"""Create Sales Invoice from Billing Run"""
-# 		try:
-# 			if not self.billing_run_line:
-# 				return {"success": False, "message": "No billing lines found"}
-			
-# 			# Create Sales Invoice
-# 			sales_invoice = frappe.new_doc("Sales Invoice")
-# 			sales_invoice.customer = self.customer
-# 			sales_invoice.contract = self.contract
-# 			sales_invoice.custom_billing_run = self.name
-# 			sales_invoice.posting_date = frappe.utils.today()
-# 			sales_invoice.due_date = frappe.utils.add_days(frappe.utils.today(), 30)
-			
-# 			# Add items from billing run lines
-# 			for line in self.billing_run_line:
-# 				if line.billied_amount and float(line.billied_amount) > 0:
-# 					sales_invoice.append("items", {
-# 						"item_code": line.charge_type or "Storage Charges",
-# 						"item_name": line.charge_type or "Storage Charges",
-# 						"description": f"{line.charge_type} - {line.billing_basis} ({line.direction})",
-# 						"qty": line.billed_qty or 1,
-# 						"rate": float(line.actual_amount or 0) / float(line.billed_qty or 1),
-# 						"amount": line.billied_amount,
-# 						"uom": line.uom or "Nos"
-# 					})
-			
-# 			# Save and submit Sales Invoice
-# 			sales_invoice.insert(ignore_permissions=True)
-# 			sales_invoice.submit()
-			
-# 			# Update billing run status
-# 			self.status = "Invoiced"
-# 			self.sales_invoice = sales_invoice.name
-# 			self.save(ignore_permissions=True)
-			
-# 			return {
-# 				"success": True, 
-# 				"message": f"Sales Invoice {sales_invoice.name} created successfully",
-# 				"sales_invoice": sales_invoice.name
-# 			}
-			
-# 		except Exception as e:
-# 			frappe.log_error(f"Error creating Sales Invoice: {str(e)}", "Billing Run Sales Invoice Creation")
-# 			return {"success": False, "message": str(e)}
+			lots = []
+			for ib in inbounds:
+				qty = float(ib.qty or 0)
+				pallet = float(ib.pallet or 0)
+				cbm = float(ib.cbm_per_unit or 0) * qty
+				
+				lots.append({
+					"posting_date": getdate(ib.posting_date),
+					"qty": qty,
+					"pallet": pallet,
+					"cbm": cbm,
+					"remaining_qty": qty,
+					"remaining_pallet": pallet,
+					"remaining_cbm": cbm
+				})
+				
+			for ob in outbounds:
+				ob_qty = float(ob.qty or 0)
+				ob_date = getdate(ob.posting_date)
+				
+				qty_to_match = ob_qty
+				for lot in lots:
+					if qty_to_match <= 0:
+						break
+					if lot["remaining_qty"] <= 0:
+						continue
+					
+					matched_qty = min(qty_to_match, lot["remaining_qty"])
+					
+					ratio = matched_qty / lot["qty"] if lot["qty"] > 0 else 0
+					matched_pallet = ratio * lot["pallet"]
+					matched_cbm = ratio * lot["cbm"]
+					
+					lot["remaining_qty"] -= matched_qty
+					lot["remaining_pallet"] -= matched_pallet
+					lot["remaining_cbm"] -= matched_cbm
+					
+					qty_to_match -= matched_qty
+					
+					stay_start = max(lot["posting_date"], getdate(period_from))
+					stay_end = min(ob_date, getdate(period_to))
+					
+					if stay_end >= stay_start:
+						days = date_diff(stay_end, stay_start) + 1
+						
+						if billing_basis == "pallet":
+							total_basis_days += matched_pallet * days
+						elif billing_basis == "cbm":
+							total_basis_days += matched_cbm * days
+						else:
+							total_basis_days += matched_qty * days
+							
+		return total_basis_days / total_days
 	
 
+@frappe.whitelist()
+def export_billing_excel(name):
+	doc = frappe.get_doc("Billing Run", name)
+	
+	import openpyxl
+	from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
+	from openpyxl.utils import get_column_letter
+	import io
+	
+	wb = openpyxl.Workbook()
+	
+	# Sheet 1: WMSPro Detail Billing
+	ws1 = wb.active
+	ws1.title = "WMSPro Detail Billing"
+	
+	# Sheet 2: WmsPro Summerize Billing
+	ws2 = wb.create_sheet(title="WmsPro Summerize Billing")
+	
+	# Sheet 3: WmsPro Customer Details
+	ws3 = wb.create_sheet(title="WmsPro Customer Details")
+	
+	# Style helpers
+	header_font = Font(name="Calibri", size=11, bold=True, color="FFFFFF")
+	header_fill = PatternFill(start_color="1F497D", end_color="1F497D", fill_type="solid") # Navy Blue
+	total_font = Font(name="Calibri", size=11, bold=True)
+	center_align = Alignment(horizontal="center", vertical="center")
+	left_align = Alignment(horizontal="left", vertical="center")
+	right_align = Alignment(horizontal="right", vertical="center")
+	
+	thin_border = Border(
+		left=Side(style='thin', color='D3D3D3'),
+		right=Side(style='thin', color='D3D3D3'),
+		top=Side(style='thin', color='D3D3D3'),
+		bottom=Side(style='thin', color='D3D3D3')
+	)
+	
+	double_bottom_border = Border(
+		left=Side(style='thin', color='D3D3D3'),
+		right=Side(style='thin', color='D3D3D3'),
+		top=Side(style='thin', color='A0A0A0'),
+		bottom=Side(style='double', color='000000')
+	)
+	
+	# Populate Sheet 1
+	headers1 = [
+		"Contract", "Customer", "Item Code", "Item Name", "Charge Type",
+		"Billing Basis", "Direction", "Days", "Actual Qty", "Billed Qty",
+		"Rate", "Billed Amount", "Invoice"
+	]
+	
+	for col_num, header in enumerate(headers1, 1):
+		cell = ws1.cell(row=1, column=col_num)
+		cell.value = header
+		cell.font = header_font
+		cell.fill = header_fill
+		cell.alignment = center_align
+		cell.border = thin_border
+		
+	for row_num, line in enumerate(doc.billing_run_line, 2):
+		data = [
+			line.contract,
+			line.customer,
+			line.item_code,
+			line.item_name,
+			line.charge_type,
+			line.billing_basis,
+			line.direction,
+			line.days,
+			line.actual_qty,
+			line.billed_qty,
+			line.rate,
+			line.billied_amount,
+			line.invoice
+		]
+		for col_num, val in enumerate(data, 1):
+			cell = ws1.cell(row=row_num, column=col_num)
+			cell.value = val
+			cell.border = thin_border
+			# Alignment
+			if isinstance(val, (int, float)):
+				cell.alignment = right_align
+			else:
+				cell.alignment = left_align
+				
+	# Total Row for Sheet 1
+	last_row1 = len(doc.billing_run_line) + 1
+	total_row1 = last_row1 + 1
+	
+	ws1.cell(row=total_row1, column=1, value="Total").font = total_font
+	ws1.cell(row=total_row1, column=9, value=f"=SUM(I2:I{last_row1})").font = total_font
+	ws1.cell(row=total_row1, column=10, value=f"=SUM(J2:J{last_row1})").font = total_font
+	ws1.cell(row=total_row1, column=12, value=f"=SUM(L2:L{last_row1})").font = total_font
+	
+	for col_num in range(1, 14):
+		cell = ws1.cell(row=total_row1, column=col_num)
+		cell.border = double_bottom_border
+		if col_num in [9, 10, 12]:
+			cell.alignment = right_align
+			
+	# Auto-fit columns for Sheet 1
+	for col in ws1.columns:
+		max_len = max(len(str(cell.value or '')) for cell in col)
+		col_letter = get_column_letter(col[0].column)
+		ws1.column_dimensions[col_letter].width = max(max_len + 3, 10)
+		
+	# Populate Sheet 2
+	headers2 = [
+		"Contract", "Customer", "Charge Type", "Billing Basis", "Direction",
+		"Days", "Actual Qty", "Billed Qty", "Rate", "Billed Amount", "Invoice"
+	]
+	
+	for col_num, header in enumerate(headers2, 1):
+		cell = ws2.cell(row=1, column=col_num)
+		cell.value = header
+		cell.font = header_font
+		cell.fill = header_fill
+		cell.alignment = center_align
+		cell.border = thin_border
+		
+	for row_num, line in enumerate(doc.billing_summerize_data, 2):
+		data = [
+			line.contract,
+			line.customer,
+			line.charge_type,
+			line.billing_basis,
+			line.direction,
+			line.days,
+			line.actual_qty,
+			line.billed_qty,
+			line.rate,
+			line.billied_amount,
+			line.invoice
+		]
+		for col_num, val in enumerate(data, 1):
+			cell = ws2.cell(row=row_num, column=col_num)
+			cell.value = val
+			cell.border = thin_border
+			if isinstance(val, (int, float)):
+				cell.alignment = right_align
+			else:
+				cell.alignment = left_align
+				
+	# Total Row for Sheet 2
+	last_row2 = len(doc.billing_summerize_data) + 1
+	total_row2 = last_row2 + 1
+	
+	ws2.cell(row=total_row2, column=1, value="Total").font = total_font
+	ws2.cell(row=total_row2, column=7, value=f"=SUM(G2:G{last_row2})").font = total_font
+	ws2.cell(row=total_row2, column=8, value=f"=SUM(H2:H{last_row2})").font = total_font
+	ws2.cell(row=total_row2, column=10, value=f"=SUM(J2:J{last_row2})").font = total_font
+	
+	for col_num in range(1, 12):
+		cell = ws2.cell(row=total_row2, column=col_num)
+		cell.border = double_bottom_border
+		if col_num in [7, 8, 10]:
+			cell.alignment = right_align
+			
+	# Auto-fit columns for Sheet 2
+	for col in ws2.columns:
+		max_len = max(len(str(cell.value or '')) for cell in col)
+		col_letter = get_column_letter(col[0].column)
+		ws2.column_dimensions[col_letter].width = max(max_len + 3, 10)
+		
+	# Populate Sheet 3 (WmsPro Customer Details)
+	customer_summary = {}
+	for line in doc.billing_run_line:
+		key = (line.customer, line.charge_type, line.billing_basis, line.direction, line.rate)
+		if key not in customer_summary:
+			customer_summary[key] = {
+				"customer": line.customer,
+				"charge_type": line.charge_type,
+				"billing_basis": line.billing_basis,
+				"direction": line.direction,
+				"rate": line.rate,
+				"actual_qty": 0.0,
+				"billed_qty": 0.0,
+				"amount": 0.0,
+				"invoices": set()
+			}
+		customer_summary[key]["actual_qty"] += float(line.actual_qty or 0)
+		customer_summary[key]["billed_qty"] += float(line.billed_qty or 0)
+		customer_summary[key]["amount"] += float(line.billied_amount or 0)
+		if line.invoice:
+			customer_summary[key]["invoices"].add(line.invoice)
+			
+	headers3 = [
+		"Contract", "Customer", "Charge Type", "Billing Basis", "Direction",
+		"Days", "Actual Qty", "Billed Qty", "Rate", "Billed Amount", "Invoice"
+	]
+	
+	for col_num, header in enumerate(headers3, 1):
+		cell = ws3.cell(row=1, column=col_num)
+		cell.value = header
+		cell.font = header_font
+		cell.fill = header_fill
+		cell.alignment = center_align
+		cell.border = thin_border
+		
+	row_num3 = 2
+	for key, s_data in customer_summary.items():
+		inv_str = ", ".join(sorted(list(s_data["invoices"])))
+		data = [
+			"", # Contract combined
+			s_data["customer"],
+			s_data["charge_type"],
+			s_data["billing_basis"],
+			s_data["direction"],
+			"", # Days combined
+			s_data["actual_qty"],
+			s_data["billed_qty"],
+			s_data["rate"],
+			s_data["amount"],
+			inv_str
+		]
+		for col_num, val in enumerate(data, 1):
+			cell = ws3.cell(row=row_num3, column=col_num)
+			cell.value = val
+			cell.border = thin_border
+			if isinstance(val, (int, float)):
+				cell.alignment = right_align
+			else:
+				cell.alignment = left_align
+				
+		row_num3 += 1
+		
+	# Total Row for Sheet 3
+	last_row3 = row_num3 - 1
+	total_row3 = row_num3
+	
+	ws3.cell(row=total_row3, column=1, value="Total").font = total_font
+	ws3.cell(row=total_row3, column=7, value=f"=SUM(G2:G{last_row3})").font = total_font
+	ws3.cell(row=total_row3, column=8, value=f"=SUM(H2:H{last_row3})").font = total_font
+	ws3.cell(row=total_row3, column=10, value=f"=SUM(J2:J{last_row3})").font = total_font
+	
+	for col_num in range(1, 12):
+		cell = ws3.cell(row=total_row3, column=col_num)
+		cell.border = double_bottom_border
+		if col_num in [7, 8, 10]:
+			cell.alignment = right_align
+			
+	# Auto-fit columns for Sheet 3
+	for col in ws3.columns:
+		max_len = max(len(str(cell.value or '')) for cell in col)
+		col_letter = get_column_letter(col[0].column)
+		ws3.column_dimensions[col_letter].width = max(max_len + 3, 10)
+		
+	# Save to buffer
+	file_stream = io.BytesIO()
+	wb.save(file_stream)
+	file_stream.seek(0)
+	
+	# Set Response headers to trigger download in Frappe
+	frappe.response['filename'] = f"WMSPro_Billing_Run_{doc.name}.xlsx"
+	frappe.response['filecontent'] = file_stream.getvalue()
+	frappe.response['type'] = 'binary'
 
 
+	

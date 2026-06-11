@@ -62,7 +62,8 @@
   "total_pallet_qty",
   "other_info_tab",
   "doc_link_doctype",
-  "doc_link"
+  "doc_link",
+  "amended_from"
  ],
  "fields": [
   {
@@ -385,8 +386,19 @@
   },
   {
    "fieldname": "total_pallet_qty",
-   "fieldtype": "Data",
-   "label": "Total Pallet Qty "
+   "fieldtype": "Float",
+   "label": "Total Pallet Qty",
+   "read_only": 1
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "WMS Goods Receipt Note",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
   }
  ],
  "grid_page_length": 50,
@@ -410,7 +422,7 @@
    "link_fieldname": "reference_name"
   }
  ],
- "modified": "2026-04-21 12:42:16.351875",
+ "modified": "2026-06-06 10:20:21.840007",
  "modified_by": "Administrator",
  "module": "WmsPro",
  "name": "WMS Goods Receipt Note",
@@ -427,7 +439,6 @@
    "report": 1,
    "role": "System Manager",
    "share": 1,
-   "submit": 1,
    "write": 1
   }
  ],

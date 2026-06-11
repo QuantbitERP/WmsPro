@@ -2,9 +2,9 @@ frappe.ui.form.on('WMS Goods Receipt Note', {
     
     refresh: function(frm) {
     
-        
+       
         // Calculate totals on form refresh
-        calculate_totals(frm);
+        // calculate_totals(frm);
         
         // Make status field read-only when GRN is submitted
         if (frm.doc.docstatus === 1) {
@@ -26,13 +26,14 @@ frappe.ui.form.on('WMS Goods Receipt Note', {
 
         
         frm.set_query('staging_bin', 'wms_grn_item', function(doc, cdt, cdn) {
-
+            let row = locals[cdt][cdn];
             let filters = {
                 is_staging: 1
             };
 
-            if (doc.warehouse) {
-                filters.warehouse = doc.warehouse;
+            let warehouse = (row && row.warehouse) || doc.warehouse;
+            if (warehouse) {
+                filters.warehouse = warehouse;
             }
 
             return {
@@ -104,7 +105,51 @@ frappe.ui.form.on("WMS Inbound Task", {
     },
     
     item_code: function(frm, cdt, cdn) {
+        let row = locals[cdt][cdn];
+        if (row.item_code) {
+            // Fetch Item Details (name, weight, MRP, and packaging volume)
+            frappe.model.with_doc('Item', row.item_code, function() {
+                let item = frappe.model.get_doc('Item', row.item_code);
+                if (item) {
+                    frappe.model.set_value(cdt, cdn, 'item_name', item.item_name);
+                    frappe.model.set_value(cdt, cdn, 'weight_per_unit', item.weight_per_unit || 0);
+                    frappe.model.set_value(cdt, cdn, 'mrp', item.custom_mrp || 0);
+                    
+                    let volume = 0;
+                    if (item.custom_item_packaging_details && item.custom_item_packaging_details.length > 0) {
+                        for (let pkg of item.custom_item_packaging_details) {
+                            if (pkg.volume) {
+                                volume = pkg.volume;
+                                break;
+                            }
+                        }
+                        if (!volume) {
+                            volume = item.custom_item_packaging_details[0].volume || 0;
+                        }
+                    }
+                    frappe.model.set_value(cdt, cdn, 'cbm_per_unit', volume);
+                }
+            });
+
+            // Set customer in child table based on party_name if party_type is Customer
+            if (frm.doc.party_type === 'Customer' && frm.doc.party_name) {
+                frappe.model.set_value(cdt, cdn, 'customer', frm.doc.party_name);
+            } else if (frm.doc.customer) {
+                frappe.model.set_value(cdt, cdn, 'customer', frm.doc.customer);
+            }
+        }
         calculate_pallets(frm, cdt, cdn);
+    },
+    
+    contract: function(frm, cdt, cdn) {
+        let row = locals[cdt][cdn];
+        if (row.contract) {
+            frappe.db.get_value('Contract', row.contract, 'custom_warehouse', function(r) {
+                if (r && r.custom_warehouse) {
+                    frappe.model.set_value(cdt, cdn, 'warehouse', r.custom_warehouse);
+                }
+            });
+        }
     },
     
     qty_received: function(frm, cdt, cdn) {

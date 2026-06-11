@@ -1,7 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
- "creation": "2026-05-02 11:59:30.581031",
+ "creation": "2026-06-03 20:36:44.816548",
  "doctype": "DocType",
  "editable_grid": 1,
  "engine": "InnoDB",
@@ -12,17 +12,18 @@
   "item_code",
   "pallet",
   "uom",
+  "direction",
+  "check_rmeo",
   "column_break_vylt",
   "contract",
   "movement_type",
   "reference_name",
+  "item_name",
   "qty",
-  "cbm_per_unit",
-  "direction"
+  "cbm_per_unit"
  ],
  "fields": [
   {
-   "depends_on": "eval:doc.parent.billing_mode ==\"Customer-wise\"",
    "fieldname": "customer",
    "fieldtype": "Link",
    "in_list_view": 1,
@@ -33,39 +34,14 @@
   {
    "fieldname": "warehouse",
    "fieldtype": "Link",
-   "in_list_view": 1,
-   "in_standard_filter": 1,
    "label": "Warehouse",
    "options": "Warehouse"
   },
   {
    "fieldname": "reference_doctype",
    "fieldtype": "Link",
-   "in_list_view": 1,
-   "in_standard_filter": 1,
    "label": "Reference Doctype",
    "options": "DocType"
-  },
-  {
-   "fieldname": "column_break_vylt",
-   "fieldtype": "Column Break"
-  },
-  {
-   "depends_on": "eval:doc.parent.billing_mode ==\"Contract-wise\";",
-   "fieldname": "contract",
-   "fieldtype": "Link",
-   "in_list_view": 1,
-   "in_standard_filter": 1,
-   "label": "Contract",
-   "options": "Contact"
-  },
-  {
-   "fieldname": "movement_type",
-   "fieldtype": "Select",
-   "in_list_view": 1,
-   "in_standard_filter": 1,
-   "label": "Movement Type",
-   "options": "Inbound\nOutbound"
   },
   {
    "fieldname": "item_code",
@@ -74,6 +50,12 @@
    "in_standard_filter": 1,
    "label": "Item Code",
    "options": "Item"
+  },
+  {
+   "fieldname": "item_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Item Name"
   },
   {
    "fieldname": "pallet",
@@ -91,10 +73,27 @@
    "options": "UOM"
   },
   {
+   "fieldname": "column_break_vylt",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "contract",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Contract",
+   "options": "Contract"
+  },
+  {
+   "fieldname": "movement_type",
+   "fieldtype": "Select",
+   "label": "Movement Type",
+   "options": "Inbound\nOutbound"
+  },
+  {
    "fieldname": "reference_name",
    "fieldtype": "Dynamic Link",
    "in_list_view": 1,
-   "in_standard_filter": 1,
    "label": "Reference Name",
    "options": "reference_doctype"
   },
@@ -119,13 +118,22 @@
    "in_standard_filter": 1,
    "label": "Direction",
    "options": "Inbound\noutbound\nBoth"
+  },
+  {
+   "default": "0",
+   "fieldname": "check_rmeo",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "in_preview": 1,
+   "in_standard_filter": 1,
+   "label": "Select"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-05-02 16:25:10.020563",
+ "modified": "2026-06-06 19:42:15.977904",
  "modified_by": "Administrator",
  "module": "WmsPro",
  "name": "Billing Details",

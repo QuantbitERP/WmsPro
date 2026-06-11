@@ -46,6 +46,13 @@ frappe.ui.form.on("OMS Fulfillment Item", {
         // When item changes, filter bin locations for this specific item
         console.log("Item code changed:", locals[cdt][cdn].item_code);
         filter_bin_locations_for_item(frm, cdt, cdn);
+        let row = locals[cdt][cdn];
+        calculate_pallet_quantity(cdt, cdn, row.item_code, row.qty_allocated);
+    },
+    
+    qty_allocated(frm, cdt, cdn) {
+        let row = locals[cdt][cdn];
+        calculate_pallet_quantity(cdt, cdn, row.item_code, row.qty_allocated);
     },
     
     items_add(frm, cdt, cdn) {
@@ -119,10 +126,10 @@ function refresh_bin_location_filters(frm) {
 }
 
 // Helper function to calculate pallet quantity
-function calculate_pallet_quantity(cdt, cdn, item_code, qty_requested) {
-    if (!item_code || !qty_requested || qty_requested <= 0) {
+function calculate_pallet_quantity(cdt, cdn, item_code, qty_allocated) {
+    if (!item_code || !qty_allocated || qty_allocated <= 0) {
         frappe.model.set_value(cdt, cdn, "pallet", 0);
-        console.log("Pallet set to 0 (no item_code or qty_requested)");
+        console.log("Pallet set to 0 (no item_code or qty_allocated)");
         return;
     }
     
@@ -130,9 +137,9 @@ function calculate_pallet_quantity(cdt, cdn, item_code, qty_requested) {
     frappe.db.get_value("Item", item_code, "custom_pallet_capacity", function(r) {
         console.log("Custom pallet capacity response:", r);
         if (r && r.custom_pallet_capacity && r.custom_pallet_capacity > 0) {
-            var pallet_qty = r.custom_pallet_capacity * qty_requested;
+            var pallet_qty = (qty_allocated / r.custom_pallet_capacity).toFixed(2);
             frappe.model.set_value(cdt, cdn, "pallet", pallet_qty);
-            console.log("Calculated pallet:", pallet_qty, "(capacity:", r.custom_pallet_capacity, "* qty:", qty_requested, ")");
+            console.log("Calculated pallet:", pallet_qty, "(qty:", qty_allocated, "/ capacity:", r.custom_pallet_capacity, ")");
         } else {
             frappe.model.set_value(cdt, cdn, "pallet", 0);
             console.log("Set pallet to 0 (custom_pallet_capacity not found or is 0)");

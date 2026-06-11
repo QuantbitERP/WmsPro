@@ -18,9 +18,15 @@
   "column_break_fvdh",
   "period_to",
   "status",
-  "section_break_tdey",
+  "section_break_bgsw",
+  "get_details",
+  "customer_details",
+  "contract_details_tab",
+  "section_break_minn",
   "billing_details",
   "wms_bill_tab",
+  "billing_summerize_data",
+  "total_amt",
   "section_break_gkbw",
   "billing_run_line",
   "total_amount",
@@ -97,14 +103,19 @@
    "options": "Billing Run Line"
   },
   {
-   "fieldname": "amended_from",
-   "fieldtype": "Link",
-   "label": "Amended From",
-   "no_copy": 1,
-   "options": "Billing Run",
-   "print_hide": 1,
-   "read_only": 1,
-   "search_index": 1
+   "fieldname": "wms_bill_tab",
+   "fieldtype": "Tab Break",
+   "label": "WMS Bill"
+  },
+  {
+   "fieldname": "section_break_minn",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "billing_details",
+   "fieldtype": "Table",
+   "label": "Contract Details",
+   "options": "Billing Details"
   },
   {
    "fieldname": "customer",
@@ -121,26 +132,52 @@
    "options": "Contract"
   },
   {
-   "fieldname": "wms_bill_tab",
-   "fieldtype": "Tab Break",
-   "label": "WMS Bill"
-  },
-  {
-   "fieldname": "section_break_tdey",
+   "fieldname": "section_break_bgsw",
    "fieldtype": "Section Break"
   },
   {
-   "fieldname": "billing_details",
+   "fieldname": "get_details",
+   "fieldtype": "Button",
+   "label": "Get Details"
+  },
+  {
+   "fieldname": "contract_details_tab",
+   "fieldtype": "Tab Break",
+   "label": "Contract Details "
+  },
+  {
+   "fieldname": "customer_details",
    "fieldtype": "Table",
-   "label": "Billing Details",
-   "options": "Billing Details"
+   "label": "Customer Details",
+   "options": "customer Details"
+  },
+  {
+   "fieldname": "billing_summerize_data",
+   "fieldtype": "Table",
+   "label": "Billing Summerize Data",
+   "options": "Billing Summerize"
+  },
+  {
+   "fieldname": "total_amt",
+   "fieldtype": "Float",
+   "label": "Total Amount"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Billing Run",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-05-02 12:33:28.148839",
+ "modified": "2026-06-11 14:11:15.038331",
  "modified_by": "Administrator",
  "module": "WmsPro",
  "name": "Billing Run",

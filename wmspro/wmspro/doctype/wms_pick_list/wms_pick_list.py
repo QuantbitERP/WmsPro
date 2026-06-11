@@ -306,13 +306,35 @@ class WMSPickList(Document):
                 
                 target_bin_warehouse = frappe.db.get_value("WMS Bin", target_bin, "warehouse")
 
+                # Create Serial and Batch Bundle if tracked
+                bundle_name = None
+                if row.batch_no and frappe.db.get_value("Item", row.item_code, "has_batch_no"):
+                    bundle = frappe.get_doc({
+                        "doctype": "Serial and Batch Bundle",
+                        "item_code": row.item_code,
+                        "warehouse": row.warehouse,
+                        "company": company,
+                        "posting_date": nowdate(),
+                        "posting_time": nowtime(),
+                        "voucher_type": "Stock Entry",
+                        "type_of_transaction": "Outward",
+                        "qty": row.qty_picked,
+                        "entries": [{
+                            "batch_no": row.batch_no,
+                            "qty": row.qty_picked,
+                            "warehouse": row.warehouse
+                        }]
+                    })
+                    bundle.insert(ignore_permissions=True)
+                    bundle_name = bundle.name
+
                 se.append("items", {
                     "item_code": row.item_code,
                     "qty": row.qty_picked,
                     "s_warehouse": row.warehouse,
                     "t_warehouse": target_bin_warehouse,  # Use target bin's warehouse
                     "uom": row.uom,
-                    "batch_no": row.batch_no,
+                    "serial_and_batch_bundle": bundle_name,
 
                     # NEW BIN FIELDS
                     "s_bin": source_bin,
