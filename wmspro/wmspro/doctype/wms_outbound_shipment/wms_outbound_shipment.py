@@ -130,6 +130,8 @@ class WMSOutboundShipment(Document):
             entry.pallet = item.pallet or ""
             entry.reference_doctype = "WMS Outbound Shipment"
             entry.reference_name = self.name
+            entry.item_name = item.item_name
+            entry.uom = item.uom
 
             entry.insert(ignore_permissions=True)
 

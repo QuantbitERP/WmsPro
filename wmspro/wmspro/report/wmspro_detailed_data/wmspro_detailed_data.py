@@ -8,8 +8,8 @@ def execute(filters=None):
 	if not filters:
 		filters = {}
 
-	group_by_contract = filters.get("group_by_contract")
-	group_by_invoice = filters.get("group_by_invoice")
+	group_by_contract = frappe.cint(filters.get("group_by_contract"))
+	group_by_invoice = frappe.cint(filters.get("group_by_invoice"))
 	columns = get_columns(group_by_contract, group_by_invoice)
 	data = get_data(filters, group_by_contract, group_by_invoice)
 	return columns, data
@@ -303,7 +303,7 @@ def get_data(filters, group_by_contract, group_by_invoice):
 				l.charge_type,
 				l.billing_basis,
 				l.direction,
-				NULLIF(SUM(CAST(l.days AS DECIMAL(10,2))), 0) as days,
+				NULLIF(SUM(CAST(NULLIF(l.days, '') AS DECIMAL(10,2))), 0) as days,
 				SUM(l.actual_qty) as actual_qty,
 				SUM(l.billed_qty) as billed_qty,
 				l.rate,

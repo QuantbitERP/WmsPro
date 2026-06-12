@@ -6,6 +6,10 @@ from frappe.model.document import Document
 
 
 class BillingRun(Document):
+	def before_save(self):
+		if not self.currency:
+			self.currency = "OMR"
+
 	@frappe.whitelist()
 	def get_storage_details(self):
 		self.set("customer_details", [])
@@ -103,6 +107,11 @@ class BillingRun(Document):
 			if si.meta.has_field("custom_billing_run"):
 				si.custom_billing_run = self.name
 				
+			if si.meta.has_field("custom_doc_link_doctype_"):
+				si.custom_doc_link_doctype_ = self.doctype
+			if si.meta.has_field("custom_doc_link"):
+				si.custom_doc_link = self.name
+				
 			for line in lines:
 				item_code = line.item_code
 				
@@ -145,6 +154,11 @@ class BillingRun(Document):
 			for line in lines:
 				line.invoice = si.name
 				line.db_update()
+				
+			for sum_line in self.billing_summerize_data:
+				if sum_line.customer == customer:
+					sum_line.invoice = si.name
+					sum_line.db_update()
 				
 		self.db_set("status", "Invoiced")
 

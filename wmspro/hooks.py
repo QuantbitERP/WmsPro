@@ -325,6 +325,30 @@ custom_fields = {
             "options": "Warehouse",
             "insert_after": "party_name"
         }
+    ],
+    "Sales Invoice": [
+        {
+            "fieldname": "custom_more_info_tab",
+            "fieldtype": "Tab Break",
+            "label": "More Info",
+            "insert_after": "amended_from"
+        },
+        {
+            "fieldname": "custom_doc_link_doctype_",
+            "fieldtype": "Link",
+            "label": "Doc Link Doctype",
+            "options": "DocType",
+            "read_only": 1,
+            "insert_after": "custom_more_info_tab"
+        },
+        {
+            "fieldname": "custom_doc_link",
+            "fieldtype": "Dynamic Link",
+            "label": "Doc Link",
+            "options": "custom_doc_link_doctype_",
+            "read_only": 1,
+            "insert_after": "custom_doc_link_doctype_"
+        }
     ]
 }
 

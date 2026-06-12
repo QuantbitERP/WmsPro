@@ -47,6 +47,7 @@ frappe.query_reports["WmsPro Detailed Data"] = {
 				if (frappe.query_report.get_filter_value("group_by_contract")) {
 					frappe.query_report.set_filter_value("group_by_invoice", 0);
 				}
+				frappe.query_report.refresh();
 			}
 		},
 		{
@@ -58,6 +59,7 @@ frappe.query_reports["WmsPro Detailed Data"] = {
 				if (frappe.query_report.get_filter_value("group_by_invoice")) {
 					frappe.query_report.set_filter_value("group_by_contract", 0);
 				}
+				frappe.query_report.refresh();
 			}
 		}
 	]

@@ -29,6 +29,7 @@
   "total_amt",
   "section_break_gkbw",
   "billing_run_line",
+  "currency",
   "total_amount",
   "amended_from"
  ],
@@ -47,7 +48,8 @@
   {
    "fieldname": "total_amount",
    "fieldtype": "Currency",
-   "label": "Total Amount"
+   "label": "Total Amount",
+   "options": "currency"
   },
   {
    "fieldname": "column_break_ntxr",
@@ -159,8 +161,9 @@
   },
   {
    "fieldname": "total_amt",
-   "fieldtype": "Float",
-   "label": "Total Amount"
+   "fieldtype": "Currency",
+   "label": "Total Amount",
+   "options": "currency"
   },
   {
    "fieldname": "amended_from",
@@ -171,12 +174,25 @@
    "print_hide": 1,
    "read_only": 1,
    "search_index": 1
+  },
+  {
+   "fieldname": "currency",
+   "fieldtype": "Link",
+   "label": "Currency",
+   "options": "Currency",
+   "default": "OMR",
+   "hidden": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
- "links": [],
+ "links": [
+  {
+   "link_doctype": "Sales Invoice",
+   "link_fieldname": "custom_doc_link"
+  }
+ ],
  "modified": "2026-06-11 14:11:15.038331",
  "modified_by": "Administrator",
  "module": "WmsPro",
