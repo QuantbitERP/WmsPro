@@ -97,6 +97,10 @@ frappe.ui.form.on('WMS Goods Receipt Note', {
 
 frappe.ui.form.on("WMS Inbound Task", {
     
+    staging_bin: function(frm, cdt, cdn) {
+        let row = locals[cdt][cdn];
+        frappe.model.set_value(cdt, cdn, 'wms_bin', row.staging_bin || '');
+    },
 
     qty_accepted: function(frm, cdt, cdn) {
         calculate_stock_qty_accepted(frm, cdt, cdn);

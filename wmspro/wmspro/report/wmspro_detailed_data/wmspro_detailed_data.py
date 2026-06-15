@@ -8,8 +8,8 @@ def execute(filters=None):
 	if not filters:
 		filters = {}
 
-	group_by_contract = frappe.cint(filters.get("group_by_contract"))
-	group_by_invoice = frappe.cint(filters.get("group_by_invoice"))
+	group_by_contract = frappe.cint(filters.get("group_by_contract") or 0)
+	group_by_invoice = frappe.cint(filters.get("group_by_invoice") or 0)
 	columns = get_columns(group_by_contract, group_by_invoice)
 	data = get_data(filters, group_by_contract, group_by_invoice)
 	return columns, data

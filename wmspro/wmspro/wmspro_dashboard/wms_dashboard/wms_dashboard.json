@@ -1,0 +1,70 @@
+{
+ "cards": [
+  {
+   "card": "Today's Total Confirmed ASN"
+  },
+  {
+   "card": "Today's Total Open GRN"
+  },
+  {
+   "card": "Today's Total Received GRN"
+  },
+  {
+   "card": "Today's Open Task"
+  },
+  {
+   "card": "Today's Completed Task"
+  },
+  {
+   "card": "Today's Total Request"
+  },
+  {
+   "card": "Today's Total Fulfilment Order"
+  },
+  {
+   "card": "Today's Open Picking Task"
+  },
+  {
+   "card": "Today's Complted Picking Task"
+  },
+  {
+   "card": "Today's Total Shipment Order"
+  },
+  {
+   "card": "Today's Open Packing List"
+  },
+  {
+   "card": "Today's Completed Packing List"
+  }
+ ],
+ "charts": [
+  {
+   "chart": "Inbound And outbound analysis",
+   "width": "Full"
+  },
+  {
+   "chart": "Stock Inventory Warehouse wise analysis",
+   "width": "Full"
+  },
+  {
+   "chart": "Stock Inventory Item wise Analysis",
+   "width": "Full"
+  },
+  {
+   "chart": "Stock Inventory Customer Wise Analysis",
+   "width": "Full"
+  }
+ ],
+ "creation": "2026-02-24 17:09:13.783767",
+ "dashboard_name": "WMS Dashboard",
+ "docstatus": 0,
+ "doctype": "Dashboard",
+ "idx": 0,
+ "is_default": 0,
+ "is_standard": 1,
+ "modified": "2026-06-15 17:52:08.597074",
+ "modified_by": "Administrator",
+ "module": "WmsPro",
+ "name": "WMS Dashboard",
+ "owner": "sourabh.yelpale@erpdata.in"
+}

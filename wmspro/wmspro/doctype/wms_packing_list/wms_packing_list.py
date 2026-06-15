@@ -7,7 +7,19 @@ from frappe.utils import now_datetime
 import uuid
 
 
+from typing import Any
+
+
 class WMSPackingList(Document):
+    packed_at: Any
+    packed_by: str | None
+    outbound_shipment: str | None
+    source_warehouse: str | None
+    pick_list: str | None
+    items: list
+    packages: list
+    total_weight_kg: float
+    total_volume_cbm: float
 
     def before_insert(self):
 
@@ -23,11 +35,14 @@ class WMSPackingList(Document):
 
             # Auto warehouse
             if not self.source_warehouse:
-                self.source_warehouse = shipment.source_warehouse
+                val = shipment.get("source_warehouse")
+                if val:
+                    self.source_warehouse = str(val)
 
             # Auto pick list
-            if hasattr(shipment, "pick_list") and shipment.pick_list:
-                self.pick_list = shipment.pick_list
+            pkl_val = shipment.get("pick_list")
+            if pkl_val:
+                self.pick_list = str(pkl_val)
 
 
     def validate(self):
@@ -98,6 +113,8 @@ class WMSPackingList(Document):
 
 
     def _update_outbound_shipment(self):
+        if not self.outbound_shipment:
+            return
 
         shipment = frappe.get_doc(
             "WMS Outbound Shipment",

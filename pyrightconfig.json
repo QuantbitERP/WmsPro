@@ -1,0 +1,9 @@
+{
+  "venvPath": "/home/erpadmin/frappe-bench",
+  "venv": "env",
+  "extraPaths": [
+    "/home/erpadmin/frappe-bench/apps/frappe",
+    "/home/erpadmin/frappe-bench/apps/erpnext",
+    "/home/erpadmin/frappe-bench/apps/wmspro"
+  ]
+}

@@ -6,6 +6,22 @@ from wmspro.wmspro.bin_ledger import create_bin_ledger_entry, get_bin_balance
 
 
 class WMSPutawayTask(Document):
+    task_status: str
+    assigned_to: str
+    party_type: str
+    party: str
+    grn_reference: str
+    item_code: str
+    quantity: float
+    from_warehouse: str
+    to_warehouse: str
+    from_bin: str
+    actual_bin: str
+    batch_no: str
+    supplier: str
+    customer: str
+    completed_at: str
+    stock_entry_reference: str | None
 
     def before_insert(self):
         """Set Putaway Task status to Draft when creating"""
@@ -28,16 +44,20 @@ class WMSPutawayTask(Document):
 
         # Create Stock Entry (always, regardless of warehouse difference)
         se = frappe.new_doc("Stock Entry")
-        se.stock_entry_type = "Material Transfer"
-        se.posting_date = today()
-        se.posting_time = now()
-        se.custom_doc_link_doctype_ = self.doctype
-        se.custom_doc_link = self.name
-        se.custom_reference_doc = self.grn_reference
+        se.update({
+            "stock_entry_type": "Material Transfer",
+            "posting_date": today(),
+            "posting_time": now(),
+            "custom_doc_link_doctype_": self.doctype,
+            "custom_doc_link": self.name,
+            "custom_reference_doc": self.grn_reference
+        })
         
         # Set customer if party_type is Customer
+        putaway_customer = None
         if self.party_type == "Customer" and self.party:
-            se.custom_3pl_customer = self.party
+            se.set("custom_3pl_customer", self.party)
+            putaway_customer = self.party
 
         se.append("items", {
             "item_code": self.item_code,
@@ -47,6 +67,8 @@ class WMSPutawayTask(Document):
             "t_warehouse": self.to_warehouse,
             "wms_bin": self.from_bin,
             "to_wms_bin": self.actual_bin,
+            "customer_name_": putaway_customer,
+            "to_customer_name_": putaway_customer,
             # Don't include batch_no - it's already tracked from Material Receipt
             # Pass batch number through custom field for reference only
             "wms_batch_no": self.batch_no
@@ -63,8 +85,8 @@ class WMSPutawayTask(Document):
             if "Serial and Batch Bundle" in str(e):
                 frappe.msgprint("Batch conflict detected, trying without batch number...")
                 # Remove batch number and try again
-                for item in se.items:
-                    item.wms_batch_no = None
+                for item in se.get("items") or []:
+                    item.set("wms_batch_no", None)
                 se.insert(ignore_permissions=True)
                 se.submit()
             else:
@@ -101,7 +123,7 @@ class WMSPutawayTask(Document):
         create_bin_ledger_entry(
             bin_location=self.from_bin,
             item_code=self.item_code,
-            qty_change=-float(self.quantity),
+            qty_change=-self.quantity,
             batch_no=self.batch_no,
             voucher_type="WMS Putaway Task",
             voucher_no=self.name,
@@ -118,7 +140,7 @@ class WMSPutawayTask(Document):
         create_bin_ledger_entry(
             bin_location=self.actual_bin,
             item_code=self.item_code,
-            qty_change=float(self.quantity),
+            qty_change=self.quantity,
             batch_no=self.batch_no,
             voucher_type="WMS Putaway Task",
             voucher_no=self.name,
@@ -156,14 +178,14 @@ class WMSPutawayTask(Document):
     def set_warehouses_from_bins(self):
 
         if self.from_bin:
-            self.from_warehouse = frappe.db.get_value(
-                "WMS Bin", self.from_bin, "warehouse"
-            )
+            val = frappe.db.get_value("WMS Bin", self.from_bin, "warehouse")
+            if val:
+                self.from_warehouse = str(val)
 
         if self.actual_bin:
-            self.to_warehouse = frappe.db.get_value(
-                "WMS Bin", self.actual_bin, "warehouse"
-            )
+            val = frappe.db.get_value("WMS Bin", self.actual_bin, "warehouse")
+            if val:
+                self.to_warehouse = str(val)
 
 
 @frappe.whitelist()

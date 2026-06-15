@@ -1,0 +1,35 @@
+{
+ "chart_name": "Stock Inventory Customer Wise Analysis",
+ "chart_type": "Report",
+ "creation": "2026-06-15 12:31:47.666506",
+ "currency": "",
+ "docstatus": 0,
+ "doctype": "Dashboard Chart",
+ "dynamic_filters_json": "{}",
+ "filters_json": "{\"group_by\":\"\"}",
+ "group_by_type": "Count",
+ "idx": 0,
+ "is_public": 0,
+ "is_standard": 1,
+ "modified": "2026-06-15 15:12:55.260733",
+ "modified_by": "Administrator",
+ "module": "WmsPro",
+ "name": "Stock Inventory Customer Wise Analysis",
+ "number_of_groups": 0,
+ "owner": "Administrator",
+ "report_name": "WmsPro Analyzer Stock inventory",
+ "roles": [],
+ "show_values_over_chart": 0,
+ "time_interval": "Yearly",
+ "timeseries": 0,
+ "timespan": "Last Year",
+ "type": "Bar",
+ "use_report_chart": 0,
+ "x_field": "customer",
+ "y_axis": [
+  {
+   "color": "#bf7600",
+   "y_field": "qty"
+  }
+ ]
+}

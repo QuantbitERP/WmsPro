@@ -9,10 +9,19 @@ from frappe import _
 from frappe.query_builder.functions import CombineDatetime, Sum
 from frappe.utils import cint, flt, get_datetime
 
+# pyrefly: ignore [missing-import]
 from erpnext.stock.doctype.inventory_dimension.inventory_dimension import get_inventory_dimensions
+
+# pyrefly: ignore [missing-import]
 from erpnext.stock.doctype.serial_no.serial_no import get_serial_nos
+
+# pyrefly: ignore [missing-import]
 from erpnext.stock.doctype.stock_reconciliation.stock_reconciliation import get_stock_balance_for
+
+# pyrefly: ignore [missing-import]
 from erpnext.stock.doctype.warehouse.warehouse import apply_warehouse_filter
+
+# pyrefly: ignore [missing-import]
 from erpnext.stock.utils import (
 	is_reposting_item_valuation_in_progress,
 	update_included_uom_in_report,
@@ -21,6 +30,11 @@ from erpnext.stock.utils import (
 
 def execute(filters=None):
 	is_reposting_item_valuation_in_progress()
+	if not filters:
+		filters = frappe._dict()
+	else:
+		filters = frappe._dict(filters)
+
 	include_uom = filters.get("include_uom")
 	columns = get_columns(filters)
 	items = get_items(filters)
@@ -43,31 +57,79 @@ def execute(filters=None):
 		data.append(opening_row)
 		conversion_factors.append(0)
 
-	actual_qty = stock_value = 0
-	
+	# Pre-populate item details and customer/supplier allocation
+	for sle in sl_entries:
+		item_detail = item_details[sle.item_code]
+		sle.update(item_detail)
+		allocation = get_customer_supplier_allocation(sle.item_code, sle.warehouse, sle)
+		sle.update(allocation)
+
 	# Filter stock ledger entries by customer and supplier if specified
 	if filters.get("customer") or filters.get("supplier"):
 		sl_entries = filter_entries_by_customer_supplier(sl_entries, filters)
-	if opening_row:
-		actual_qty = opening_row.get("qty_after_transaction")
-		stock_value = opening_row.get("stock_value")
 
 	available_serial_nos = {}
 	inventory_dimension_filters_applied = check_inventory_dimension_filters_applied(filters)
 
 	batch_balance_dict = frappe._dict({})
-	if actual_qty and filters.get("batch_no"):
-		batch_balance_dict[filters.batch_no] = [actual_qty, stock_value]
+
+	# Dictionary to keep track of running balances for unique combinations of (item_code, warehouse, customer, supplier)
+	running_balances = {}
+
+	single_item_code = filters.get("item_code")
+	if isinstance(single_item_code, list) and len(single_item_code) == 1:
+		single_item_code = single_item_code[0]
+	elif isinstance(single_item_code, list):
+		single_item_code = None
+
+	single_warehouse = filters.get("warehouse")
+	if isinstance(single_warehouse, list) and len(single_warehouse) == 1:
+		single_warehouse = single_warehouse[0]
+	elif isinstance(single_warehouse, list):
+		single_warehouse = None
+
+	if opening_row and single_item_code and single_warehouse:
+		key = (single_item_code, single_warehouse, filters.get("customer"), filters.get("supplier"))
+		running_balances[key] = {
+			"qty_after_transaction": flt(opening_row.get("qty_after_transaction") or 0),
+			"stock_value": flt(opening_row.get("stock_value") or 0),
+			"valuation_rate": flt(opening_row.get("valuation_rate") or 0)
+		}
 
 	for sle in sl_entries:
-		item_detail = item_details[sle.item_code]
+		# Define the running balance key for this entry
+		key = (sle.item_code, sle.warehouse, sle.customer, sle.supplier)
+		if key not in running_balances:
+			running_balances[key] = get_opening_balance_for_combination(
+				sle.item_code, sle.warehouse, sle.customer, sle.supplier, filters.from_date, filters.company
+			)
 
-		sle.update(item_detail)
-		
-		# Get customer/supplier allocation for this item and warehouse
-		allocation = get_customer_supplier_allocation(sle.item_code, sle.warehouse, sle)
-		sle.update(allocation)
+		balance_details = running_balances[key]
+
+		if sle.voucher_type == "Stock Reconciliation" and not sle.actual_qty:
+			balance_details["qty_after_transaction"] = sle.qty_after_transaction
+			balance_details["stock_value"] = sle.stock_value
+		else:
+			balance_details["qty_after_transaction"] += flt(sle.actual_qty, precision)
+			balance_details["stock_value"] += sle.stock_value_difference
+
+		if balance_details["qty_after_transaction"]:
+			balance_details["valuation_rate"] = flt(balance_details["stock_value"]) / flt(balance_details["qty_after_transaction"])
+		else:
+			balance_details["valuation_rate"] = 0.0
+
+		sle.update({
+			"qty_after_transaction": balance_details["qty_after_transaction"],
+			"stock_value": balance_details["stock_value"],
+			"valuation_rate": balance_details["valuation_rate"]
+		})
+
 		if bundle_info := bundle_details.get(sle.serial_and_batch_bundle):
+			if sle.batch_no:
+				if not batch_balance_dict.get(sle.batch_no):
+					batch_balance_dict[sle.batch_no] = [0, 0]
+				batch_balance_dict[sle.batch_no][0] += sle.actual_qty
+				batch_balance_dict[sle.batch_no][1] += sle.stock_value
 			data.extend(get_segregated_bundle_entries(sle, bundle_info, batch_balance_dict, filters))
 			continue
 
@@ -76,20 +138,11 @@ def execute(filters=None):
 			if not batch_balance_dict.get(sle.batch_no):
 				batch_balance_dict[sle.batch_no] = [0, 0]
 			batch_balance_dict[sle.batch_no][0] += sle.actual_qty
-			batch_balance_dict[sle.batch_no][1] += stock_value
+			batch_balance_dict[sle.batch_no][1] += sle.stock_value
 
 		if filters.get("batch_no") or inventory_dimension_filters_applied:
-			actual_qty += flt(sle.actual_qty, precision)
-			stock_value += sle.stock_value_difference
-
 			if filters.get("segregate_serial_batch_bundle"):
-				actual_qty = batch_balance_dict[sle.batch_no][0]
-
-			if sle.voucher_type == "Stock Reconciliation" and not sle.actual_qty:
-				actual_qty = sle.qty_after_transaction
-				stock_value = sle.stock_value
-
-			sle.update({"qty_after_transaction": actual_qty, "stock_value": stock_value})
+				sle["qty_after_transaction"] = batch_balance_dict[sle.batch_no][0]
 
 		sle.update({"in_qty": max(sle.actual_qty, 0), "out_qty": min(sle.actual_qty, 0)})
 
@@ -105,22 +158,16 @@ def execute(filters=None):
 		data.append(sle)
 
 		if include_uom:
-			conversion_factors.append(item_detail.conversion_factor)
+			conversion_factors.append(sle.conversion_factor)
 
 	update_included_uom_in_report(columns, data, include_uom, conversion_factors)
 	return columns, data
 
 
 def get_columns(filters):
-	columns = [
+	valuation_field_type = filters.get("valuation_field_type") or "Currency"
+	columns: list[dict] = [
 		{"label": _("Date"), "fieldname": "date", "fieldtype": "Datetime", "width": 150},
-		{
-			"label": _("Customer"),
-			"fieldname": "customer",
-			"fieldtype": "Link",
-			"options": "Customer",
-			"width": 120,
-		},
 		{
 			"label": _("Supplier"),
 			"fieldname": "supplier",
@@ -212,20 +259,20 @@ def get_columns(filters):
 			{
 				"label": _("Avg Rate (Balance Stock)"),
 				"fieldname": "valuation_rate",
-				"fieldtype": filters.valuation_field_type,
+				"fieldtype": valuation_field_type,
 				"width": 180,
 				"options": "Company:company:default_currency"
-				if filters.valuation_field_type == "Currency"
+				if valuation_field_type == "Currency"
 				else None,
 				"convertible": "rate",
 			},
 			{
 				"label": _("Valuation Rate"),
 				"fieldname": "in_out_rate",
-				"fieldtype": filters.valuation_field_type,
+				"fieldtype": valuation_field_type,
 				"width": 140,
 				"options": "Company:company:default_currency"
-				if filters.valuation_field_type == "Currency"
+				if valuation_field_type == "Currency"
 				else None,
 				"convertible": "rate",
 			},
@@ -289,6 +336,32 @@ def get_columns(filters):
 		]
 	)
 
+	# Reorder columns according to preferred order: date, Customer, supplier, warehouse, item group, item, etc.
+	preferred_order = [
+		("date", None),
+		("customer_name_", _("Customer")),
+		("customer", _("Customer")),
+		("supplier", None),
+		("warehouse", None),
+		("item_group", None),
+		("item_code", None),
+		("item_name", None),
+		("stock_uom", None)
+	]
+	
+	ordered_cols = []
+	for fieldname, custom_label in preferred_order:
+		for col in list(columns):
+			if col.get("fieldname") == fieldname:
+				if custom_label:
+					col["label"] = custom_label
+				ordered_cols.append(col)
+				columns.remove(col)
+				break
+				
+	ordered_cols.extend(columns)
+	columns = ordered_cols
+
 	return columns
 
 
@@ -318,6 +391,7 @@ def get_stock_ledger_entries(filters, items):
 			sle.batch_no,
 			sle.serial_no,
 			sle.project,
+			sle.custom_3pl_customer,
 		)
 		.where((sle.docstatus < 2) & (sle.is_cancelled == 0) & (sle.posting_datetime[from_date:to_date]))
 		.orderby(sle.posting_datetime)
@@ -477,6 +551,9 @@ def get_segregated_bundle_entries(sle, bundle_details, batch_balance_dict, filte
 
 
 def get_serial_batch_bundle_details(sl_entries, filters=None):
+	if not filters:
+		filters = frappe._dict()
+
 	bundle_details = []
 	for sle in sl_entries:
 		if sle.serial_and_batch_bundle:
@@ -487,7 +564,7 @@ def get_serial_batch_bundle_details(sl_entries, filters=None):
 
 	query_filers = {"parent": ("in", bundle_details)}
 	if filters.get("batch_no"):
-		query_filers["batch_no"] = filters.batch_no
+		query_filers["batch_no"] = filters.get("batch_no")
 
 	_bundle_details = frappe._dict({})
 	batch_entries = frappe.get_all(
@@ -623,6 +700,9 @@ def get_opening_balance_from_batch(filters, columns, sl_entries):
 		if value := filters.get(fields):
 			query_filters[fields] = ("in", value)
 
+	if filters.get("customer"):
+		query_filters["custom_3pl_customer"] = filters.customer
+
 	opening_data = frappe.get_all(
 		"Stock Ledger Entry",
 		fields=["sum(actual_qty) as qty_after_transaction", "sum(stock_value_difference) as stock_value"],
@@ -683,37 +763,91 @@ def get_opening_balance_from_batch(filters, columns, sl_entries):
 
 def get_opening_balance(filters, columns, sl_entries):
 	if not (filters.item_code and filters.warehouse and filters.from_date):
-		return
+		return None
 
-	from erpnext.stock.stock_ledger import get_previous_sle
+	item_code = filters.get("item_code")
+	if isinstance(item_code, list):
+		if len(item_code) == 1:
+			item_code = item_code[0]
+		else:
+			return None
 
-	last_entry = get_previous_sle(
-		{
-			"item_code": filters.item_code,
-			"warehouse_condition": get_warehouse_condition(filters.warehouse),
-			"posting_date": filters.from_date,
-			"posting_time": "00:00:00",
-		}
+	warehouse = filters.get("warehouse")
+	if isinstance(warehouse, list):
+		if len(warehouse) == 1:
+			warehouse = warehouse[0]
+		else:
+			return None
+
+	customer = filters.get("customer")
+	supplier = filters.get("supplier")
+
+	opening_balance = get_opening_balance_for_combination(
+		item_code, warehouse, customer, supplier, filters.from_date, filters.company
 	)
-
-	# check if any SLEs are actually Opening Stock Reconciliation
-	for sle in list(sl_entries):
-		if (
-			sle.get("voucher_type") == "Stock Reconciliation"
-			and sle.posting_date == filters.from_date
-			and frappe.db.get_value("Stock Reconciliation", sle.voucher_no, "purpose") == "Opening Stock"
-		):
-			last_entry = sle
-			sl_entries.remove(sle)
 
 	row = {
 		"item_code": _("'Opening'"),
-		"qty_after_transaction": last_entry.get("qty_after_transaction", 0),
-		"valuation_rate": last_entry.get("valuation_rate", 0),
-		"stock_value": last_entry.get("stock_value", 0),
+		"qty_after_transaction": opening_balance.get("qty_after_transaction", 0),
+		"valuation_rate": opening_balance.get("valuation_rate", 0),
+		"stock_value": opening_balance.get("stock_value", 0),
 	}
 
 	return row
+
+
+def get_opening_balance_for_combination(item_code, warehouse, customer, supplier, from_date, company):
+	if customer:
+		res = frappe.db.sql("""
+			select sum(actual_qty) as qty, sum(stock_value_difference) as value
+			from `tabStock Ledger Entry`
+			where item_code = %s and warehouse = %s and custom_3pl_customer = %s
+			and posting_date < %s and docstatus < 2 and is_cancelled = 0
+		""", (item_code, warehouse, customer, from_date), as_dict=True)
+		qty = flt(res[0].qty) if res and res[0].qty else 0.0
+		stock_val = flt(res[0].value) if res and res[0].value else 0.0
+		val_rate = stock_val / qty if qty else 0.0
+		return {
+			"qty_after_transaction": qty,
+			"valuation_rate": val_rate,
+			"stock_value": stock_val
+		}
+	elif supplier:
+		query = """
+			select sum(sle.actual_qty) as qty, sum(sle.stock_value_difference) as value
+			from `tabStock Ledger Entry` sle
+			where sle.item_code = %s and sle.warehouse = %s
+			and sle.posting_date < %s and sle.docstatus < 2 and sle.is_cancelled = 0
+			and (
+				(sle.voucher_type = 'Purchase Receipt' and exists(select name from `tabPurchase Receipt` where name = sle.voucher_no and supplier = %s)) or
+				(sle.voucher_type = 'Purchase Invoice' and exists(select name from `tabPurchase Invoice` where name = sle.voucher_no and supplier = %s)) or
+				(sle.voucher_type = 'Purchase Order' and exists(select name from `tabPurchase Order` where name = sle.voucher_no and supplier = %s)) or
+				(sle.voucher_type = 'Stock Entry' and exists(select name from `tabStock Entry` where name = sle.voucher_no and supplier = %s))
+			)
+		"""
+		res = frappe.db.sql(query, (item_code, warehouse, from_date, supplier, supplier, supplier, supplier), as_dict=True)
+		qty = flt(res[0].qty) if res and res[0].qty else 0.0
+		stock_val = flt(res[0].value) if res and res[0].value else 0.0
+		val_rate = stock_val / qty if qty else 0.0
+		return {
+			"qty_after_transaction": qty,
+			"valuation_rate": val_rate,
+			"stock_value": stock_val
+		}
+	else:
+		# pyrefly: ignore [missing-import]
+		from erpnext.stock.stock_ledger import get_previous_sle
+		last_entry = get_previous_sle({
+			"item_code": item_code,
+			"warehouse": warehouse,
+			"posting_date": from_date,
+			"posting_time": "00:00:00",
+		})	
+		return {
+			"qty_after_transaction": flt(last_entry.get("qty_after_transaction", 0)),
+			"valuation_rate": flt(last_entry.get("valuation_rate", 0)),
+			"stock_value": flt(last_entry.get("stock_value", 0))
+		}
 
 
 def get_warehouse_condition(warehouses):
@@ -918,28 +1052,26 @@ def filter_entries_by_customer_supplier(sl_entries, filters):
 
 def check_customer_for_sle(sle, customer):
 	"""Check if a stock ledger entry is related to a specific customer"""
-	
+	if sle.get("customer") == customer:
+		return True
+
 	# Check different voucher types that might have customer information
 	if sle.voucher_type in ["Sales Invoice", "Delivery Note", "Sales Order"]:
-		# Check if the voucher is related to the customer
 		customer_field = frappe.db.get_value(sle.voucher_type, sle.voucher_no, "customer")
 		if customer_field == customer:
 			return True
-	
+
 	elif sle.voucher_type == "Stock Entry":
-		# Check Stock Entry for customer (for material issues to customer)
 		customer_field = frappe.db.get_value("Stock Entry", sle.voucher_no, "customer")
 		if customer_field == customer:
 			return True
-	
+
 	elif sle.voucher_type == "Purchase Receipt":
-		# Purchase Receipt might have customer in case of returns
 		customer_field = frappe.db.get_value("Purchase Receipt", sle.voucher_no, "customer")
 		if customer_field == customer:
 			return True
-	
+
 	# Check if the item is typically sold to this customer
-	# Check recent sales orders for this item and customer
 	so_query = """
 		SELECT COUNT(*) as count
 		FROM `tabSales Order` so
@@ -952,28 +1084,27 @@ def check_customer_for_sle(sle, customer):
 	result = frappe.db.sql(so_query, (customer, sle.item_code), as_dict=True)
 	if result and result[0].count > 0:
 		return True
-	
+
 	return False
 
 
 def check_supplier_for_sle(sle, supplier):
 	"""Check if a stock ledger entry is related to a specific supplier"""
-	
+	if sle.get("supplier") == supplier:
+		return True
+
 	# Check different voucher types that might have supplier information
 	if sle.voucher_type in ["Purchase Invoice", "Purchase Order", "Purchase Receipt"]:
-		# Check if the voucher is related to the supplier
 		supplier_field = frappe.db.get_value(sle.voucher_type, sle.voucher_no, "supplier")
 		if supplier_field == supplier:
 			return True
-	
+
 	elif sle.voucher_type == "Stock Entry":
-		# Check Stock Entry for supplier (for material receipts from supplier)
 		supplier_field = frappe.db.get_value("Stock Entry", sle.voucher_no, "supplier")
 		if supplier_field == supplier:
 			return True
-	
+
 	# Check if the item is typically purchased from this supplier
-	# Check recent purchase orders for this item and supplier
 	po_query = """
 		SELECT COUNT(*) as count
 		FROM `tabPurchase Order` po
@@ -986,5 +1117,5 @@ def check_supplier_for_sle(sle, supplier):
 	result = frappe.db.sql(po_query, (supplier, sle.item_code), as_dict=True)
 	if result and result[0].count > 0:
 		return True
-	
+
 	return False

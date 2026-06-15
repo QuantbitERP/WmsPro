@@ -54,7 +54,7 @@ def create_bin_ledger_entry(
         return
 
     bin_doc = frappe.get_doc("WMS Bin", bin_location)
-    frappe.log_error(message=str(frappe.as_json(bin_doc)), title="Bin Doc")
+    frappe.log_error(message=frappe.as_json(bin_doc.as_dict()), title="Bin Doc")
     if to_check_balance:
         current = get_bin_balance(bin_location, item_code, batch_no)
     else:
@@ -69,9 +69,9 @@ def create_bin_ledger_entry(
         "doctype": "WMS Bin Ledger",
         "posting_date": frappe.utils.today(),
         "posting_time": frappe.utils.nowtime(),
-        "warehouse": warehouse or bin_doc.warehouse,
+        "warehouse": warehouse or bin_doc.get("warehouse"),
         "bin_location": bin_location,
-        "zone": bin_doc.zone,
+        "zone": bin_doc.get("zone"),
         "item_code": item_code,
         "batch_no": batch_no,
         "quantity_change": qty_change,
@@ -89,7 +89,7 @@ def create_bin_ledger_entry(
         "supplier_name": supplier_name,
         "data_uldd": customer,
     })
-    frappe.log_error(message=str(frappe.as_json(entry)), title="Bin Ledger Entry")
+    frappe.log_error(message=frappe.as_json(entry.as_dict()), title="Bin Ledger Entry")
 
     entry.insert(ignore_permissions=True)
 

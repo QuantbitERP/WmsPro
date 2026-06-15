@@ -7,6 +7,23 @@ from frappe.utils import now, today
 
 
 class AdvancedShipmentNotice(Document):
+    asn_status: str
+    party: str
+    party_name: str
+    company: str
+    purchase_order: str
+    supplier_name: str
+    customer: str
+    warehouse: str
+    advanced_shipment_notice_details: list
+
+    def validate(self):
+        if not self.party:
+            frappe.throw("Party Type is required")
+        if self.party == "Supplier" and not self.supplier_name:
+            frappe.throw("Supplier Name is required")
+        if self.party == "Customer" and not self.customer:
+            frappe.throw("Customer is required")
 
     def before_insert(self):
         """Set ASN status to Draft when saving"""

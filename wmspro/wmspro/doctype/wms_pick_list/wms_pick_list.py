@@ -3,7 +3,8 @@
 
 import frappe
 from frappe.model.document import Document
-from frappe.utils import now_datetime, nowdate, nowtime
+from frappe.utils import now_datetime, nowdate, nowtime, flt
+from typing import Any
 
 
 # -------------------------
@@ -21,11 +22,29 @@ def get_warehouse_from_bin(bin_location):
 
 
 class WMSPickList(Document):
+    customer: str | None
+    customer_name: str | None
+    status: str
+    assigned_to: str | None
+    started_at: Any
+    stock_entry: str | None
+    outbound_shipment: str | None
+    material_request: str | None
+    total_qty_picked: float
+    total_short_qty: float
+    pick_completion_pct: float
+    completed_at: Any
+    warehouse: str
+    to_bin_location: str | None
+    items: list
+    source_warehouse: str | None
+    contract: str | None
 
     def validate(self):
         # Auto-fetch customer_name if customer is set but customer_name is empty
         if self.customer and not self.customer_name:
-            self.customer_name = frappe.db.get_value("Customer", self.customer, "customer_name")
+            val = frappe.db.get_value("Customer", self.customer, "customer_name")
+            self.customer_name = str(val) if val else None
         
         # Validate that qty_picked cannot be greater than qty_ordered for any item
         for row in self.items:
@@ -114,7 +133,8 @@ class WMSPickList(Document):
         # Create Outbound Shipment
         outbound_name = self._create_outbound_shipment()
         self.outbound_shipment = outbound_name
-        self.material_request = self._get_material_request()
+        req_val = self._get_material_request()
+        self.material_request = str(req_val) if req_val else None
 
         for row in self.items:
             self._apply_stock_movement(row)
@@ -169,7 +189,12 @@ class WMSPickList(Document):
             as_dict=True
         )
 
-        return sle[0].qty_after_transaction if sle else 0
+        sle_list = list(sle) if sle else []
+        if sle_list:
+            val = sle_list[0]
+            if isinstance(val, dict):
+                return val.get("qty_after_transaction") or 0
+        return 0
 
 
     # ---------------------------------------------------------
@@ -190,7 +215,12 @@ class WMSPickList(Document):
             as_dict=True
         )
 
-        return last[0].balance_qty if last else 0
+        last_list = list(last) if last else []
+        if last_list:
+            val = last_list[0]
+            if isinstance(val, dict):
+                return val.get("balance_qty") or 0
+        return 0
 
 
     # ---------------------------------------------------------
@@ -271,9 +301,11 @@ class WMSPickList(Document):
 
         bin_doc = frappe.get_doc("WMS Bin", row.bin_location)
 
-        bin_doc.current_occupancy = max(
-            (bin_doc.current_occupancy or 0) - row.qty_picked,
-            0
+        val = bin_doc.get("current_occupancy")
+        curr_occ = flt(val) if isinstance(val, (int, float, str)) else 0.0
+        bin_doc.set(
+            "current_occupancy",
+            max(curr_occ - row.qty_picked, 0.0)
         )
 
         bin_doc.save(ignore_permissions=True)
@@ -291,6 +323,7 @@ class WMSPickList(Document):
             "stock_entry_type": "Material Transfer",
             "company": company,
             "posting_date": nowdate(),
+            "custom_3pl_customer": self.customer,
             "items": []
         })
 
@@ -340,10 +373,12 @@ class WMSPickList(Document):
                     "s_bin": source_bin,
                     "t_bin": target_bin,
                     "wms_bin": source_bin,
-                    "to_wms_bin": target_bin
+                    "to_wms_bin": target_bin,
+                    "customer_name_": self.customer,
+                    "to_customer_name_": self.customer
                 })
 
-        if not se.items:
+        if not se.get("items"):
             frappe.throw("No picked quantity found to create Stock Entry")
 
         se.insert(ignore_permissions=True)

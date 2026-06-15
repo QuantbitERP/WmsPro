@@ -55,6 +55,7 @@ class WMSGoodsReceiptNote(Document):
                 qty = 1
 
             item_warehouse = getattr(item, 'warehouse', None) or self.warehouse
+            item_staging_bin = getattr(item, 'staging_bin', None) or getattr(self, 'staging_bin', None) or self.get_staging_bin_for_warehouse(item_warehouse)
 
             pr.append("items", {
                 "item_code": item.item_code,
@@ -66,7 +67,8 @@ class WMSGoodsReceiptNote(Document):
                 "stock_uom": item.stock_uom,
                 "rate": item.rate,
                 "custom_mrp": item.mrp,
-                "warehouse": item_warehouse
+                "warehouse": item_warehouse,
+                "wms_bin": item_staging_bin
             })
 
         pr.insert(ignore_permissions=True)
@@ -75,6 +77,11 @@ class WMSGoodsReceiptNote(Document):
     def validate(self):
         if self.docstatus == 1 and self.status != "Received":
             self.status = "Received"
+
+        # Pass staging_bin to wms_bin in child items (Inventory Dimension)
+        for item in self.wms_grn_item:
+            if item.staging_bin:
+                item.wms_bin = item.staging_bin
 
         # Validate total quantities
         self.validate_total_quantities()
@@ -236,6 +243,8 @@ class WMSGoodsReceiptNote(Document):
 
             suggested_bin = self.get_suggested_bin(item.item_code, item.warehouse)
             item_warehouse = getattr(item, 'warehouse', None) or self.warehouse
+            item_staging_bin = getattr(item, 'staging_bin', None) or getattr(self, 'staging_bin', None) or self.get_staging_bin_for_warehouse(item_warehouse)
+            item_customer = getattr(item, 'customer', None) or getattr(self, 'customer', None)
 
             # Create Serial and Batch Bundle if tracked
             bundle_name = None
@@ -266,7 +275,11 @@ class WMSGoodsReceiptNote(Document):
                 "qty": qty,
                 "conversion_factor": item.conversion_factor or 1,
                 "stock_uom": item.stock_uom,
-                "serial_and_batch_bundle": bundle_name
+                "serial_and_batch_bundle": bundle_name,
+                "wms_bin": item_staging_bin,
+                "to_wms_bin": item_staging_bin,
+                "customer_name_": item_customer,
+                "to_customer_name_": item_customer
             })
 
         # Only submit if items were added

@@ -1,0 +1,8 @@
+{
+  "python.defaultInterpreterPath": "/home/erpadmin/frappe-bench/env/bin/python",
+  "python.analysis.extraPaths": [
+    "/home/erpadmin/frappe-bench/apps/frappe",
+    "/home/erpadmin/frappe-bench/apps/erpnext",
+    "/home/erpadmin/frappe-bench/apps/wmspro"
+  ]
+}

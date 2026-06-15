@@ -76,6 +76,7 @@ class WMSOutboundShipment(Document):
             "company": company,
             "posting_date": nowdate(),
             "from_warehouse": self.source_warehouse,
+            "custom_3pl_customer": self.customer,
             "items": []
         })
 
@@ -90,7 +91,9 @@ class WMSOutboundShipment(Document):
                     "stock_uom": row.uom,
                     "transfer_qty": row.qty_picked,
                     "conversion_factor": 1,
-                    "wms_bin": self.to_bin_location
+                    "wms_bin": self.to_bin_location,
+                    "customer_name_": self.customer,
+                    "to_customer_name_": self.customer
                 })
 
         if not se.items:
