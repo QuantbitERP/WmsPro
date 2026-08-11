@@ -1,0 +1,172 @@
+{
+ "actions": [],
+ "autoname": "naming_series:",
+ "creation": "2026-07-29 12:40:53.250716",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "naming_series",
+  "freight_job",
+  "customer",
+  "col_b1",
+  "segment",
+  "currency",
+  "sec_b1",
+  "cost_lines",
+  "sec_b2",
+  "total_buy_amount",
+  "total_sell_amount",
+  "col_b2",
+  "gross_profit",
+  "gp_percent",
+  "sec_b3",
+  "sales_invoice"
+ ],
+ "fields": [
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "label": "Series",
+   "options": "JCS-.YYYY.-",
+   "reqd": 1
+  },
+  {
+   "bold": 1,
+   "fieldname": "freight_job",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Freight Job",
+   "options": "ILS Freight Job",
+   "reqd": 1
+  },
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Customer",
+   "options": "Customer",
+   "read_only": 1
+  },
+  {
+   "fieldname": "col_b1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "segment",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Segment",
+   "options": "ILS Segment Master",
+   "read_only": 1
+  },
+  {
+   "fieldname": "currency",
+   "fieldtype": "Link",
+   "label": "Currency",
+   "options": "Currency",
+   "reqd": 1
+  },
+  {
+   "fieldname": "sec_b1",
+   "fieldtype": "Section Break",
+   "label": "Cost Lines (Buy Side)"
+  },
+  {
+   "fieldname": "cost_lines",
+   "fieldtype": "Table",
+   "label": "Cost Lines",
+   "options": "ILS Cost Line"
+  },
+  {
+   "fieldname": "sec_b2",
+   "fieldtype": "Section Break",
+   "label": "Summary"
+  },
+  {
+   "bold": 1,
+   "fieldname": "total_buy_amount",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Total Buy Amount",
+   "read_only": 1
+  },
+  {
+   "bold": 1,
+   "description": "Pulled from linked Sales Invoice",
+   "fieldname": "total_sell_amount",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Total Sell Amount",
+   "read_only": 1
+  },
+  {
+   "fieldname": "col_b2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "bold": 1,
+   "fieldname": "gross_profit",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Gross Profit",
+   "read_only": 1
+  },
+  {
+   "bold": 1,
+   "fieldname": "gp_percent",
+   "fieldtype": "Percent",
+   "in_list_view": 1,
+   "label": "GP %",
+   "read_only": 1
+  },
+  {
+   "fieldname": "sec_b3",
+   "fieldtype": "Section Break",
+   "label": "Linked Invoice"
+  },
+  {
+   "fieldname": "sales_invoice",
+   "fieldtype": "Link",
+   "label": "Sales Invoice",
+   "options": "Sales Invoice",
+   "read_only": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "max_attachments": 10,
+ "modified": "2026-07-29 12:40:53.250716",
+ "modified_by": "Administrator",
+ "module": "Freight Management",
+ "name": "ILS Job Cost Sheet",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "export": 1,
+   "read": 1,
+   "report": 1,
+   "role": "All"
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "search_fields": "freight_job,customer",
+ "show_name_in_global_search": 1,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

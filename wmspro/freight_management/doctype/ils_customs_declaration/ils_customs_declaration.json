@@ -1,0 +1,199 @@
+{
+ "actions": [],
+ "autoname": "naming_series:",
+ "creation": "2026-07-29 12:39:02.445144",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "naming_series",
+  "freight_job",
+  "declaration_type",
+  "col_b1",
+  "status",
+  "declaration_date",
+  "sec_b1",
+  "customs_agent",
+  "port_of_entry_exit",
+  "col_b2",
+  "authority_declaration_no",
+  "currency",
+  "sec_b2",
+  "hs_code_lines",
+  "sec_b3",
+  "total_declared_value",
+  "total_duty_amount",
+  "sec_b4",
+  "customs_stages",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "label": "Series",
+   "options": "CD-.YYYY.-",
+   "reqd": 1
+  },
+  {
+   "bold": 1,
+   "fieldname": "freight_job",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Freight Job",
+   "options": "ILS Freight Job",
+   "reqd": 1
+  },
+  {
+   "fieldname": "declaration_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Declaration Type",
+   "options": "Import\nExport",
+   "reqd": 1
+  },
+  {
+   "fieldname": "col_b1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "Draft",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "allow_on_submit": 1,
+   "label": "Status",
+   "options": "Draft\nSubmitted to Customs\nUnder Examination\nExamination Complete\nDuty Paid\nReleased\nRejected"
+  },
+  {
+   "default": "Today",
+   "fieldname": "declaration_date",
+   "fieldtype": "Date",
+   "label": "Declaration Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "sec_b1",
+   "fieldtype": "Section Break",
+   "label": "Customs Details"
+  },
+  {
+   "fieldname": "customs_agent",
+   "fieldtype": "Link",
+   "label": "Customs Agent",
+   "options": "Supplier"
+  },
+  {
+   "fieldname": "port_of_entry_exit",
+   "fieldtype": "Data",
+   "label": "Port of Entry / Exit"
+  },
+  {
+   "fieldname": "col_b2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "description": "Number issued by customs authority",
+   "fieldname": "authority_declaration_no",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Authority Declaration No"
+  },
+  {
+   "fieldname": "currency",
+   "fieldtype": "Link",
+   "label": "Currency",
+   "options": "Currency",
+   "reqd": 1
+  },
+  {
+   "fieldname": "sec_b2",
+   "fieldtype": "Section Break",
+   "label": "HS Code Lines"
+  },
+  {
+   "fieldname": "hs_code_lines",
+   "fieldtype": "Table",
+   "label": "HS Code Lines",
+   "options": "ILS HS Code Line",
+   "reqd": 1
+  },
+  {
+   "fieldname": "sec_b3",
+   "fieldtype": "Section Break",
+   "label": "Totals"
+  },
+  {
+   "fieldname": "total_declared_value",
+   "fieldtype": "Currency",
+   "label": "Total Declared Value",
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_duty_amount",
+   "fieldtype": "Currency",
+   "label": "Total Duty Amount",
+   "read_only": 1
+  },
+  {
+   "fieldname": "sec_b4",
+   "fieldtype": "Section Break",
+   "label": "Clearance Stages"
+  },
+  {
+   "fieldname": "customs_stages",
+   "fieldtype": "Table",
+   "label": "Customs Stages",
+   "options": "ILS Customs Stage"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "ILS Customs Declaration",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "max_attachments": 10,
+ "modified": "2026-07-29 12:39:02.445144",
+ "modified_by": "Administrator",
+ "module": "Freight Management",
+ "name": "ILS Customs Declaration",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "export": 1,
+   "read": 1,
+   "report": 1,
+   "role": "All"
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "search_fields": "freight_job,authority_declaration_no",
+ "show_name_in_global_search": 1,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}
