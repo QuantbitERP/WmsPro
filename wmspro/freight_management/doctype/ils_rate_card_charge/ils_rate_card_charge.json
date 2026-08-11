@@ -1,0 +1,79 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "hash",
+ "creation": "2026-07-29 11:58:25.713783",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "charge",
+  "unit",
+  "buy_rate",
+  "sell_rate",
+  "currency",
+  "min_amount"
+ ],
+ "fields": [
+  {
+   "columns": 3,
+   "fieldname": "charge",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Charge",
+   "options": "ILS Charge Master",
+   "reqd": 1
+  },
+  {
+   "columns": 2,
+   "fieldname": "unit",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Unit",
+   "options": "Per CBM\nPer KG\nPer Container\nPer Shipment\nPer BL\nLumpsum",
+   "reqd": 1
+  },
+  {
+   "columns": 2,
+   "fieldname": "buy_rate",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Buy Rate"
+  },
+  {
+   "columns": 2,
+   "fieldname": "sell_rate",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Sell Rate"
+  },
+  {
+   "columns": 2,
+   "fieldname": "currency",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Currency",
+   "options": "Currency"
+  },
+  {
+   "fieldname": "min_amount",
+   "fieldtype": "Currency",
+   "label": "Min Amount"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-07-29 11:58:25.713783",
+ "modified_by": "Administrator",
+ "module": "Freight Management",
+ "name": "ILS Rate Card Charge",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

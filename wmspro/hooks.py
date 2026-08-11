@@ -202,7 +202,9 @@ fixtures = [
     {
         "doctype": "Custom Field",
         "filters": [
-            ["module", "=", "WMSPro"]
+            # CHANGED: added Freight Management so our custom fields
+            # are also exported as fixtures
+            ["module", "in", ["WMSPro", "Freight Management"]]
         ]
     },
 
@@ -211,23 +213,26 @@ fixtures = [
 # Scheduled Tasks
 # ---------------
 
-# scheduler_events = {
-# 	"all": [
-# 		"wmspro.tasks.all"
-# 	],
-# 	"daily": [
-# 		"wmspro.tasks.daily"
-# 	],
-# 	"hourly": [
-# 		"wmspro.tasks.hourly"
-# 	],
-# 	"weekly": [
-# 		"wmspro.tasks.weekly"
-# 	],
-# 	"monthly": [
-# 		"wmspro.tasks.monthly"
-# 	],
-# }
+scheduler_events = {
+    # "all": [
+    # 	"wmspro.tasks.all"
+    # ],
+    "daily": [
+        # "wmspro.tasks.daily",
+
+        # ADDED: Auto-expire Rate Cards whose valid_to date has passed
+        "wmspro.freight_management.doctype.ils_freight_rate_card.ils_freight_rate_card.expire_rate_cards",
+    ],
+    # "hourly": [
+    # 	"wmspro.tasks.hourly"
+    # ],
+    # "weekly": [
+    # 	"wmspro.tasks.weekly"
+    # ],
+    # "monthly": [
+    # 	"wmspro.tasks.monthly"
+    # ],
+}
 
 # Testing
 # -------
@@ -315,6 +320,28 @@ before_insert = {
 # 	"Logging DocType Name": 30  # days to retain logs
 # }
 
+# ADDED: Document Events for Freight Management
+doc_events = {
+
+    # Quotation — auto fill notes, calculate totals, create Freight Job
+    "Quotation": {
+        "before_save":   "wmspro.freight_management.controllers.quotation.before_save",
+        "before_submit": "wmspro.freight_management.controllers.quotation.before_submit",
+        "on_submit":     "wmspro.freight_management.controllers.quotation.on_submit",
+    },
+
+    # Purchase Invoice — auto add cost line to Job Cost Sheet on submit
+    "Purchase Invoice": {
+        "on_submit": "wmspro.freight_management.doctype.ils_job_cost_sheet.ils_job_cost_sheet.purchase_invoice_on_submit",
+    },
+
+    # Sales Invoice — update Freight Job status to Invoiced on submit
+    "Sales Invoice": {
+        "on_submit": "wmspro.freight_management.doctype.ils_job_cost_sheet.ils_job_cost_sheet.sales_invoice_on_submit",
+        "on_cancel": "wmspro.freight_management.doctype.ils_job_cost_sheet.ils_job_cost_sheet.sales_invoice_on_cancel",
+    },
+}
+
 # Add custom fields to doctypes
 custom_fields = {
     "Contract": [
@@ -351,4 +378,3 @@ custom_fields = {
         }
     ]
 }
-
