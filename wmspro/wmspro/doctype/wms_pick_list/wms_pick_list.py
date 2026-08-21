@@ -224,6 +224,29 @@ class WMSPickList(Document):
 
 
     # ---------------------------------------------------------
+    # Resolve the WMS Goods Receipt Note a picked batch came from
+    # ---------------------------------------------------------
+    def _get_originating_grn(self):
+        """Best-effort trace-back to the GRN that received the batch being picked, using the first
+        picked row that carries a batch_no. Only one Link value can be stamped on the Stock Entry, so
+        if a single pick spans batches from multiple GRNs the rest won't be individually traceable
+        this way - the Stock/Bin Ledger reports remain the source of truth for the full picture."""
+
+        for row in self.items:
+            if row.get("batch_no"):
+                grn = frappe.db.get_value(
+                    "WMS Inbound Task",
+                    {"item_code": row.item_code, "batch_no": row.batch_no},
+                    "parent",
+                    order_by="creation desc"
+                )
+                if grn:
+                    return grn
+
+        return None
+
+
+    # ---------------------------------------------------------
     # Validate To Bin (must be staging or storage)
     # ---------------------------------------------------------
     def _validate_to_bin(self, bin_location):
@@ -247,7 +270,7 @@ class WMSPickList(Document):
         if self.items and len(self.items) > 0:
             warehouse = self.items[0].warehouse
         else:
-            warehouse = self.warehouse  # Fallback to pick list warehouse
+            warehouse = self.source_warehouse  # Fallback to pick list warehouse
         
         frappe.logger().info(f"Looking for bins in warehouse: {warehouse} (from item: {self.items[0].warehouse if self.items else 'None'})")
         
@@ -316,7 +339,7 @@ class WMSPickList(Document):
     # ---------------------------------------------------------
     def _create_stock_entry(self):
 
-        company = frappe.db.get_value("Warehouse", self.warehouse, "company")
+        company = frappe.db.get_value("Warehouse", self.source_warehouse, "company")
 
         se = frappe.get_doc({
             "doctype": "Stock Entry",
@@ -324,6 +347,12 @@ class WMSPickList(Document):
             "company": company,
             "posting_date": nowdate(),
             "custom_3pl_customer": self.customer,
+            "custom_doc_link_doctype_": self.doctype,
+            "custom_doc_link": self.name,
+            # Trace this movement back to the GRN the picked batch was originally received against,
+            # same as WMS Goods Receipt Note / WMS Putaway Task already do, so the Stock/Bin Ledger
+            # reports can be filtered by that GRN and still show this leg of the item's lifecycle.
+            "custom_reference_doc": self._get_originating_grn(),
             "items": []
         })
 
@@ -418,6 +447,7 @@ class WMSPickList(Document):
             "warehouse": row.warehouse,
             "bin_location": source_bin,
             "item_code": row.item_code,
+            "batch_no": row.batch_no,
             "quantity_change": -row.qty_picked,
             "balance_qty": source_balance - row.qty_picked,
             "reserved_qty": 0,
@@ -437,6 +467,7 @@ class WMSPickList(Document):
             "warehouse": target_bin_warehouse,
             "bin_location": target_bin,
             "item_code": row.item_code,
+            "batch_no": row.batch_no,
             "quantity_change": row.qty_picked,
             "balance_qty": target_balance + row.qty_picked,
             "reserved_qty": 0,

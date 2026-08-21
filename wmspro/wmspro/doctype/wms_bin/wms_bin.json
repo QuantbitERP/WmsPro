@@ -79,9 +79,10 @@
   },
   {
    "fieldname": "bay",
-   "fieldtype": "Int",
+   "fieldtype": "Link",
    "in_list_view": 1,
    "label": "Bay",
+   "options": "WMS Bay",
    "reqd": 1
   },
   {
@@ -130,8 +131,9 @@
   },
   {
    "fieldname": "rack",
-   "fieldtype": "Data",
-   "label": "Rack"
+   "fieldtype": "Link",
+   "label": "Rack",
+   "options": "WMS Rack"
   },
   {
    "fieldname": "capacity_volume",
@@ -198,8 +200,9 @@
   },
   {
    "fieldname": "zone",
-   "fieldtype": "Data",
-   "label": "Zone"
+   "fieldtype": "Link",
+   "label": "Zone",
+   "options": "WMS Zone"
   },
   {
    "fieldname": "shelf",
@@ -280,11 +283,10 @@
    "label": "City"
   },
   {
-   "default": "BIN-.[warehouse_abbr]-.####",
    "fieldname": "naming_series",
    "fieldtype": "Select",
    "label": "Naming Series",
-   "options": "BIN-.[warehouse_abbr]-.####",
+   "options": "BIN-.{warehouse_abbr}-.####",
    "read_only": 1,
    "reqd": 1
   },
@@ -306,7 +308,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-04-03 09:37:55.291686",
+ "modified": "2026-08-12 12:47:33.219029",
  "modified_by": "Administrator",
  "module": "WmsPro",
  "name": "WMS Bin",

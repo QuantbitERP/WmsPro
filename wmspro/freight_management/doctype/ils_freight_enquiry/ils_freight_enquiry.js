@@ -5,6 +5,15 @@ frappe.ui.form.on("ILS Freight Enquiry", {
 
 	refresh(frm) {
 		ils_toggle_container_type(frm);
+
+		if (!frm.is_new() && frm.doc.status === "Open") {
+			frm.add_custom_button(__('Quotation'), function() {
+				frappe.model.open_mapped_doc({
+					method: "wmspro.freight_management.doctype.ils_freight_enquiry.ils_freight_enquiry.make_quotation",
+					frm: frm
+				});
+			}, __('Create'));
+		}
 	},
 
 	segment(frm) {

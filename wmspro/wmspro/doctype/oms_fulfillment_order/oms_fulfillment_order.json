@@ -280,7 +280,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-04-15 15:10:48.319418",
+ "modified": "2026-08-12 13:22:55.482242",
  "modified_by": "Administrator",
  "module": "WmsPro",
  "name": "OMS Fulfillment Order",
@@ -288,6 +288,7 @@
  "owner": "sahil.sawant@erpdata.in",
  "permissions": [
   {
+   "cancel": 1,
    "create": 1,
    "delete": 1,
    "email": 1,
@@ -297,6 +298,7 @@
    "report": 1,
    "role": "System Manager",
    "share": 1,
+   "submit": 1,
    "write": 1
   }
  ],

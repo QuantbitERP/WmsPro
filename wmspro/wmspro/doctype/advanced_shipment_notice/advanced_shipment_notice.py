@@ -3,7 +3,7 @@
 
 import frappe
 from frappe.model.document import Document
-from frappe.utils import now, today
+from frappe.utils import flt, now, today
 
 
 class AdvancedShipmentNotice(Document):
@@ -24,6 +24,9 @@ class AdvancedShipmentNotice(Document):
             frappe.throw("Supplier Name is required")
         if self.party == "Customer" and not self.customer:
             frappe.throw("Customer is required")
+            
+        # Calculate total qty
+        self.total_qty = sum([flt(d.ordered_qty) for d in self.advanced_shipment_notice_details])
 
     def before_insert(self):
         """Set ASN status to Draft when saving"""
@@ -77,9 +80,6 @@ class AdvancedShipmentNotice(Document):
                 if not qty or qty <= 0:
                     frappe.throw(f"Quantity must be greater than zero for Item {row.item_code}")
 
-                # Debug: Check item name values
-                frappe.log_error(f"DEBUG ASN: row.item_code={row.item_code}, row.item_name={getattr(row, 'item_name', 'NOT_SET')}, row.item_name from DB={frappe.db.get_value('Item', row.item_code, 'item_name')}")
-
                 # Get item_code and item_name from Purchase Order item table
                 po_item = frappe.db.get_value("Purchase Order Item", 
                     {"parent": self.purchase_order, "item_code": row.item_code}, 
@@ -100,9 +100,6 @@ class AdvancedShipmentNotice(Document):
                 rate = getattr(row, 'rate', 0)  # Define rate from ASN row
                 amount = mrp * ordered_qty if ordered_qty else 0
                 
-                # Debug: Check rate and amount values
-                frappe.log_error(f"DEBUG ASN Rate/Amount: item_code={item_code}, ordered_qty={ordered_qty}, amount={amount}, mrp={mrp}")
-
                 # Handle batch number - create if doesn't exist
                 # batch_no = row.batch_no
                 # if batch_no:
@@ -123,7 +120,7 @@ class AdvancedShipmentNotice(Document):
                 # Use batch_no directly from ASN row without creating new batches
                 batch_no = row.batch_no
 
-                grn.append("wms_grn_item", {
+                grn_item = {
                     "item_code": item_code,
                     "item_name": item_name,
                     "description": row.description,
@@ -137,7 +134,7 @@ class AdvancedShipmentNotice(Document):
 
                     # Additional fields from ASN
                     "uom": row.uom,  # Pass UOM from ASN
-
+                    
                     # Required for stock
                     "qty": qty,
                     "conversion_factor": row.conversion_factor or 1,  # Use conversion_factor from ASN
@@ -146,7 +143,15 @@ class AdvancedShipmentNotice(Document):
                     
                     # Pass customer from main GRN to child table
                     "customer": self.customer if self.party == "Customer" else self.party_name
-                })
+                }
+                
+                # Pre-calculate pallet on GRN generation
+                pallet_capacity = frappe.db.get_value("Item", item_code, "custom_pallet_capacity")
+                if pallet_capacity and flt(pallet_capacity) > 0:
+                    qty_for_pallet = row.expected_qty or row.ordered_qty or 0
+                    grn_item["pallet"] = round(flt(qty_for_pallet) / flt(pallet_capacity), 2)
+                
+                grn.append("wms_grn_item", grn_item)
                 frappe.msgprint(f"Added item to GRN: {item_code}, qty_excepted: {row.expected_qty or row.ordered_qty}")
             
             # ---- Insert GRN ----

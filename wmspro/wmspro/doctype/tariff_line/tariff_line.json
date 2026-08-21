@@ -30,8 +30,7 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Frequency",
-   "options": "Daily\nWeekly\nMonthly\nQuarterly\nYearly",
-   "read_only": 1
+   "options": "Daily\nWeekly\nMonthly\nQuarterly\nYearly"
   },
   {
    "default": "0",
@@ -87,7 +86,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-04-14 15:52:18.027843",
+ "modified": "2026-08-12 12:02:37.886425",
  "modified_by": "Administrator",
  "module": "WmsPro",
  "name": "Tariff Line",
