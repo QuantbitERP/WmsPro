@@ -158,6 +158,12 @@ frappe.ui.form.on("WMS Inbound Task", {
     
     qty_received: function(frm, cdt, cdn) {
         calculate_stock_qty_received(frm, cdt, cdn);
+        calculate_pallets(frm, cdt, cdn);
+        calculate_totals(frm);
+    },
+    
+    qty_excepted: function(frm, cdt, cdn) {
+        calculate_pallets(frm, cdt, cdn);
         calculate_totals(frm);
     },
     
@@ -239,15 +245,15 @@ function calculate_stock_qty_received(frm, cdt, cdn) {
 
 function calculate_pallets(frm, cdt, cdn) {
     let row = locals[cdt][cdn];
+    let qty = parseFloat(row.qty_accepted) || parseFloat(row.qty_excepted) || parseFloat(row.qty_received) || 0;
     
-    if (row.item_code && row.qty_accepted) {
+    if (row.item_code && qty > 0) {
         frappe.db.get_value('Item', row.item_code, 'custom_pallet_capacity', function(r) {
             if (r && r.custom_pallet_capacity) {
                 let capacity = parseFloat(r.custom_pallet_capacity);
-                let qty_accepted = parseFloat(row.qty_accepted) || 0;
                 
-                if (capacity > 0 && qty_accepted > 0) {
-                    let calculated_pallets = qty_accepted / capacity;
+                if (capacity > 0) {
+                    let calculated_pallets = qty / capacity;
                     frappe.model.set_value(cdt, cdn, 'pallet', calculated_pallets.toFixed(2));
                 } else {
                     frappe.model.set_value(cdt, cdn, 'pallet', 0);

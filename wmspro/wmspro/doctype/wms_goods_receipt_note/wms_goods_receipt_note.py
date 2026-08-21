@@ -239,7 +239,7 @@ class WMSGoodsReceiptNote(Document):
                         batch.item = item.item_code
                         batch.insert(ignore_permissions=True)
                     except Exception as e:
-                        frappe.log_error(f"Failed to auto-create batch {item.batch_no}: {str(e)}")
+                        frappe.log_error(title=f"Failed to auto-create batch {item.batch_no}", message=str(e))
 
             suggested_bin = self.get_suggested_bin(item.item_code, item.warehouse)
             item_warehouse = getattr(item, 'warehouse', None) or self.warehouse
@@ -279,7 +279,8 @@ class WMSGoodsReceiptNote(Document):
                 "wms_bin": item_staging_bin,
                 "to_wms_bin": item_staging_bin,
                 "customer_name_": item_customer,
-                "to_customer_name_": item_customer
+                "to_customer_name_": item_customer,
+                "allow_zero_valuation_rate": 1
             })
 
         # Only submit if items were added
@@ -287,10 +288,9 @@ class WMSGoodsReceiptNote(Document):
             try:
                 stock_entry.insert(ignore_permissions=True)
                 stock_entry.submit()
-                self.db_set("stock_entry", stock_entry.name)
                 frappe.msgprint(f"Material Receipt Stock Entry {stock_entry.name} created successfully")
             except Exception as e:
-                frappe.log_error(f"Failed to create Stock Entry: {str(e)}", "Stock Entry Error")
+                frappe.log_error(title="Stock Entry Error", message=f"Failed to create Stock Entry: {str(e)}")
                 frappe.msgprint(f"Error creating Stock Entry: {str(e)}")
         else:
             frappe.msgprint("No items found for Material Receipt Stock Entry")
@@ -444,7 +444,10 @@ class WMSGoodsReceiptNote(Document):
             task.from_warehouse = item_staging_bin_warehouse
             
             suggested_bin = self.get_abc_suggested_bin(item.item_code, item_warehouse)
-            suggested_bin_warehouse = frappe.db.get_value("WMS Bin", suggested_bin, "warehouse")
+            if suggested_bin:
+                suggested_bin_warehouse = frappe.db.get_value("WMS Bin", suggested_bin, "warehouse")
+            else:
+                suggested_bin_warehouse = item_warehouse
             
             task.to_warehouse = suggested_bin_warehouse
             task.from_bin = item_staging_bin
@@ -579,3 +582,34 @@ def get_contract_for_customer(customer):
     
     # If no contract found, return empty
     return {"contract": ""}
+
+@frappe.whitelist()
+@frappe.validate_and_sanitize_search_inputs
+def get_customers_by_warehouse(doctype, txt, searchfield, start, page_len, filters):
+    warehouse = filters.get("warehouse")
+    if not warehouse:
+        return frappe.db.get_list("Customer", filters={"name": ("like", f"%{txt}%")}, as_list=True)
+    
+    # Get customers from Contracts for this warehouse
+    contracts = frappe.db.get_all("Contract", {"custom_warehouse": warehouse, "docstatus": 1}, "party_name")
+    customer_names = [c.party_name for c in contracts if c.party_name]
+    
+    # Also check departments safely
+    dept = frappe.db.get_value("Warehouse", warehouse, "custom_department")
+    if dept:
+        try:
+            dept_customer = frappe.db.get_value("Department", dept, "customer")
+            if dept_customer and dept_customer not in customer_names:
+                customer_names.append(dept_customer)
+        except Exception:
+            pass
+            
+    if not customer_names:
+        # If no customers are strictly linked to this warehouse, just return all matching the text
+        return frappe.db.get_list("Customer", filters={"name": ("like", f"%{txt}%")}, as_list=True)
+        
+    return frappe.db.sql(f"""
+        SELECT name FROM `tabCustomer`
+        WHERE name IN %s AND name LIKE %s
+        LIMIT %s, %s
+    """, (tuple(customer_names), f"%{txt}%", start, page_len))

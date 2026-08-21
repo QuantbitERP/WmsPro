@@ -64,6 +64,7 @@
    "options": "Purchase Order"
   },
   {
+   "fetch_from": "item_code.description",
    "fieldname": "description",
    "fieldtype": "Small Text",
    "label": "Description"
@@ -92,6 +93,7 @@
    "label": "Manufacturing Date"
   },
   {
+   "fetch_from": "item_code.stock_uom",
    "fieldname": "uom",
    "fieldtype": "Link",
    "label": "UOM",
@@ -150,6 +152,7 @@
   },
   {
    "columns": 1,
+   "fetch_from": "item_code.stock_uom",
    "fieldname": "stock_uom",
    "fieldtype": "Link",
    "in_list_view": 1,

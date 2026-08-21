@@ -10,7 +10,20 @@ frappe.ui.form.on('WMS Inbound Task', {
         // Auto-populate customer based on warehouse selection
         let row = locals[cdt][cdn];
         if (row.warehouse) {
-            get_customer_for_warehouse(frm, cdt, cdn, row.warehouse);
+            // First check if parent has customer
+            let parent_customer = "";
+            if (frm.doc.customer) {
+                parent_customer = frm.doc.customer;
+            } else if (frm.doc.party_type === 'Customer' && frm.doc.party_name) {
+                parent_customer = frm.doc.party_name;
+            }
+            
+            if (parent_customer) {
+                frappe.model.set_value(cdt, cdn, 'customer', parent_customer);
+                get_contract_for_customer(frm, cdt, cdn, parent_customer);
+            } else {
+                get_customer_for_warehouse(frm, cdt, cdn, row.warehouse);
+            }
         } else {
             // Clear customer and contract if warehouse is cleared
             frappe.model.set_value(cdt, cdn, 'customer', '');
@@ -36,9 +49,9 @@ function setup_warehouse_customer_filters(frm) {
         let row = locals[cdt][cdn];
         if (row.warehouse) {
             return {
+                query: 'wmspro.wmspro.doctype.wms_goods_receipt_note.wms_goods_receipt_note.get_customers_by_warehouse',
                 filters: {
-                    // Filter customers by custom_warehouse field
-                    'custom_warehouse': row.warehouse
+                    'warehouse': row.warehouse
                 }
             };
         }

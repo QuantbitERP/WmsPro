@@ -73,13 +73,14 @@ class OMSFulfillmentOrder(Document):
                 )
 
         if (self.total_qty_allocated or 0) >= (self.total_qty_required or 0):
-
             if not self.is_new():
-
                 old_doc = self.get_doc_before_save()
-
+                
                 if not old_doc:
                     return
+                    
+                if (old_doc.total_qty_allocated or 0) >= (old_doc.total_qty_required or 0):
+                    pass
 
                 for item in self.items:
 
@@ -98,8 +99,14 @@ class OMSFulfillmentOrder(Document):
                         )
 
         self.calculate_pallet_for_items()
+        self.calculate_totals()
 
 
+    def calculate_totals(self):
+        self.total_qty_required = sum(flt(d.qty_required) for d in self.items)
+        self.total_qty_allocated = sum(flt(d.qty_allocated) for d in self.items)
+        self.total_qty_dispatched = sum(flt(d.qty_dispatched) for d in self.items)
+        self.total_qty_delivered = sum(flt(d.qty_delivered) for d in self.items)
 
     def calculate_pallet_for_items(self):
         """Calculate pallet quantity for fulfillment items: qty_allocated / custom_pallet_capacity"""
@@ -141,8 +148,8 @@ class OMSFulfillmentOrder(Document):
                 )
 
         # NEW CHECK
-        if (self.total_qty_allocated or 0) >= (self.total_qty_required or 0):
-            frappe.throw("All required quantity already allocated. No new Pick List needed.")
+        # if (self.total_qty_allocated or 0) >= (self.total_qty_required or 0):
+        #     frappe.throw("All required quantity already allocated. No new Pick List needed.")
 
         allocations = self.allocate_inventory()
 
@@ -196,6 +203,7 @@ class OMSFulfillmentOrder(Document):
                 """
                 SELECT
                     bl.bin_location,
+                    bl.batch_no,
                     bl.balance_qty,
                     IFNULL(bl.reserved_qty,0) AS reserved_qty,
                     bl.available_qty
@@ -292,6 +300,7 @@ class OMSFulfillmentOrder(Document):
             "bin_location": row.bin_location,
             "item_code": item_code,
             "item_name": item_name,
+            "batch_no": row.batch_no,
             "quantity_change": 0,  # Reservation doesn't change quantity
             "balance_qty": sle_balance,
             "reserved_qty": (row.reserved_qty or 0) + qty,

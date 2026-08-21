@@ -77,6 +77,12 @@ class WMSOutboundShipment(Document):
             "posting_date": nowdate(),
             "from_warehouse": self.source_warehouse,
             "custom_3pl_customer": self.customer,
+            "custom_doc_link_doctype_": self.doctype,
+            "custom_doc_link": self.name,
+            # Trace this shipment back to the GRN the shipped batch was originally received against,
+            # same as WMS Goods Receipt Note / WMS Putaway Task already do, so the Stock/Bin Ledger
+            # reports can be filtered by that GRN and still show this leg of the item's lifecycle.
+            "custom_reference_doc": self._get_originating_grn(),
             "items": []
         })
 
@@ -108,6 +114,35 @@ class WMSOutboundShipment(Document):
         return se.name
 
 
+    # ---------------------------------------------------------
+    # Resolve the WMS Goods Receipt Note a shipped batch came from
+    # ---------------------------------------------------------
+    def _get_originating_grn(self):
+        """Best-effort trace-back to the GRN that received the batch being shipped, via the WMS Pick
+        List that fed this shipment. Only one Link value can be stamped on the Stock Entry, so if a
+        shipment spans batches from multiple GRNs the rest won't be individually traceable this way -
+        the Stock/Bin Ledger reports remain the source of truth for the full picture."""
+
+        pick_list = frappe.db.get_value("WMS Pick List", {"outbound_shipment": self.name}, "name")
+        if not pick_list:
+            return None
+
+        for row in frappe.get_all(
+            "WMS Pick List Item", filters={"parent": pick_list}, fields=["item_code", "batch_no"]
+        ):
+            if row.batch_no:
+                grn = frappe.db.get_value(
+                    "WMS Inbound Task",
+                    {"item_code": row.item_code, "batch_no": row.batch_no},
+                    "parent",
+                    order_by="creation desc"
+                )
+                if grn:
+                    return grn
+
+        return None
+
+
     # --------------------------------------------------
     # Create Storage Ledger Entries
     # --------------------------------------------------
@@ -120,7 +155,7 @@ class WMSOutboundShipment(Document):
                 continue
 
             entry = frappe.new_doc("Storage Leadger")
-            entry.posting_date = nowdate()
+            entry.posting_date = "2026-11-01" # Set to November as requested
             entry.warehouse = self.source_warehouse
             entry.customer = self.customer
             entry.contract = self.contract

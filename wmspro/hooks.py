@@ -188,12 +188,6 @@ fixtures = [
         ]
     },
     {
-        "doctype": "Insights Workbook"
-    },
-    {
-        "doctype": "Insights Data Source"
-    },
-    {
         "doctype": "Property Setter",
         "filters": [
             ["module", "=", "WMSPro"]

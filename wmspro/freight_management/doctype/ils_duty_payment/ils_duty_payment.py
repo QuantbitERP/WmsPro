@@ -54,6 +54,8 @@ class ILSDutyPayment(Document):
 		pe = frappe.new_doc("Payment Entry")
 		pe.set("payment_type", "Pay")
 		pe.set("posting_date", payment_date)
+		pe.set("party_type", "Supplier")
+		pe.set("party", frappe.db.get_value("ILS Customs Declaration", customs_declaration, "customs_agent"))
 		pe.set("paid_amount", amount)
 		pe.set("received_amount", amount)
 		pe.set("source_exchange_rate", 1)

@@ -53,12 +53,26 @@ frappe.ui.form.on("OMS Fulfillment Item", {
     qty_allocated(frm, cdt, cdn) {
         let row = locals[cdt][cdn];
         calculate_pallet_quantity(cdt, cdn, row.item_code, row.qty_allocated);
+        calculate_totals(frm);
+    },
+    
+    qty_dispatched(frm, cdt, cdn) {
+        calculate_totals(frm);
+    },
+    
+    qty_delivered(frm, cdt, cdn) {
+        calculate_totals(frm);
     },
     
     items_add(frm, cdt, cdn) {
         // When new item row is added, set up filter
         console.log("New item row added");
         filter_bin_locations_for_item(frm, cdt, cdn);
+        calculate_totals(frm);
+    },
+    
+    items_remove(frm, cdt, cdn) {
+        calculate_totals(frm);
     },
     
     bin_location(frm, cdt, cdn) {
@@ -145,4 +159,26 @@ function calculate_pallet_quantity(cdt, cdn, item_code, qty_allocated) {
             console.log("Set pallet to 0 (custom_pallet_capacity not found or is 0)");
         }
     });
+}
+
+// Helper function to calculate totals
+function calculate_totals(frm) {
+    let total_qty_required = 0;
+    let total_qty_allocated = 0;
+    let total_qty_dispatched = 0;
+    let total_qty_delivered = 0;
+    
+    if (frm.doc.items && frm.doc.items.length) {
+        frm.doc.items.forEach(row => {
+            total_qty_required += flt(row.qty_required);
+            total_qty_allocated += flt(row.qty_allocated);
+            total_qty_dispatched += flt(row.qty_dispatched);
+            total_qty_delivered += flt(row.qty_delivered);
+        });
+    }
+    
+    frm.set_value("total_qty_required", total_qty_required);
+    frm.set_value("total_qty_allocated", total_qty_allocated);
+    frm.set_value("total_qty_dispatched", total_qty_dispatched);
+    frm.set_value("total_qty_delivered", total_qty_delivered);
 }

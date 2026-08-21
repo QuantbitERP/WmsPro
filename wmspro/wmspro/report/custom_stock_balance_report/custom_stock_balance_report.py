@@ -4,6 +4,9 @@
 import frappe
 from frappe.utils import flt
 
+# pyrefly: ignore [missing-import]
+from erpnext.stock.doctype.inventory_dimension.inventory_dimension import get_inventory_dimensions
+
 def execute(filters=None):
 	columns, data = [], []
 	
@@ -30,6 +33,8 @@ def get_columns():
 		{"fieldname": "customer", "label": "Customer", "fieldtype": "Link", "options": "Customer", "width": 120},
 		{"fieldname": "supplier", "label": "Supplier", "fieldtype": "Link", "options": "Supplier", "width": 120},
 		{"fieldname": "warehouse", "label": "Warehouse", "fieldtype": "Link", "options": "Warehouse", "width": 120},
+		{"fieldname": "rack", "label": "Rack", "fieldtype": "Link", "options": "WMS Rack", "width": 120},
+		{"fieldname": "bay", "label": "Bay", "fieldtype": "Link", "options": "WMS Bay", "width": 120},
 		{"fieldname": "wms_bin", "label": "WMS Bin", "fieldtype": "Link", "options": "WMS Bin", "width": 120},
 		{"fieldname": "bin_location", "label": "Bin Location", "fieldtype": "Link", "options": "WMS Bin", "width": 120},
 		{"fieldname": "item_code", "label": "Item Code", "fieldtype": "Link", "options": "Item", "width": 120},
@@ -53,19 +58,23 @@ def get_stock_balance_data(filters):
 	data = []
 	
 	frappe.log_error(f"Filters received: {frappe.as_json(filters)}", "Custom Stock Balance Debug")
-	
-	wms_data = get_wms_bin_balance(filters)
-	frappe.log_error(f"WMS Bin Ledger data found: {len(wms_data)} rows", "Custom Stock Balance Debug")
-	
+	wms_data = get_wms_bin_balance_from_dimension(filters)
+	frappe.log_error(f"WMS Bin dimension (Stock Ledger Entry) data found: {len(wms_data)} rows", "Custom Stock Balance Debug")
+
+	if not wms_data:
+		frappe.log_error("WMS Bin dimension empty, falling back to legacy WMS Bin Ledger", "Custom Stock Balance Debug")
+		wms_data = get_wms_bin_balance(filters)
+		frappe.log_error(f"WMS Bin Ledger data found: {len(wms_data)} rows", "Custom Stock Balance Debug")
+
 	if wms_data:
 		frappe.log_error(f"Sample WMS data: {frappe.as_json(wms_data[:2])}", "Custom Stock Balance Debug")
-	
+
 	if not wms_data:
 		frappe.log_error("WMS Bin Ledger empty, falling back to standard Stock Ledger", "Custom Stock Balance Debug")
 		wms_data = get_standard_stock_balance(filters)
 		frappe.log_error(f"Standard Stock Ledger data: {len(wms_data)} rows", "Custom Stock Balance Debug")
 	else:
-		frappe.log_error(f"Using WMS Bin Ledger data: {len(wms_data)} rows", "Custom Stock Balance Debug")
+		frappe.log_error(f"Using WMS Bin data: {len(wms_data)} rows", "Custom Stock Balance Debug")
 	
 	group_by = filters.get('group_by', 'Item')
 	frappe.log_error(f"Grouping by: {group_by}", "Custom Stock Balance Debug")
@@ -80,13 +89,19 @@ def get_stock_balance_data(filters):
 		frappe.log_error(f"Filtered by bins: {filters['bin_location']}, showing {len(wms_data)} rows", "Custom Stock Balance Debug")
 	
 	if filters.get('supplier') and filters['supplier']:
-		if isinstance(filters['supplier'], list):
-			wms_data = [row for row in wms_data 
-				if (row.get('supplier') in filters['supplier']) or (row.get('supplier_name') in filters['supplier'])]
-		else:
-			wms_data = [row for row in wms_data 
-				if (row.get('supplier') == filters['supplier']) or (row.get('supplier_name') == filters['supplier'])]
-		
+		target_suppliers = filters['supplier'] if isinstance(filters['supplier'], list) else [filters['supplier']]
+
+		def _row_supplier(row):
+			if row.get('supplier'):
+				return row['supplier']
+			if row.get('supplier_name'):
+				return row['supplier_name']
+			allocation = get_customer_supplier_allocation(row.get('item_code'), row.get('bin_location'))
+			row['supplier'] = allocation.get('supplier')
+			return row['supplier']
+
+		wms_data = [row for row in wms_data if _row_supplier(row) in target_suppliers]
+
 		frappe.log_error(f"Filtered by supplier: {filters['supplier']}, showing {len(wms_data)} rows", "Custom Stock Balance Debug")
 	
 	if filters.get('customer') and filters['customer']:
@@ -141,23 +156,26 @@ def get_stock_balance_data(filters):
 		if key not in grouped_data:
 			grouped_data[key] = {
 				'warehouse': row.get('warehouse'),
+				'rack': row.get('rack'),
+				'bay': row.get('bay'),
 				'bin_location': row.get('bin_location'),
 				'item_code': row.get('item_code'),
 				'batch_no': row.get('batch_no'),
 				'customer': row.get('customer'),
 				'supplier': row.get('supplier'),
 				'balance_qty': 0,
-				'reserved_qty': 0,
+				'reserved_qty': flt(row.get('reserved_qty', 0)),
 				'available_qty': 0,
 				'stock_uom': row.get('stock_uom'),
 				'posting_date': row.get('posting_date'),
 				'posting_time': row.get('posting_time')
 			}
-		
-		grouped_data[key]['balance_qty'] += flt(row.get('balance_qty', 0))
-		grouped_data[key]['reserved_qty'] += flt(row.get('reserved_qty', 0))
-		grouped_data[key]['available_qty'] += flt(row.get('available_qty', 0))
-	
+
+		grouped_data[key]['balance_qty'] += flt(row.get('quantity_change', row.get('balance_qty', 0)))
+
+	for row in grouped_data.values():
+		row['available_qty'] = row['balance_qty'] - row['reserved_qty']
+
 	wms_data = list(grouped_data.values())
 	frappe.log_error(f"After grouping: {len(wms_data)} rows", "Custom Stock Balance Debug")
 	
@@ -168,6 +186,8 @@ def get_stock_balance_data(filters):
 			if bin_key not in bin_specific_data:
 				bin_specific_data[bin_key] = {
 					'warehouse': row.get('warehouse'),
+					'rack': row.get('rack'),
+					'bay': row.get('bay'),
 					'bin_location': row.get('bin_location'),
 					'item_code': row.get('item_code'),
 					'batch_no': row.get('batch_no'),
@@ -219,12 +239,17 @@ def get_stock_balance_data(filters):
 				
 				new_data = []
 				for bin_name in bin_names:
-					bin_warehouse = frappe.db.get_value("WMS Bin", bin_name, "warehouse")
+					bin_info = frappe.db.get_value("WMS Bin", bin_name, ["warehouse", "rack", "bay"], as_dict=True)
+					if not bin_info:
+						continue
+					bin_warehouse = bin_info.get("warehouse")
 					for original_row in wms_data:
 						if original_row.get('warehouse') == bin_warehouse and original_row.get('bin_location') == 'N/A':
 							bin_row = original_row.copy()
 							bin_row['bin_location'] = bin_name
 							bin_row['wms_bin'] = bin_name
+							bin_row['rack'] = bin_info.get("rack")
+							bin_row['bay'] = bin_info.get("bay")
 							new_data.append(bin_row)
 						elif original_row.get('bin_location') != 'N/A':
 							
@@ -239,12 +264,14 @@ def get_stock_balance_data(filters):
 			
 			wms_bins = frappe.db.get_all("WMS Bin", 
 				filters={"warehouse": row['warehouse']},
-				fields=["name", "bin_code"]
+				fields=["name", "bin_code", "rack", "bay"]
 			)
 			if wms_bins:
 				
 				row['wms_bin'] = wms_bins[0].name
 				row['bin_location'] = wms_bins[0].name
+				row['rack'] = wms_bins[0].rack
+				row['bay'] = wms_bins[0].bay
 			else:
 				row['wms_bin'] = 'N/A'
 		else:
@@ -289,8 +316,94 @@ def get_stock_balance_data(filters):
 	
 	return data
 
+def get_wms_bin_dimension_fieldname():
+	"""Return the Stock Ledger Entry column backing the 'WMS Bin' Inventory Dimension, if one has
+	been configured (Stock > Settings > Inventory Dimension, reference document = WMS Bin).
+	Returns None if no such dimension exists yet, or it hasn't been synced onto Stock Ledger Entry."""
+	for dimension in get_inventory_dimensions():
+		if dimension.get("doctype") == "WMS Bin" and dimension.get("fieldname"):
+			if frappe.db.has_column("Stock Ledger Entry", dimension["fieldname"]):
+				return dimension["fieldname"]
+	return None
+
+
+def get_wms_bin_balance_from_dimension(filters):
+	"""Get current bin-level stock balance from Stock Ledger Entry, grouped by the 'WMS Bin'
+	Inventory Dimension column. This is the preferred source: sle.actual_qty is a true per-event
+	delta, so SUM(actual_qty) per (item, warehouse, bin, batch) bucket is always a correct running
+	balance - unlike WMS Bin Ledger.balance_qty (see get_wms_bin_balance below), which is a snapshot
+	recorded at each event and is unsafe to sum across multiple rows."""
+
+	bin_field = get_wms_bin_dimension_fieldname()
+	if not bin_field:
+		frappe.log_error("WMS Bin Inventory Dimension not configured/synced on Stock Ledger Entry", "Custom Stock Balance Debug")
+		return []
+
+	conditions = [f"sle.{bin_field} is not null", f"sle.{bin_field} != ''", "sle.docstatus < 2", "sle.is_cancelled = 0"]
+
+	if filters.get('company'):
+		conditions.append("sle.company = %(company)s")
+	if filters.get('warehouse'):
+		if isinstance(filters['warehouse'], list):
+			conditions.append("sle.warehouse IN %(warehouse)s")
+		else:
+			conditions.append("sle.warehouse = %(warehouse)s")
+	if filters.get('item_code'):
+		if isinstance(filters['item_code'], list):
+			conditions.append("sle.item_code IN %(item_code)s")
+		else:
+			conditions.append("sle.item_code = %(item_code)s")
+	if filters.get('item_group'):
+		conditions.append("i.item_group = %(item_group)s")
+	if filters.get('customer'):
+		if isinstance(filters['customer'], list):
+			conditions.append("sle.custom_3pl_customer IN %(customer)s")
+		else:
+			conditions.append("sle.custom_3pl_customer = %(customer)s")
+
+	where_clause = " AND ".join(conditions)
+
+	query = f"""
+		SELECT
+			sle.item_code,
+			sle.warehouse,
+			sle.{bin_field} as bin_location,
+			sle.batch_no,
+			SUM(sle.actual_qty) as balance_qty,
+			0 as reserved_qty,
+			SUM(sle.actual_qty) as available_qty,
+			i.item_name,
+			i.item_group,
+			i.brand,
+			i.stock_uom,
+			w.rack as rack,
+			w.bay as bay,
+			sle.custom_3pl_customer as customer,
+			MAX(sle.posting_date) as posting_date,
+			MAX(sle.posting_time) as posting_time
+		FROM `tabStock Ledger Entry` sle
+		LEFT JOIN `tabItem` i ON sle.item_code = i.name
+		LEFT JOIN `tabWMS Bin` w ON sle.{bin_field} = w.name
+		WHERE {where_clause}
+		GROUP BY sle.item_code, sle.warehouse, sle.{bin_field}, sle.batch_no, sle.custom_3pl_customer
+		HAVING SUM(sle.actual_qty) != 0
+		ORDER BY sle.item_code
+	"""
+
+	try:
+		data = frappe.db.sql(query, filters, as_dict=True)
+	except Exception as e:
+		frappe.log_error(f"WMS Bin dimension Query Error: {str(e)}", "Custom Stock Balance Debug")
+		data = []
+
+	frappe.log_error(f"WMS Bin dimension ({bin_field}) balance rows: {len(data)}", "Custom Stock Balance Debug")
+	return data
+
+
 def get_wms_bin_balance(filters):
-	"""Get stock balance from WMS Bin Ledger"""
+	"""Get stock balance from WMS Bin Ledger - legacy fallback for stock movements recorded before
+	the WMS Bin Inventory Dimension existed. See get_wms_bin_balance_from_dimension for the
+	preferred, delta-safe source."""
 	
 	table_exists = frappe.db.exists("DocType", "WMS Bin Ledger")
 	frappe.log_error(f"WMS Bin Ledger DocType exists: {table_exists}", "Custom Stock Balance Debug")
@@ -307,9 +420,9 @@ def get_wms_bin_balance(filters):
 			return []
 	
 	conditions = []
-	
+
 	if filters.get('company'):
-		conditions.append("w.warehouse = %(company)s")
+		conditions.append("w.warehouse in (select name from `tabWarehouse` where company = %(company)s)")
 	if filters.get('warehouse'):
 		if isinstance(filters['warehouse'], list):
 			conditions.append("w.warehouse IN %(warehouse)s")
@@ -348,6 +461,8 @@ def get_wms_bin_balance(filters):
 		SELECT 
 			bl.*,
 			w.warehouse as bin_warehouse,
+			w.rack as rack,
+			w.bay as bay,
 			i.item_name,
 			i.item_group,
 			i.brand,
@@ -648,6 +763,8 @@ def get_standard_stock_balance(filters):
 					bin_query = f"""
 						SELECT 
 							wbs.warehouse,
+							w.rack,
+							w.bay,
 							wbs.item_code,
 							wbs.batch_no,
 							wbs.balance_qty,
@@ -667,6 +784,7 @@ def get_standard_stock_balance(filters):
 							 WHERE pri.item_code = wbs.item_code AND pr.docstatus = 1
 							 ORDER BY pr.creation DESC LIMIT 1) as supplier
 						FROM `tabWMS Bin Stock` wbs
+						LEFT JOIN `tabWMS Bin` w ON wbs.bin_location = w.name
 						LEFT JOIN `tabItem` i ON wbs.item_code = i.name
 						WHERE wbs.bin_location = '{bin_name}'
 						AND wbs.balance_qty > 0
@@ -697,6 +815,8 @@ def get_standard_stock_balance(filters):
 					bin_query = f"""
 						SELECT 
 							b.warehouse,
+							(SELECT rack FROM `tabWMS Bin` WHERE name='{bin_name}') as rack,
+							(SELECT bay FROM `tabWMS Bin` WHERE name='{bin_name}') as bay,
 							b.item_code,
 							b.batch_no,
 							b.actual_qty as balance_qty,
@@ -753,6 +873,8 @@ def get_standard_stock_balance(filters):
 					warehouse_query = f"""
 						SELECT 
 							sle.warehouse,
+							(SELECT rack FROM `tabWMS Bin` WHERE name='{bin_name}') as rack,
+							(SELECT bay FROM `tabWMS Bin` WHERE name='{bin_name}') as bay,
 							sle.item_code,
 							sle.batch_no,
 							SUM(sle.actual_qty) as balance_qty,

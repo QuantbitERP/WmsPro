@@ -235,6 +235,7 @@ frappe.ui.form.on('Advanced Shipment Notice', {
                     
                     // Refresh the table to show calculated values
                     frm.refresh_field("advanced_shipment_notice_details");
+                    calculate_total_qty(frm);
                 }, 200);
             }
         });
@@ -251,6 +252,11 @@ frappe.ui.form.on("Advanced Shipment Notice Details", {
         }
         calculate_asn_amount(frm, cdt, cdn);
         calculate_stock_qty(frm, cdt, cdn);
+        calculate_total_qty(frm);
+    },
+    
+    advanced_shipment_notice_details_remove: function(frm, cdt, cdn) {
+        calculate_total_qty(frm);
     },
     
     mrp: function(frm, cdt, cdn) {
@@ -343,4 +349,14 @@ function calculate_stock_qty(frm, cdt, cdn) {
     
     // Set the stock_qty field
     frappe.model.set_value(cdt, cdn, 'stock_qty', stock_qty);
+}
+
+function calculate_total_qty(frm) {
+    let total = 0;
+    if (frm.doc.advanced_shipment_notice_details) {
+        frm.doc.advanced_shipment_notice_details.forEach(row => {
+            total += parseFloat(row.ordered_qty) || 0;
+        });
+    }
+    frm.set_value('total_qty', total);
 }
