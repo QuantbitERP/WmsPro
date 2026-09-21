@@ -14,33 +14,84 @@ frappe.ui.form.on("ILS Job Cost Sheet", {
 			frm.page.set_indicator(`GP: ${gp}%`, "red");
 		}
 
+		// Action button to Fetch Invoices
+		if (frm.doc.freight_job) {
+			frm.add_custom_button(__("Fetch Invoices"), () => {
+				frappe.call({
+					method: "wmspro.freight_management.doctype.ils_job_cost_sheet.ils_job_cost_sheet.get_cost_sheet_data",
+					args: { freight_job: frm.doc.freight_job },
+					callback(r) {
+						if (r.message) {
+							ils_apply_cost_sheet_data(frm, r.message);
+							frappe.show_alert({
+								message: __("Invoices fetched: {0} Purchase Invoice(s), {1} Sales Invoice(s).", [r.message.purchase_invoices_count || 0, r.message.sales_invoices_count || 0]),
+								indicator: "green"
+							});
+						}
+					}
+				});
+			}, __("Actions"));
+		}
+
 		// Quick links
 		if (frm.doc.freight_job) {
-			frm.add_custom_button("Freight Job", () => {
+			frm.add_custom_button(__("Freight Job"), () => {
 				frappe.set_route("Form", "ILS Freight Job", frm.doc.freight_job);
-			}, "View");
+			}, __("View"));
 		}
 		if (frm.doc.sales_invoice) {
-			frm.add_custom_button("Sales Invoice", () => {
+			frm.add_custom_button(__("Sales Invoice"), () => {
 				frappe.set_route("Form", "Sales Invoice", frm.doc.sales_invoice);
-			}, "View");
+			}, __("View"));
+		}
+
+		let has_pi = (frm.doc.cost_lines || []).some(row => row.purchase_invoice_ref);
+		if (has_pi) {
+			frm.add_custom_button(__("Purchase Invoices"), () => {
+				frappe.set_route("List", "Purchase Invoice", {
+					custom_ils_freight_job: frm.doc.freight_job
+				});
+			}, __("View"));
 		}
 	},
 
 	freight_job(frm) {
 		if (!frm.doc.freight_job) return;
-		frappe.db.get_value(
-			"ILS Freight Job", frm.doc.freight_job,
-			["customer", "segment"],
-			(r) => {
-				if (!r) return;
-				if (!frm.doc.customer) frm.set_value("customer", r.customer);
-				if (!frm.doc.segment)  frm.set_value("segment", r.segment);
+		frappe.call({
+			method: "wmspro.freight_management.doctype.ils_job_cost_sheet.ils_job_cost_sheet.get_cost_sheet_data",
+			args: { freight_job: frm.doc.freight_job },
+			callback(r) {
+				if (r.message) {
+					ils_apply_cost_sheet_data(frm, r.message);
+					frappe.show_alert({
+						message: __("Loaded data: {0} Purchase Invoice(s), {1} Sales Invoice(s).", [r.message.purchase_invoices_count || 0, r.message.sales_invoices_count || 0]),
+						indicator: "green"
+					});
+				}
 			}
-		);
+		});
 	}
 
 });
+
+function ils_apply_cost_sheet_data(frm, d) {
+	if (d.customer) frm.set_value("customer", d.customer);
+	if (d.segment)  frm.set_value("segment", d.segment);
+	if (d.currency) frm.set_value("currency", d.currency);
+	if (d.sales_invoice) frm.set_value("sales_invoice", d.sales_invoice);
+	frm.set_value("total_sell_amount", d.total_sell_amount || 0);
+
+	frm.clear_table("cost_lines");
+	(d.cost_lines || []).forEach(row => {
+		let child = frm.add_child("cost_lines");
+		Object.assign(child, row);
+	});
+	frm.refresh_field("cost_lines");
+
+	frm.set_value("total_buy_amount", d.total_buy_amount || 0);
+	frm.set_value("gross_profit", d.gross_profit || 0);
+	frm.set_value("gp_percent", d.gp_percent || 0);
+}
 
 // ── Cost Lines child table ────────────────────────────────────
 frappe.ui.form.on("ILS Cost Line", {

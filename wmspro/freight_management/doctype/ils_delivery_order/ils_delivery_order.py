@@ -47,16 +47,17 @@ class ILSDeliveryOrder(Document):
 		freight_job = self.get("freight_job")
 		frappe.db.set_value(
 			"ILS Freight Job", freight_job,
-			"custom_ils_delivery_order", self.name
+			"delivery_order", self.name
 		)
 
 	def on_update_after_submit(self):
 		freight_job = self.get("freight_job")
-		if self.get("status") == "Collected":
-			frappe.db.set_value(
-				"ILS Freight Job", freight_job, "status", "Out for Delivery"
-			)
-			frappe.msgprint(
-				f"Freight Job <b>{freight_job}</b> updated to Out for Delivery.",
-				indicator="green"
-			)
+		if self.get("status") == "Collected" and freight_job:
+			fj = frappe.get_doc("ILS Freight Job", freight_job)
+			if fj.status not in ("Out for Delivery", "Delivered", "Invoiced", "Closed"):
+				fj.status = "Out for Delivery"
+				fj.save(ignore_permissions=True)
+				frappe.msgprint(
+					f"Freight Job <b>{freight_job}</b> updated to Out for Delivery.",
+					indicator="green"
+				)

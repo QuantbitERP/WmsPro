@@ -1,0 +1,121 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "hash",
+ "creation": "2026-08-22 12:32:41.276455",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "sec_break_1",
+  "col_break_1",
+  "transport_job",
+  "allocation_date",
+  "col_break_2",
+  "source_job_type",
+  "remarks",
+  "col_break_3",
+  "freight_job",
+  "col_break_4",
+  "transport_cost_allocated"
+ ],
+ "fields": [
+  {
+   "fieldname": "sec_break_1",
+   "fieldtype": "Section Break",
+   "label": "General Details"
+  },
+  {
+   "fieldname": "col_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "transport_job",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Transport Job",
+   "options": "Transport Job",
+   "reqd": 1
+  },
+  {
+   "fieldname": "allocation_date",
+   "fieldtype": "Date",
+   "label": "Allocation Date"
+  },
+  {
+   "fieldname": "col_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "Freight",
+   "fieldname": "source_job_type",
+   "fieldtype": "Select",
+   "label": "Source Job Type",
+   "options": "Freight\nWarehouse\nCFS"
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Small Text",
+   "label": "Remarks"
+  },
+  {
+   "fieldname": "col_break_3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "freight_job",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Freight Job",
+   "options": "ILS Freight Job"
+  },
+  {
+   "fieldname": "col_break_4",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "transport_cost_allocated",
+   "fieldtype": "Currency",
+   "label": "Transport Cost Allocated"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-08-22 12:32:41.276455",
+ "modified_by": "Administrator",
+ "module": "Freight Management",
+ "name": "Job Cost Allocation",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "All",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

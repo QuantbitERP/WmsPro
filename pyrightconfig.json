@@ -1,9 +1,14 @@
 {
-  "venvPath": "/home/erpadmin/frappe-bench",
+  "venvPath": "/home/erpadmin/bench-wmspro",
   "venv": "env",
   "extraPaths": [
-    "/home/erpadmin/frappe-bench/apps/frappe",
-    "/home/erpadmin/frappe-bench/apps/erpnext",
-    "/home/erpadmin/frappe-bench/apps/wmspro"
+    "/home/erpadmin/bench-wmspro/apps/frappe",
+    "/home/erpadmin/bench-wmspro/apps/erpnext",
+    "/home/erpadmin/bench-wmspro/apps/wmspro",
+    "/home/erpadmin/bench-wmspro/apps/hrms",
+    "/home/erpadmin/bench-wmspro/apps/india_compliance",
+    "/home/erpadmin/bench-wmspro/apps/quantbit_fleet_system",
+    "/home/erpadmin/bench-wmspro/apps/quantbit_hims_integration"
   ]
 }
+

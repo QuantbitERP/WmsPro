@@ -5,45 +5,66 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "sec_break_1",
+  "col_break_1",
   "naming_series",
-  "quote_date",
-  "quote_status",
-  "col_b1",
-  "validity_date",
   "linked_enquiry",
-  "sec_b1",
+  "col_break_2",
+  "quote_date",
   "customer",
+  "col_break_3",
+  "quote_status",
   "customer_name",
-  "col_b2",
+  "col_break_4",
+  "validity_date",
   "carrier_agent",
-  "sec_b2",
+  "sec_break_2",
+  "col_break_5",
   "segment",
-  "direction",
-  "incoterm",
-  "col_b3",
-  "origin_country",
   "origin_port",
+  "col_break_6",
+  "direction",
   "destination_country",
+  "col_break_7",
+  "incoterm",
   "destination_port",
-  "sec_b3",
+  "col_break_8",
+  "origin_country",
   "commodity",
+  "sec_break_3",
+  "col_break_9",
   "hs_code",
-  "cargo_description",
-  "col_b4",
-  "total_packages",
-  "total_weight_kg",
   "total_cbm",
+  "col_break_10",
+  "cargo_description",
   "container_type",
-  "sec_b4",
-  "quotation_charges",
+  "col_break_11",
+  "total_packages",
   "currency",
+  "col_break_12",
+  "total_weight_kg",
   "total_buy_amount",
+  "sec_break_4",
+  "col_break_13",
   "total_sell_amount",
-  "sec_b5",
+  "col_break_14",
   "quote_notes",
+  "col_break_15",
+  "col_break_16",
+  "sec_break_5",
+  "quotation_charges",
   "amended_from"
  ],
  "fields": [
+  {
+   "fieldname": "sec_break_1",
+   "fieldtype": "Section Break",
+   "label": "General Details"
+  },
+  {
+   "fieldname": "col_break_1",
+   "fieldtype": "Column Break"
+  },
   {
    "fieldname": "naming_series",
    "fieldtype": "Select",
@@ -52,11 +73,33 @@
    "reqd": 1
   },
   {
+   "fieldname": "linked_enquiry",
+   "fieldtype": "Link",
+   "label": "Linked Enquiry",
+   "options": "ILS Freight Enquiry"
+  },
+  {
+   "fieldname": "col_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
    "default": "Today",
    "fieldname": "quote_date",
    "fieldtype": "Date",
    "label": "Quote Date",
    "reqd": 1
+  },
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Customer",
+   "options": "Customer"
+  },
+  {
+   "fieldname": "col_break_3",
+   "fieldtype": "Column Break"
   },
   {
    "default": "Draft",
@@ -68,7 +111,13 @@
    "options": "Draft\nSent\nAccepted\nRejected\nExpired"
   },
   {
-   "fieldname": "col_b1",
+   "description": "For prospects not yet in Customer master",
+   "fieldname": "customer_name",
+   "fieldtype": "Data",
+   "label": "Customer Name"
+  },
+  {
+   "fieldname": "col_break_4",
    "fieldtype": "Column Break"
   },
   {
@@ -78,44 +127,19 @@
    "reqd": 1
   },
   {
-   "fieldname": "linked_enquiry",
-   "fieldtype": "Link",
-   "label": "Linked Enquiry",
-   "options": "ILS Freight Enquiry"
-  },
-  {
-   "fieldname": "sec_b1",
-   "fieldtype": "Section Break",
-   "label": "Customer"
-  },
-  {
-   "fieldname": "customer",
-   "fieldtype": "Link",
-   "in_list_view": 1,
-   "in_standard_filter": 1,
-   "label": "Customer",
-   "options": "Customer"
-  },
-  {
-   "description": "For prospects not yet in Customer master",
-   "fieldname": "customer_name",
-   "fieldtype": "Data",
-   "label": "Customer Name"
-  },
-  {
-   "fieldname": "col_b2",
-   "fieldtype": "Column Break"
-  },
-  {
    "fieldname": "carrier_agent",
    "fieldtype": "Link",
    "label": "Carrier / Agent",
    "options": "Supplier"
   },
   {
-   "fieldname": "sec_b2",
+   "fieldname": "sec_break_2",
    "fieldtype": "Section Break",
-   "label": "Shipment Details"
+   "label": "Additional Info 1"
+  },
+  {
+   "fieldname": "col_break_5",
+   "fieldtype": "Column Break"
   },
   {
    "fieldname": "segment",
@@ -127,6 +151,15 @@
    "reqd": 1
   },
   {
+   "fieldname": "origin_port",
+   "fieldtype": "Data",
+   "label": "Origin Port / Airport"
+  },
+  {
+   "fieldname": "col_break_6",
+   "fieldtype": "Column Break"
+  },
+  {
    "fieldname": "direction",
    "fieldtype": "Select",
    "in_list_view": 1,
@@ -135,13 +168,27 @@
    "reqd": 1
   },
   {
+   "fieldname": "destination_country",
+   "fieldtype": "Data",
+   "label": "Destination Country"
+  },
+  {
+   "fieldname": "col_break_7",
+   "fieldtype": "Column Break"
+  },
+  {
    "fieldname": "incoterm",
    "fieldtype": "Select",
    "label": "Incoterm",
    "options": "EXW\nFCA\nFOB\nCFR\nCIF\nCPT\nCIP\nDAP\nDDP"
   },
   {
-   "fieldname": "col_b3",
+   "fieldname": "destination_port",
+   "fieldtype": "Data",
+   "label": "Destination Port / Airport"
+  },
+  {
+   "fieldname": "col_break_8",
    "fieldtype": "Column Break"
   },
   {
@@ -150,29 +197,18 @@
    "label": "Origin Country"
   },
   {
-   "fieldname": "origin_port",
-   "fieldtype": "Data",
-   "label": "Origin Port / Airport"
-  },
-  {
-   "fieldname": "destination_country",
-   "fieldtype": "Data",
-   "label": "Destination Country"
-  },
-  {
-   "fieldname": "destination_port",
-   "fieldtype": "Data",
-   "label": "Destination Port / Airport"
-  },
-  {
-   "fieldname": "sec_b3",
-   "fieldtype": "Section Break",
-   "label": "Cargo Details"
-  },
-  {
    "fieldname": "commodity",
    "fieldtype": "Data",
    "label": "Commodity"
+  },
+  {
+   "fieldname": "sec_break_3",
+   "fieldtype": "Section Break",
+   "label": "Additional Info 2"
+  },
+  {
+   "fieldname": "col_break_9",
+   "fieldtype": "Column Break"
   },
   {
    "fieldname": "hs_code",
@@ -180,28 +216,18 @@
    "label": "HS Code"
   },
   {
-   "fieldname": "cargo_description",
-   "fieldtype": "Small Text",
-   "label": "Cargo Description"
-  },
-  {
-   "fieldname": "col_b4",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "total_packages",
-   "fieldtype": "Int",
-   "label": "Total Packages"
-  },
-  {
-   "fieldname": "total_weight_kg",
-   "fieldtype": "Float",
-   "label": "Total Weight (KG)"
-  },
-  {
    "fieldname": "total_cbm",
    "fieldtype": "Float",
    "label": "Total CBM"
+  },
+  {
+   "fieldname": "col_break_10",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "cargo_description",
+   "fieldtype": "Small Text",
+   "label": "Cargo Description"
   },
   {
    "depends_on": "eval:['FCL-EXP','FCL-IMP'].includes(doc.segment)",
@@ -211,15 +237,13 @@
    "options": "\n20GP\n40GP\n40HC"
   },
   {
-   "fieldname": "sec_b4",
-   "fieldtype": "Section Break",
-   "label": "Charges"
+   "fieldname": "col_break_11",
+   "fieldtype": "Column Break"
   },
   {
-   "fieldname": "quotation_charges",
-   "fieldtype": "Table",
-   "label": "Quotation Charges",
-   "options": "ILS Quotation Charge"
+   "fieldname": "total_packages",
+   "fieldtype": "Int",
+   "label": "Total Packages"
   },
   {
    "fieldname": "currency",
@@ -229,10 +253,28 @@
    "reqd": 1
   },
   {
+   "fieldname": "col_break_12",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "total_weight_kg",
+   "fieldtype": "Float",
+   "label": "Total Weight (KG)"
+  },
+  {
    "fieldname": "total_buy_amount",
    "fieldtype": "Currency",
    "label": "Total Buy Amount",
    "read_only": 1
+  },
+  {
+   "fieldname": "sec_break_4",
+   "fieldtype": "Section Break",
+   "label": "Additional Info 3"
+  },
+  {
+   "fieldname": "col_break_13",
+   "fieldtype": "Column Break"
   },
   {
    "fieldname": "total_sell_amount",
@@ -241,14 +283,32 @@
    "read_only": 1
   },
   {
-   "fieldname": "sec_b5",
-   "fieldtype": "Section Break",
-   "label": "Quote Notes"
+   "fieldname": "col_break_14",
+   "fieldtype": "Column Break"
   },
   {
    "fieldname": "quote_notes",
    "fieldtype": "Text Editor",
    "label": "Quote Notes"
+  },
+  {
+   "fieldname": "col_break_15",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "col_break_16",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "sec_break_5",
+   "fieldtype": "Section Break",
+   "label": "Quotation Charges"
+  },
+  {
+   "fieldname": "quotation_charges",
+   "fieldtype": "Table",
+   "label": "Quotation Charges",
+   "options": "ILS Quotation Charge"
   },
   {
    "fieldname": "amended_from",

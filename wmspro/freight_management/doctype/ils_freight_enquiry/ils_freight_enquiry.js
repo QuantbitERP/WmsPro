@@ -3,6 +3,16 @@
 
 frappe.ui.form.on("ILS Freight Enquiry", {
 
+	setup(frm) {
+		frm.set_query("item_code", "item", function() {
+			return {
+				filters: {
+					"is_stock_item": 1
+				}
+			};
+		});
+	},
+
 	refresh(frm) {
 		ils_toggle_container_type(frm);
 
@@ -14,6 +24,14 @@ frappe.ui.form.on("ILS Freight Enquiry", {
 				});
 			}, __('Create'));
 		}
+
+		frm.set_query("item_code", "item", function() {
+			return {
+				filters: {
+					"is_stock_item": 1
+				}
+			};
+		});
 	},
 
 	segment(frm) {

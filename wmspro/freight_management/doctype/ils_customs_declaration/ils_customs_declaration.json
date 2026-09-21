@@ -1,38 +1,67 @@
 {
  "actions": [],
  "autoname": "naming_series:",
- "creation": "2026-07-29 12:39:02.445144",
+ "creation": "2026-08-22 16:36:03.637737",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "sec_break_1",
+  "col_break_1",
   "naming_series",
-  "freight_job",
-  "declaration_type",
-  "col_b1",
-  "status",
   "declaration_date",
-  "sec_b1",
+  "col_break_2",
+  "freight_job",
   "customs_agent",
+  "col_break_3",
+  "declaration_type",
   "port_of_entry_exit",
-  "col_b2",
+  "col_break_4",
+  "status",
   "authority_declaration_no",
+  "sec_break_2",
+  "col_break_5",
   "currency",
-  "sec_b2",
-  "hs_code_lines",
-  "sec_b3",
+  "col_break_6",
   "total_declared_value",
+  "col_break_7",
   "total_duty_amount",
-  "sec_b4",
+  "col_break_8",
+  "sec_break_3",
+  "hs_code_lines",
+  "sec_break_4",
   "customs_stages",
-  "amended_from"
+  "amended_from",
+  "tab_2_tab",
+  "doc_link_doctype",
+  "doc_link"
  ],
  "fields": [
+  {
+   "fieldname": "sec_break_1",
+   "fieldtype": "Section Break",
+   "label": "General Details"
+  },
+  {
+   "fieldname": "col_break_1",
+   "fieldtype": "Column Break"
+  },
   {
    "fieldname": "naming_series",
    "fieldtype": "Select",
    "label": "Series",
    "options": "CD-.YYYY.-",
    "reqd": 1
+  },
+  {
+   "default": "Today",
+   "fieldname": "declaration_date",
+   "fieldtype": "Date",
+   "label": "Declaration Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "col_break_2",
+   "fieldtype": "Column Break"
   },
   {
    "bold": 1,
@@ -45,6 +74,16 @@
    "reqd": 1
   },
   {
+   "fieldname": "customs_agent",
+   "fieldtype": "Link",
+   "label": "Customs Agent",
+   "options": "Supplier"
+  },
+  {
+   "fieldname": "col_break_3",
+   "fieldtype": "Column Break"
+  },
+  {
    "fieldname": "declaration_type",
    "fieldtype": "Select",
    "in_list_view": 1,
@@ -53,45 +92,23 @@
    "reqd": 1
   },
   {
-   "fieldname": "col_b1",
-   "fieldtype": "Column Break"
-  },
-  {
-   "default": "Draft",
-   "fieldname": "status",
-   "fieldtype": "Select",
-   "in_list_view": 1,
-   "in_standard_filter": 1,
-   "allow_on_submit": 1,
-   "label": "Status",
-   "options": "Draft\nSubmitted to Customs\nUnder Examination\nExamination Complete\nDuty Paid\nReleased\nRejected"
-  },
-  {
-   "default": "Today",
-   "fieldname": "declaration_date",
-   "fieldtype": "Date",
-   "label": "Declaration Date",
-   "reqd": 1
-  },
-  {
-   "fieldname": "sec_b1",
-   "fieldtype": "Section Break",
-   "label": "Customs Details"
-  },
-  {
-   "fieldname": "customs_agent",
-   "fieldtype": "Link",
-   "label": "Customs Agent",
-   "options": "Supplier"
-  },
-  {
    "fieldname": "port_of_entry_exit",
    "fieldtype": "Data",
    "label": "Port of Entry / Exit"
   },
   {
-   "fieldname": "col_b2",
+   "fieldname": "col_break_4",
    "fieldtype": "Column Break"
+  },
+  {
+   "allow_on_submit": 1,
+   "default": "Draft",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Status",
+   "options": "Draft\nSubmitted to Customs\nUnder Examination\nExamination Complete\nDuty Paid\nReleased\nRejected"
   },
   {
    "description": "Number issued by customs authority",
@@ -101,6 +118,15 @@
    "label": "Authority Declaration No"
   },
   {
+   "fieldname": "sec_break_2",
+   "fieldtype": "Section Break",
+   "label": "Additional Info 1"
+  },
+  {
+   "fieldname": "col_break_5",
+   "fieldtype": "Column Break"
+  },
+  {
    "fieldname": "currency",
    "fieldtype": "Link",
    "label": "Currency",
@@ -108,7 +134,31 @@
    "reqd": 1
   },
   {
-   "fieldname": "sec_b2",
+   "fieldname": "col_break_6",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "total_declared_value",
+   "fieldtype": "Currency",
+   "label": "Total Declared Value",
+   "read_only": 1
+  },
+  {
+   "fieldname": "col_break_7",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "total_duty_amount",
+   "fieldtype": "Currency",
+   "label": "Total Duty Amount",
+   "read_only": 1
+  },
+  {
+   "fieldname": "col_break_8",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "sec_break_3",
    "fieldtype": "Section Break",
    "label": "HS Code Lines"
   },
@@ -120,26 +170,9 @@
    "reqd": 1
   },
   {
-   "fieldname": "sec_b3",
+   "fieldname": "sec_break_4",
    "fieldtype": "Section Break",
-   "label": "Totals"
-  },
-  {
-   "fieldname": "total_declared_value",
-   "fieldtype": "Currency",
-   "label": "Total Declared Value",
-   "read_only": 1
-  },
-  {
-   "fieldname": "total_duty_amount",
-   "fieldtype": "Currency",
-   "label": "Total Duty Amount",
-   "read_only": 1
-  },
-  {
-   "fieldname": "sec_b4",
-   "fieldtype": "Section Break",
-   "label": "Clearance Stages"
+   "label": "Customs Stages"
   },
   {
    "fieldname": "customs_stages",
@@ -156,6 +189,23 @@
    "print_hide": 1,
    "read_only": 1,
    "search_index": 1
+  },
+  {
+   "fieldname": "tab_2_tab",
+   "fieldtype": "Tab Break",
+   "label": "Connection"
+  },
+  {
+   "fieldname": "doc_link_doctype",
+   "fieldtype": "Link",
+   "label": "Doc link Doctype",
+   "options": "DocType"
+  },
+  {
+   "fieldname": "doc_link",
+   "fieldtype": "Dynamic Link",
+   "label": "Doc link",
+   "options": "doc_link_doctype"
   }
  ],
  "grid_page_length": 50,
@@ -163,10 +213,11 @@
  "is_submittable": 1,
  "links": [],
  "max_attachments": 10,
- "modified": "2026-07-29 12:39:02.445144",
+ "modified": "2026-08-25 10:34:45.698805",
  "modified_by": "Administrator",
  "module": "Freight Management",
  "name": "ILS Customs Declaration",
+ "naming_rule": "By \"Naming Series\" field",
  "owner": "Administrator",
  "permissions": [
   {

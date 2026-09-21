@@ -23,7 +23,7 @@
    "fieldtype": "Link",
    "in_list_view": 1,
    "label": "Cost Type",
-   "options": "ILS Charge Master",
+   "options": "Item",
    "reqd": 1
   },
   {

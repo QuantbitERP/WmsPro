@@ -28,7 +28,7 @@ export default function FinanceView() {
           {label:'Cost',data:[1680,1760,1850,1980,1840,2110],backgroundColor:C.red+'88',borderRadius:4},
           {label:'GP',data:[500,550,570,610,570,730],backgroundColor:C.green+'BB',borderRadius:4}
         ]},
-        options:{plugins:{legend:{display:false}},scales:{x:{grid:{display:false}},y:{grid:{color:C.border},ticks:{callback:v=>'AED '+(v/1000).toFixed(0)+'K'}}}}
+        options:{plugins:{legend:{display:false}},scales:{x:{grid:{display:false}},y:{grid:{color:C.border},ticks:{callback:v=>'OMR '+(v/1000).toFixed(0)+'K'}}}}
       });
 
       new Chart('gpSegChart',{
@@ -76,16 +76,16 @@ export default function FinanceView() {
         <div className="content">
           <div className="section-label">Month-to-Date Performance</div>
           <div className="grid-4">
-            <div className="kpi info"><div className="kpi-label">Revenue MTD</div><div className="kpi-value sm">AED 2.84M</div><div className="kpi-sub"><span className="up">↑18%</span>&nbsp;vs Jul 2025</div><div className="kpi-icon">💵</div></div>
-            <div className="kpi warning"><div className="kpi-label">Total Cost MTD</div><div className="kpi-value sm">AED 2.11M</div><div className="kpi-sub"><span className="down">↑14%</span>&nbsp;cost growth</div><div className="kpi-icon">📤</div></div>
-            <div className="kpi success"><div className="kpi-label">Gross Profit MTD</div><div className="kpi-value sm" style={{color:'var(--green)'}}>AED 730K</div><div className="kpi-sub"><span className="up">25.7% GP</span>&nbsp;margin</div><div className="kpi-icon">📈</div></div>
-            <div className="kpi danger"><div className="kpi-label">Unbilled Delivered</div><div className="kpi-value sm" style={{color:'var(--red)'}}>AED 286K</div><div className="kpi-sub">8 jobs — invoice pending</div><div className="kpi-icon">⚠️</div></div>
+            <div className="kpi info"><div className="kpi-label">Revenue MTD</div><div className="kpi-value sm">OMR 2.84M</div><div className="kpi-sub"><span className="up">↑18%</span>&nbsp;vs Jul 2025</div><div className="kpi-icon">💵</div></div>
+            <div className="kpi warning"><div className="kpi-label">Total Cost MTD</div><div className="kpi-value sm">OMR 2.11M</div><div className="kpi-sub"><span className="down">↑14%</span>&nbsp;cost growth</div><div className="kpi-icon">📤</div></div>
+            <div className="kpi success"><div className="kpi-label">Gross Profit MTD</div><div className="kpi-value sm" style={{color:'var(--green)'}}>OMR 730K</div><div className="kpi-sub"><span className="up">25.7% GP</span>&nbsp;margin</div><div className="kpi-icon">📈</div></div>
+            <div className="kpi danger"><div className="kpi-label">Unbilled Delivered</div><div className="kpi-value sm" style={{color:'var(--red)'}}>OMR 286K</div><div className="kpi-sub">8 jobs — invoice pending</div><div className="kpi-icon">⚠️</div></div>
           </div>
 
           <div className="section-label">Revenue vs Cost vs Gross Profit — Last 6 Months</div>
           <div className="chart-card">
             <div className="chart-card-header">
-              <div><div className="chart-card-title">Monthly Financial Performance</div><div className="chart-card-sub">AED thousands</div></div>
+              <div><div className="chart-card-title">Monthly Financial Performance</div><div className="chart-card-sub">OMR thousands</div></div>
               <div className="legend-row">
                 <div className="legend-item"><div className="legend-dot" style={{background:'#1A56DB'}}></div>Revenue</div>
                 <div className="legend-item"><div className="legend-dot" style={{background:'#EF4444'}}></div>Cost</div>
@@ -112,7 +112,7 @@ export default function FinanceView() {
             <div className="chart-card">
               <div className="chart-card-title" style={{marginBottom:12}}>Top 8 Customers — Revenue MTD</div>
               <table className="data-table">
-                <thead><tr><th>#</th><th>Customer</th><th>Revenue (AED)</th><th>GP%</th><th>Health</th></tr></thead>
+                <thead><tr><th>#</th><th>Customer</th><th>Revenue (OMR)</th><th>GP%</th><th>Health</th></tr></thead>
                 <tbody>
                   <tr><td className="mono">01</td><td>Gulf Traders LLC</td><td className="mono">482,000</td><td style={{color:'var(--green)',fontWeight:600}}>28%</td><td><span className="badge green">Healthy</span></td></tr>
                   <tr><td className="mono">02</td><td>Apex Electronics</td><td className="mono">371,000</td><td style={{color:'var(--green)',fontWeight:600}}>31%</td><td><span className="badge green">Healthy</span></td></tr>
@@ -128,7 +128,7 @@ export default function FinanceView() {
             <div>
               <div className="chart-card" style={{marginBottom:12}}>
                 <div className="chart-card-title" style={{marginBottom:10}}>Invoice Aging — Outstanding Receivables</div>
-                <div style={{display:'flex',justifyContent:'space-between',fontSize:11,color:'var(--muted)',marginBottom:4}}><span>Total Outstanding</span><span style={{fontWeight:700,color:'var(--ink)',fontFamily:"'JetBrains Mono',monospace"}}>AED 1,248,000</span></div>
+                <div style={{display:'flex',justifyContent:'space-between',fontSize:11,color:'var(--muted)',marginBottom:4}}><span>Total Outstanding</span><span style={{fontWeight:700,color:'var(--ink)',fontFamily:"'JetBrains Mono',monospace"}}>OMR 1,248,000</span></div>
                 <div className="aging-strip">
                   <div style={{flex:38,background:'var(--green-md)'}}></div>
                   <div style={{flex:27,background:'var(--amber-md)'}}></div>
@@ -136,10 +136,10 @@ export default function FinanceView() {
                   <div style={{flex:15,background:'var(--red)'}}></div>
                 </div>
                 <div className="aging-labels">
-                  <div className="aging-label"><div className="aging-swatch" style={{background:'var(--green-md)'}}></div>Current (AED 474K · 38%)</div>
-                  <div className="aging-label"><div className="aging-swatch" style={{background:'var(--amber-md)'}}></div>1-30d (AED 337K · 27%)</div>
-                  <div className="aging-label"><div className="aging-swatch" style={{background:'var(--red-md)'}}></div>31-60d (AED 250K · 20%)</div>
-                  <div className="aging-label"><div className="aging-swatch" style={{background:'var(--red)'}}></div>60+ (AED 187K · 15%)</div>
+                  <div className="aging-label"><div className="aging-swatch" style={{background:'var(--green-md)'}}></div>Current (OMR 474K · 38%)</div>
+                  <div className="aging-label"><div className="aging-swatch" style={{background:'var(--amber-md)'}}></div>1-30d (OMR 337K · 27%)</div>
+                  <div className="aging-label"><div className="aging-swatch" style={{background:'var(--red-md)'}}></div>31-60d (OMR 250K · 20%)</div>
+                  <div className="aging-label"><div className="aging-swatch" style={{background:'var(--red)'}}></div>60+ (OMR 187K · 15%)</div>
                 </div>
               </div>
               <div className="chart-card">
@@ -147,11 +147,11 @@ export default function FinanceView() {
                 <table className="data-table">
                   <thead><tr><th>Job</th><th>Charge</th><th>Amount</th><th>Days</th></tr></thead>
                   <tbody>
-                    <tr><td className="mono link-cell">FCL-IMP-26-00302</td><td>Ocean Freight</td><td className="mono">AED 84,000</td><td style={{color:'var(--red)',fontWeight:700}}>35</td></tr>
-                    <tr><td className="mono link-cell">AIR-EXP-26-00421</td><td>Air Freight</td><td className="mono">AED 31,500</td><td style={{color:'var(--amber)',fontWeight:700}}>18</td></tr>
-                    <tr><td className="mono link-cell">FCL-EXP-26-00319</td><td>THC</td><td className="mono">AED 12,800</td><td style={{color:'var(--amber)',fontWeight:700}}>12</td></tr>
-                    <tr><td className="mono link-cell">LCL-IMP-26-00071</td><td>Customs Agency</td><td className="mono">AED 6,200</td><td style={{color:'var(--green)',fontWeight:700}}>4</td></tr>
-                    <tr><td className="mono link-cell">CFS-26-00044</td><td>Storage</td><td className="mono">AED 4,800</td><td style={{color:'var(--green)',fontWeight:700}}>3</td></tr>
+                    <tr><td className="mono link-cell">FCL-IMP-26-00302</td><td>Ocean Freight</td><td className="mono">OMR 84,000</td><td style={{color:'var(--red)',fontWeight:700}}>35</td></tr>
+                    <tr><td className="mono link-cell">AIR-EXP-26-00421</td><td>Air Freight</td><td className="mono">OMR 31,500</td><td style={{color:'var(--amber)',fontWeight:700}}>18</td></tr>
+                    <tr><td className="mono link-cell">FCL-EXP-26-00319</td><td>THC</td><td className="mono">OMR 12,800</td><td style={{color:'var(--amber)',fontWeight:700}}>12</td></tr>
+                    <tr><td className="mono link-cell">LCL-IMP-26-00071</td><td>Customs Agency</td><td className="mono">OMR 6,200</td><td style={{color:'var(--green)',fontWeight:700}}>4</td></tr>
+                    <tr><td className="mono link-cell">CFS-26-00044</td><td>Storage</td><td className="mono">OMR 4,800</td><td style={{color:'var(--green)',fontWeight:700}}>3</td></tr>
                   </tbody>
                 </table>
               </div>
@@ -163,11 +163,11 @@ export default function FinanceView() {
           <div className="sidebar-card">
             <div className="sidebar-title">Revenue Target</div>
             <div style={{textAlign:'center',padding:'8px 0'}}>
-              <div style={{fontSize:28,fontWeight:700,fontFamily:"'JetBrains Mono',monospace",color:'var(--blue)'}}>AED 2.84M</div>
-              <div style={{fontSize:11,color:'var(--muted)',marginTop:4}}>of AED 3.2M target</div>
+              <div style={{fontSize:28,fontWeight:700,fontFamily:"'JetBrains Mono',monospace",color:'var(--blue)'}}>OMR 2.84M</div>
+              <div style={{fontSize:11,color:'var(--muted)',marginTop:4}}>of OMR 3.2M target</div>
               <div className="prog-bar" style={{marginTop:10}}><div className="prog-fill blue" style={{width:'89%'}}></div></div>
               <div style={{fontSize:13,fontWeight:700,color:'var(--blue)',marginTop:6}}>89% achieved</div>
-              <div style={{fontSize:11,color:'var(--muted)'}}>AED 360K needed · 2 days left</div>
+              <div style={{fontSize:11,color:'var(--muted)'}}>OMR 360K needed · 2 days left</div>
             </div>
           </div>
           <div className="sidebar-card">
@@ -179,10 +179,10 @@ export default function FinanceView() {
           </div>
           <div className="sidebar-card">
             <div className="sidebar-title">Finance Actions</div>
-            <div className="alert-item urgent"><span className="alert-icon">📄</span><div><div>8 jobs need invoicing</div><div className="alert-ref">AED 286,000 unbilled</div></div></div>
-            <div className="alert-item urgent"><span className="alert-icon">💸</span><div><div>Duty payment auth needed</div><div className="alert-ref">Falcon — AED 42,000</div></div></div>
+            <div className="alert-item urgent"><span className="alert-icon">📄</span><div><div>8 jobs need invoicing</div><div className="alert-ref">OMR 286,000 unbilled</div></div></div>
+            <div className="alert-item urgent"><span className="alert-icon">💸</span><div><div>Duty payment auth needed</div><div className="alert-ref">Falcon — OMR 42,000</div></div></div>
             <div className="alert-item warning"><span className="alert-icon">🔁</span><div><div>5 accruals to reverse</div><div className="alert-ref">PIs received, match needed</div></div></div>
-            <div className="alert-item warning"><span className="alert-icon">⏰</span><div><div>60+ day outstanding</div><div className="alert-ref">AED 187K — escalate</div></div></div>
+            <div className="alert-item warning"><span className="alert-icon">⏰</span><div><div>60+ day outstanding</div><div className="alert-ref">OMR 187K — escalate</div></div></div>
           </div>
           <div className="sidebar-card">
             <div className="sidebar-title">Import vs Export</div>

@@ -1,69 +1,56 @@
 {
  "actions": [],
  "autoname": "naming_series:",
- "creation": "2026-07-29 12:39:51.996961",
+ "creation": "2026-08-22 16:35:56.875384",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "sec_break_1",
+  "col_break_1",
   "naming_series",
-  "freight_job",
-  "do_type",
-  "col_b1",
-  "issue_date",
   "status",
-  "sec_b1",
+  "col_break_2",
+  "freight_job",
   "customer",
+  "col_break_3",
+  "do_type",
   "consignee",
-  "col_b2",
+  "col_break_4",
+  "issue_date",
   "carrier",
+  "sec_break_2",
+  "col_break_5",
   "bl_awb_no",
-  "sec_b2",
-  "cargo_description",
-  "no_of_packages",
-  "col_b3",
-  "weight_kg",
   "cbm",
+  "col_break_6",
+  "cargo_description",
   "container_no",
-  "sec_b3",
+  "col_break_7",
+  "no_of_packages",
   "port_airport",
+  "col_break_8",
+  "weight_kg",
   "valid_until",
-  "amended_from"
+  "amended_from",
+  "connection_tab",
+  "doc_type_link",
+  "doc_link"
  ],
  "fields": [
+  {
+   "fieldname": "sec_break_1",
+   "fieldtype": "Section Break",
+   "label": "General Details"
+  },
+  {
+   "fieldname": "col_break_1",
+   "fieldtype": "Column Break"
+  },
   {
    "fieldname": "naming_series",
    "fieldtype": "Select",
    "label": "Series",
    "options": "DO-.YYYY.-",
-   "reqd": 1
-  },
-  {
-   "bold": 1,
-   "fieldname": "freight_job",
-   "fieldtype": "Link",
-   "in_list_view": 1,
-   "label": "Freight Job",
-   "options": "ILS Freight Job",
-   "reqd": 1
-  },
-  {
-   "fieldname": "do_type",
-   "fieldtype": "Select",
-   "in_list_view": 1,
-   "label": "Type",
-   "options": "Sea\nAir",
-   "reqd": 1
-  },
-  {
-   "fieldname": "col_b1",
-   "fieldtype": "Column Break"
-  },
-  {
-   "default": "Today",
-   "fieldname": "issue_date",
-   "fieldtype": "Date",
-   "in_list_view": 1,
-   "label": "Issue Date",
    "reqd": 1
   },
   {
@@ -76,9 +63,17 @@
    "options": "Issued\nCollected\nExpired"
   },
   {
-   "fieldname": "sec_b1",
-   "fieldtype": "Section Break",
-   "label": "Parties"
+   "fieldname": "col_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "bold": 1,
+   "fieldname": "freight_job",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Freight Job",
+   "options": "ILS Freight Job",
+   "reqd": 1
   },
   {
    "fieldname": "customer",
@@ -89,13 +84,33 @@
    "reqd": 1
   },
   {
+   "fieldname": "col_break_3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "do_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Type",
+   "options": "Sea\nAir",
+   "reqd": 1
+  },
+  {
    "fieldname": "consignee",
    "fieldtype": "Data",
    "label": "Consignee"
   },
   {
-   "fieldname": "col_b2",
+   "fieldname": "col_break_4",
    "fieldtype": "Column Break"
+  },
+  {
+   "default": "Today",
+   "fieldname": "issue_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Issue Date",
+   "reqd": 1
   },
   {
    "fieldname": "carrier",
@@ -104,39 +119,33 @@
    "options": "Supplier"
   },
   {
+   "fieldname": "sec_break_2",
+   "fieldtype": "Section Break",
+   "label": "Additional Info 1"
+  },
+  {
+   "fieldname": "col_break_5",
+   "fieldtype": "Column Break"
+  },
+  {
    "fieldname": "bl_awb_no",
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "BL No / AWB No"
   },
   {
-   "fieldname": "sec_b2",
-   "fieldtype": "Section Break",
-   "label": "Cargo"
+   "fieldname": "cbm",
+   "fieldtype": "Float",
+   "label": "CBM"
+  },
+  {
+   "fieldname": "col_break_6",
+   "fieldtype": "Column Break"
   },
   {
    "fieldname": "cargo_description",
    "fieldtype": "Data",
    "label": "Cargo Description"
-  },
-  {
-   "fieldname": "no_of_packages",
-   "fieldtype": "Int",
-   "label": "No of Packages"
-  },
-  {
-   "fieldname": "col_b3",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "weight_kg",
-   "fieldtype": "Float",
-   "label": "Weight (KG)"
-  },
-  {
-   "fieldname": "cbm",
-   "fieldtype": "Float",
-   "label": "CBM"
   },
   {
    "depends_on": "eval:doc.do_type=='Sea'",
@@ -145,14 +154,27 @@
    "label": "Container No"
   },
   {
-   "fieldname": "sec_b3",
-   "fieldtype": "Section Break",
-   "label": "Port & Validity"
+   "fieldname": "col_break_7",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "no_of_packages",
+   "fieldtype": "Int",
+   "label": "No of Packages"
   },
   {
    "fieldname": "port_airport",
    "fieldtype": "Data",
    "label": "Port / Airport"
+  },
+  {
+   "fieldname": "col_break_8",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "weight_kg",
+   "fieldtype": "Float",
+   "label": "Weight (KG)"
   },
   {
    "fieldname": "valid_until",
@@ -168,6 +190,23 @@
    "print_hide": 1,
    "read_only": 1,
    "search_index": 1
+  },
+  {
+   "fieldname": "connection_tab",
+   "fieldtype": "Tab Break",
+   "label": "Connection"
+  },
+  {
+   "fieldname": "doc_type_link",
+   "fieldtype": "Link",
+   "label": "Doc Type link",
+   "options": "DocType"
+  },
+  {
+   "fieldname": "doc_link",
+   "fieldtype": "Dynamic Link",
+   "label": "Doc link",
+   "options": "doc_type_link"
   }
  ],
  "grid_page_length": 50,
@@ -175,10 +214,11 @@
  "is_submittable": 1,
  "links": [],
  "max_attachments": 10,
- "modified": "2026-07-29 12:39:51.996961",
+ "modified": "2026-08-25 10:37:41.774955",
  "modified_by": "Administrator",
  "module": "Freight Management",
  "name": "ILS Delivery Order",
+ "naming_rule": "By \"Naming Series\" field",
  "owner": "Administrator",
  "permissions": [
   {

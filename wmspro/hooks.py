@@ -46,7 +46,8 @@ app_include_js = "/assets/wmspro/js/stock_ledger_override.js"
 doctype_js = {
     "Item" : "public/js/custom_item.js",
     "WMS Goods Receipt Note" : "public/js/custom_grn.js",
-    "Contract" : "public/js/custom_contract.js"
+    "Contract" : "public/js/custom_contract.js",
+    "Quotation" : "public/js/custom_quotation.js"
 }
 # doctype_js = {"doctype" : "public/js/doctype.js"}
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
@@ -157,7 +158,7 @@ fixtures = [
     {
         "doctype": "Workspace",
         "filters": [
-            ["name", "=", "WMSPro"]
+            ["name", "in", ["WMS", "Freight Management"]]
         ]
     },
     {
@@ -216,6 +217,7 @@ scheduler_events = {
 
         # ADDED: Auto-expire Rate Cards whose valid_to date has passed
         "wmspro.freight_management.doctype.ils_freight_rate_card.ils_freight_rate_card.expire_rate_cards",
+        "wmspro.freight_management.controllers.quotation.daily_expire_quotations",
     ],
     # "hourly": [
     # 	"wmspro.tasks.hourly"
@@ -319,9 +321,12 @@ doc_events = {
 
     # Quotation — auto fill notes, calculate totals, create Freight Job
     "Quotation": {
+        "before_validate": "wmspro.freight_management.controllers.quotation.before_validate",
         "before_save":   "wmspro.freight_management.controllers.quotation.before_save",
         "before_submit": "wmspro.freight_management.controllers.quotation.before_submit",
         "on_submit":     "wmspro.freight_management.controllers.quotation.on_submit",
+        "after_insert":  "wmspro.freight_management.controllers.quotation.after_insert",
+        "on_update":     "wmspro.freight_management.controllers.quotation.on_update",
     },
 
     # Purchase Invoice — auto add cost line to Job Cost Sheet on submit
@@ -369,6 +374,33 @@ custom_fields = {
             "options": "custom_doc_link_doctype_",
             "read_only": 1,
             "insert_after": "custom_doc_link_doctype_"
+        },
+        {
+            "fieldname": "custom_ils_transport_job",
+            "fieldtype": "Link",
+            "label": "Transport Job",
+            "options": "Transport Job",
+            "insert_after": "custom_ils_freight_job"
+        },
+        {
+            "fieldname": "custom_ils_charges_section",
+            "fieldtype": "Section Break",
+            "label": "Freight Job Charges",
+            "insert_after": "items"
+        },
+        {
+            "fieldname": "custom_ils_job_charges",
+            "fieldtype": "Table",
+            "label": "Freight Job Charges",
+            "options": "ILS Job Charge",
+            "insert_after": "custom_ils_charges_section"
+        },
+        {
+            "fieldname": "custom_ils_total_charges",
+            "fieldtype": "Currency",
+            "label": "Total Freight Charges",
+            "read_only": 1,
+            "insert_after": "custom_ils_job_charges"
         }
     ]
 }
