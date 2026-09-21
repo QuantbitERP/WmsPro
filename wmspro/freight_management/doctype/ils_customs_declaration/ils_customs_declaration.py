@@ -19,11 +19,14 @@ class ILSCustomsDeclaration(Document):
 			frappe.throw("Freight Job is mandatory for Customs Declaration.")
 
 		job_status = frappe.db.get_value("ILS Freight Job", freight_job, "status")
-		valid_statuses = ["Arrived", "Customs Pending", "Customs Released"]
+		valid_statuses = [
+			"Arrived", "Customs Pending", "Customs Released",
+			"Out for Delivery", "Delivered", "Invoiced", "Closed"
+		]
 		if job_status not in valid_statuses:
 			frappe.throw(
 				f"Customs Declaration can only be created when Freight Job status is "
-				f"<b>Arrived</b>. Current status: <b>{job_status}</b>"
+				f"<b>Arrived</b> or later. Current status: <b>{job_status}</b>"
 			)
 
 	def calculate_duty_per_line(self):
@@ -55,23 +58,23 @@ class ILSCustomsDeclaration(Document):
 		if not freight_job:
 			return
 
-		current_job_status = frappe.db.get_value(
-			"ILS Freight Job", freight_job, "status"
-		)
+		target_job_status = None
+		if status in ["Submitted to Customs", "Under Examination", "Examination Complete", "Duty Paid"]:
+			target_job_status = "Customs Pending"
+		elif status == "Released":
+			target_job_status = "Customs Released"
+		elif status in ["Draft", "Rejected"]:
+			target_job_status = "Arrived"
 
-		if status == "Submitted to Customs" and current_job_status == "Arrived":
-			frappe.db.set_value(
-				"ILS Freight Job", freight_job, "status", "Customs Pending"
-			)
-
-		if status == "Released":
-			frappe.db.set_value(
-				"ILS Freight Job", freight_job, "status", "Customs Released"
-			)
-			frappe.msgprint(
-				f"Freight Job <b>{freight_job}</b> updated to Customs Released.",
-				indicator="green"
-			)
+		if target_job_status:
+			current_job_status = frappe.db.get_value("ILS Freight Job", freight_job, "status")
+			if current_job_status in ("Out for Delivery", "Delivered", "Invoiced", "Closed"):
+				return
+			if current_job_status != target_job_status:
+				job = frappe.get_doc("ILS Freight Job", freight_job)
+				job.status = target_job_status
+				job.save(ignore_permissions=True)
+				frappe.db.commit()
 
 		if status == "Rejected":
 			frappe.msgprint(

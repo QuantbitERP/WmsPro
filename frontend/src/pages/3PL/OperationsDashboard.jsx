@@ -77,7 +77,7 @@ export default function OperationsDashboard() {
         <span className="alert-icon">ℹ️</span>
         <div className="alert-body">
           <div className="title">4 invoices pending Finance Manager approval — aging 3+ days</div>
-          <div className="desc">Total value at risk: RM 84,200 · Approval needed before month-end close</div>
+          <div className="desc">Total value at risk: OMR 84,200 · Approval needed before month-end close</div>
         </div>
       </div>
     </div>
@@ -89,21 +89,21 @@ export default function OperationsDashboard() {
     <div className="kpi info">
       <div className="accent-bar"></div>
       <div className="label">Invoiced This Month</div>
-      <div className="value">RM 342K</div>
+      <div className="value">OMR 342K</div>
       <div className="sub">26 invoices raised</div>
       <div className="delta up">↑ 12% vs last month</div>
     </div>
     <div className="kpi danger">
       <div className="accent-bar"></div>
       <div className="label">Unbilled Transactions</div>
-      <div className="value">RM 61K</div>
+      <div className="value">OMR 61K</div>
       <div className="sub">Exceptions blocking billing</div>
       <div className="delta down">↑ 3 new today</div>
     </div>
     <div className="kpi warn">
       <div className="accent-bar"></div>
       <div className="label">Overdue Receivables</div>
-      <div className="value">RM 128K</div>
+      <div className="value">OMR 128K</div>
       <div className="sub">8 customers overdue</div>
       <div className="delta warn">4 over 60 days</div>
     </div>
@@ -121,16 +121,16 @@ export default function OperationsDashboard() {
     <div className="card">
       <div className="card-header">
         <span className="card-title">Invoice Aging Breakdown</span>
-        <span className="card-badge badge-red">RM 128K total</span>
+        <span className="card-badge badge-red">OMR 128K total</span>
       </div>
       <div className="card-body" style={{padding: 0}}>
         <table>
           <thead><tr><th>Bucket</th><th>Customers</th><th>Amount</th><th>Risk</th></tr></thead>
           <tbody>
-            <tr><td>0–30 days</td><td>12</td><td className="mono">RM 54,000</td><td><span className="pill pill-green">Low</span></td></tr>
-            <tr><td>31–60 days</td><td>5</td><td className="mono">RM 38,500</td><td><span className="pill pill-amber">Medium</span></td></tr>
-            <tr><td>61–90 days</td><td>3</td><td className="mono">RM 23,200</td><td><span className="pill pill-red">High</span></td></tr>
-            <tr><td>&gt;90 days</td><td>1</td><td className="mono">RM 12,300</td><td><span className="pill pill-red">Critical</span></td></tr>
+            <tr><td>0–30 days</td><td>12</td><td className="mono">OMR 54,000</td><td><span className="pill pill-green">Low</span></td></tr>
+            <tr><td>31–60 days</td><td>5</td><td className="mono">OMR 38,500</td><td><span className="pill pill-amber">Medium</span></td></tr>
+            <tr><td>61–90 days</td><td>3</td><td className="mono">OMR 23,200</td><td><span className="pill pill-red">High</span></td></tr>
+            <tr><td>&gt;90 days</td><td>1</td><td className="mono">OMR 12,300</td><td><span className="pill pill-red">Critical</span></td></tr>
           </tbody>
         </table>
       </div>
@@ -318,31 +318,31 @@ export default function OperationsDashboard() {
           <tbody>
             <tr>
               <td><strong>MegaRetail Sdn</strong></td><td>KL-Central</td>
-              <td className="mono">RM 15,000</td><td className="mono">RM 8,200</td>
-              <td className="mono" style={{color: 'var(--red)'}}>RM 6,800</td>
+              <td className="mono">OMR 15,000</td><td className="mono">OMR 8,200</td>
+              <td className="mono" style={{color: 'var(--red)'}}>OMR 6,800</td>
               <td><span className="pill pill-red">Top-Up Active</span></td>
             </tr>
             <tr>
               <td><strong>SunTrade Sdn</strong></td><td>KL-Central</td>
-              <td className="mono">RM 8,000</td><td className="mono">RM 5,900</td>
-              <td className="mono" style={{color: 'var(--amber)'}}>RM 2,100</td>
+              <td className="mono">OMR 8,000</td><td className="mono">OMR 5,900</td>
+              <td className="mono" style={{color: 'var(--amber)'}}>OMR 2,100</td>
               <td><span className="pill pill-amber">Top-Up Active</span></td>
             </tr>
             <tr>
               <td><strong>EcoStore Bhd</strong></td><td>KL-North</td>
-              <td className="mono">RM 6,500</td><td className="mono">RM 6,100</td>
-              <td className="mono" style={{color: 'var(--amber)'}}>RM 400</td>
+              <td className="mono">OMR 6,500</td><td className="mono">OMR 6,100</td>
+              <td className="mono" style={{color: 'var(--amber)'}}>OMR 400</td>
               <td><span className="pill pill-amber">Near Miss</span></td>
             </tr>
             <tr>
               <td>Alpha Pharma</td><td>KL-Central</td>
-              <td className="mono">RM 22,000</td><td className="mono">RM 26,400</td>
+              <td className="mono">OMR 22,000</td><td className="mono">OMR 26,400</td>
               <td className="mono" style={{color: 'var(--green)'}}>—</td>
               <td><span className="pill pill-green">Exceeded</span></td>
             </tr>
             <tr>
               <td>BrightGoods Sdn</td><td>KL-Central</td>
-              <td className="mono">RM 12,000</td><td className="mono">RM 14,800</td>
+              <td className="mono">OMR 12,000</td><td className="mono">OMR 14,800</td>
               <td className="mono" style={{color: 'var(--green)'}}>—</td>
               <td><span className="pill pill-green">Exceeded</span></td>
             </tr>
@@ -366,21 +366,21 @@ export default function OperationsDashboard() {
           <tr>
             <td><strong>SunTrade Sdn</strong></td><td>KL-Central</td>
             <td className="mono">2 Aug 2026</td>
-            <td className="mono">RM 8,000</td>
+            <td className="mono">OMR 8,000</td>
             <td className="mono" style={{color: 'var(--red)', fontWeight: 700}}>7 days</td>
             <td><span className="pill pill-red">Urgent Renewal</span></td>
           </tr>
           <tr>
             <td><strong>EcoStore Bhd</strong></td><td>KL-North</td>
             <td className="mono">18 Aug 2026</td>
-            <td className="mono">RM 6,500</td>
+            <td className="mono">OMR 6,500</td>
             <td className="mono" style={{color: 'var(--amber)', fontWeight: 700}}>23 days</td>
             <td><span className="pill pill-amber">Initiate Renewal</span></td>
           </tr>
           <tr>
             <td>FreshPack Co</td><td>KL-Central</td>
             <td className="mono">12 Sep 2026</td>
-            <td className="mono">RM 11,200</td>
+            <td className="mono">OMR 11,200</td>
             <td className="mono" style={{color: 'var(--blue)'}}>48 days</td>
             <td><span className="pill pill-blue">Monitor</span></td>
           </tr>

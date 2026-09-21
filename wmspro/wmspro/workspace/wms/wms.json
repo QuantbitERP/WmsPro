@@ -1,7 +1,7 @@
 {
  "charts": [],
- "content": "[{\"id\":\"gBOxt5NAC-\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Wms Flow</b></span>\",\"col\":12}},{\"id\":\"KdutzJiW-r\",\"type\":\"card\",\"data\":{\"card_name\":\"Master & Setup\",\"col\":4}},{\"id\":\"zL97B1kffn\",\"type\":\"card\",\"data\":{\"card_name\":\"Transaction & Process Doctype\",\"col\":4}},{\"id\":\"DRTZvHIsKk\",\"type\":\"card\",\"data\":{\"card_name\":\"Data Keeping and storing\",\"col\":4}},{\"id\":\"m10IH_3-58\",\"type\":\"card\",\"data\":{\"card_name\":\"Report\",\"col\":4}}]",
- "creation": "2026-08-12 13:47:06.813125",
+ "content": "[{\"id\": \"gBOxt5NAC-\", \"type\": \"header\", \"data\": {\"text\": \"<span class=\\\"h4\\\"><b>Wms Flow</b></span>\", \"col\": 12}}, {\"id\": \"KdutzJiW-r\", \"type\": \"card\", \"data\": {\"card_name\": \"Master & Setup\", \"col\": 4}}, {\"id\": \"zL97B1kffn\", \"type\": \"card\", \"data\": {\"card_name\": \"Inbound Shipment\", \"col\": 4}}, {\"id\": \"c087t9M37n\", \"type\": \"card\", \"data\": {\"card_name\": \"Outbound Shipment\", \"col\": 4}}, {\"id\": \"DRTZvHIsKk\", \"type\": \"card\", \"data\": {\"card_name\": \"Data Keeping and storing\", \"col\": 4}}, {\"id\": \"m10IH_3-58\", \"type\": \"card\", \"data\": {\"card_name\": \"Report\", \"col\": 4}}]",
+ "creation": "2026-09-07 12:13:16.638891",
  "custom_blocks": [],
  "docstatus": 0,
  "doctype": "Workspace",
@@ -11,158 +11,13 @@
  "idx": 0,
  "indicator_color": "green",
  "is_hidden": 0,
- "label": "WMSPro",
+ "label": "WMS",
  "links": [
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Data Keeping and storing",
-   "link_count": 2,
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Storage Leadger",
-   "link_count": 0,
-   "link_to": "Storage Leadger",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Stock Entry",
-   "link_count": 0,
-   "link_to": "Stock Entry",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Bill Transaction",
-   "link_count": 1,
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Billing Run",
-   "link_count": 0,
-   "link_to": "Billing Run",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Report",
-   "link_count": 8,
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Custom Stock leadger Report",
-   "link_count": 0,
-   "link_to": "Custom Stock leadger Report",
-   "link_type": "Report",
-   "onboard": 0,
-   "report_ref_doctype": "Stock Ledger Entry",
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Custom Stock Balance Report",
-   "link_count": 0,
-   "link_to": "Custom Stock Balance Report",
-   "link_type": "Report",
-   "onboard": 0,
-   "report_ref_doctype": "Stock Ledger Entry",
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Inbound and Outbound Analysis",
-   "link_count": 0,
-   "link_to": "Inbound and Outbound Analysis",
-   "link_type": "Report",
-   "onboard": 0,
-   "report_ref_doctype": "Storage Leadger",
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "WmsPro Analyzer Stock inventory",
-   "link_count": 0,
-   "link_to": "WmsPro Analyzer Stock inventory",
-   "link_type": "Report",
-   "onboard": 0,
-   "report_ref_doctype": "Storage Leadger",
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "WmsPro Summerize Data",
-   "link_count": 0,
-   "link_to": "WmsPro Summerize Data",
-   "link_type": "Report",
-   "onboard": 0,
-   "report_ref_doctype": "Billing Run",
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "WmsPro Detailed Data",
-   "link_count": 0,
-   "link_to": "WmsPro Detailed Data",
-   "link_type": "Report",
-   "onboard": 0,
-   "report_ref_doctype": "Billing Run",
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "ASN Comaparison Report",
-   "link_count": 0,
-   "link_to": "ASN Comaparison Report",
-   "link_type": "Report",
-   "onboard": 0,
-   "report_ref_doctype": "Advanced Shipment Notice",
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "GRN Summary Report",
-   "link_count": 0,
-   "link_to": "GRN Summary Report",
-   "link_type": "Report",
-   "onboard": 0,
-   "report_ref_doctype": "WMS Goods Receipt Note",
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
    "label": "Master & Setup",
-   "link_count": 9,
+   "link_count": 0,
    "link_type": "DocType",
    "onboard": 0,
    "type": "Card Break"
@@ -260,8 +115,8 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Transaction & Process Doctype",
-   "link_count": 8,
+   "label": "Inbound Shipment",
+   "link_count": 0,
    "link_type": "DocType",
    "onboard": 0,
    "type": "Card Break"
@@ -295,6 +150,15 @@
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Outbound Shipment",
+   "link_count": 0,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
   },
   {
    "hidden": 0,
@@ -339,18 +203,154 @@
   {
    "hidden": 0,
    "is_query_report": 0,
+   "label": "WMS Packing List",
+   "link_count": 0,
+   "link_to": "WMS Packing List",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
    "label": "Billing Run",
    "link_count": 0,
    "link_to": "Billing Run",
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Data Keeping and storing",
+   "link_count": 0,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Storage Leadger",
+   "link_count": 0,
+   "link_to": "Storage Leadger",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Stock Entry",
+   "link_count": 0,
+   "link_to": "Stock Entry",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Report",
+   "link_count": 0,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Custom Stock leadger Report",
+   "link_count": 0,
+   "link_to": "Custom Stock leadger Report",
+   "link_type": "Report",
+   "onboard": 0,
+   "report_ref_doctype": "Stock Ledger Entry",
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Custom Stock Balance Report",
+   "link_count": 0,
+   "link_to": "Custom Stock Balance Report",
+   "link_type": "Report",
+   "onboard": 0,
+   "report_ref_doctype": "Stock Ledger Entry",
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Inbound and Outbound Analysis",
+   "link_count": 0,
+   "link_to": "Inbound and Outbound Analysis",
+   "link_type": "Report",
+   "onboard": 0,
+   "report_ref_doctype": "Storage Leadger",
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "WmsPro Analyzer Stock inventory",
+   "link_count": 0,
+   "link_to": "WmsPro Analyzer Stock inventory",
+   "link_type": "Report",
+   "onboard": 0,
+   "report_ref_doctype": "Storage Leadger",
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "WmsPro Summerize Data",
+   "link_count": 0,
+   "link_to": "WmsPro Summerize Data",
+   "link_type": "Report",
+   "onboard": 0,
+   "report_ref_doctype": "Billing Run",
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "WmsPro Detailed Data",
+   "link_count": 0,
+   "link_to": "WmsPro Detailed Data",
+   "link_type": "Report",
+   "onboard": 0,
+   "report_ref_doctype": "Billing Run",
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "ASN Comaparison Report",
+   "link_count": 0,
+   "link_to": "ASN Comaparison Report",
+   "link_type": "Report",
+   "onboard": 0,
+   "report_ref_doctype": "Advanced Shipment Notice",
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "GRN Summary Report",
+   "link_count": 0,
+   "link_to": "GRN Summary Report",
+   "link_type": "Report",
+   "onboard": 0,
+   "report_ref_doctype": "WMS Goods Receipt Note",
+   "type": "Link"
   }
  ],
- "modified": "2026-08-12 16:42:26.755355",
+ "modified": "2026-09-07 12:52:13.075388",
  "modified_by": "Administrator",
  "module": "WmsPro",
- "name": "WMSPro",
+ "name": "WMS",
  "number_cards": [],
  "owner": "Administrator",
  "parent_page": "",
@@ -359,5 +359,5 @@
  "roles": [],
  "sequence_id": 42.0,
  "shortcuts": [],
- "title": "WMSPro"
+ "title": "WMS"
 }

@@ -1,0 +1,687 @@
+{
+ "charts": [],
+ "content": "[{\"id\":\"CYDAVu7wVD\",\"type\":\"paragraph\",\"data\":{\"text\":\"Masters &amp; Setup&nbsp;\",\"col\":12}},{\"id\":\"3z6dkuLWb5\",\"type\":\"card\",\"data\":{\"card_name\":\"Freight \",\"col\":4}},{\"id\":\"dLDqh_yiui\",\"type\":\"card\",\"data\":{\"card_name\":\"Vehicle and Fleet\",\"col\":4}},{\"id\":\"ErW_Sb_qaW\",\"type\":\"card\",\"data\":{\"card_name\":\"Transportation \",\"col\":4}},{\"id\":\"FnZo_piGkG\",\"type\":\"paragraph\",\"data\":{\"text\":\"Transactions\",\"col\":12}},{\"id\":\"gnTJBEujmI\",\"type\":\"card\",\"data\":{\"card_name\":\"Freight Forwarding \",\"col\":4}},{\"id\":\"hGzmGounT9\",\"type\":\"card\",\"data\":{\"card_name\":\"Transportation\",\"col\":4}},{\"id\":\"a0okXPI4T0\",\"type\":\"card\",\"data\":{\"card_name\":\"Fleet and Workshop\",\"col\":4}},{\"id\":\"gJ65EvfSUZ\",\"type\":\"card\",\"data\":{\"card_name\":\"Standard ERPNext\",\"col\":4}},{\"id\":\"c-dqIh9flc\",\"type\":\"card\",\"data\":{\"card_name\":\"Fleet Reports \",\"col\":4}}]",
+ "creation": "2026-09-07 12:52:13.867449",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "hide_custom": 0,
+ "icon": "table",
+ "idx": 0,
+ "indicator_color": "blue",
+ "is_hidden": 0,
+ "label": "Freight Management",
+ "links": [
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Freight ",
+   "link_count": 0,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Segment Master",
+   "link_count": 0,
+   "link_to": "ILS Segment Master",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Charge Master",
+   "link_count": 0,
+   "link_to": "ILS Charge Master",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Freight Rate Card",
+   "link_count": 0,
+   "link_to": "ILS Freight Rate Card",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Vehicle and Fleet",
+   "link_count": 0,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Vehicle Master",
+   "link_count": 0,
+   "link_to": "Vehicle Master",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Driver Master",
+   "link_count": 0,
+   "link_to": "Driver Master",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Vehicle Type",
+   "link_count": 0,
+   "link_to": "Vehicle Type",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Maintenance Type Master",
+   "link_count": 0,
+   "link_to": "Maintenance Type Master",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Expense Category Master",
+   "link_count": 0,
+   "link_to": "Expense Category Master",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Insurance Type Master",
+   "link_count": 0,
+   "link_to": "Insurance Type Master",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Parts Catalogue",
+   "link_count": 0,
+   "link_to": "Parts Catalogue",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Workshop Bay",
+   "link_count": 0,
+   "link_to": "Workshop Bay",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Workshop Staff",
+   "link_count": 0,
+   "link_to": "Workshop Staff",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Workshop Settings",
+   "link_count": 0,
+   "link_to": "Workshop Settings",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Transportation ",
+   "link_count": 0,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Transporter",
+   "link_count": 0,
+   "link_to": "Transporter",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Route",
+   "link_count": 0,
+   "link_to": "Route",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Route Point",
+   "link_count": 0,
+   "link_to": "Route Point",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Transport Rate",
+   "link_count": 0,
+   "link_to": "Transport Rate",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Vehicle Document Type",
+   "link_count": 0,
+   "link_to": "Vehicle Document Type",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Trip Allowance Type",
+   "link_count": 0,
+   "link_to": "Trip Allowance Type",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Freight Forwarding ",
+   "link_count": 0,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Freight Enquiry",
+   "link_count": 0,
+   "link_to": "ILS Freight Enquiry",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Quotation",
+   "link_count": 0,
+   "link_to": "Quotation",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Freight Job",
+   "link_count": 0,
+   "link_to": "ILS Freight Job",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Customs Declaration",
+   "link_count": 0,
+   "link_to": "ILS Customs Declaration",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Duty Payment",
+   "link_count": 0,
+   "link_to": "ILS Duty Payment",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Delivery Order",
+   "link_count": 0,
+   "link_to": "ILS Delivery Order",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Delivery Advice",
+   "link_count": 0,
+   "link_to": "ILS Delivery Advice",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Job Cost Sheet",
+   "link_count": 0,
+   "link_to": "ILS Job Cost Sheet",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Transportation",
+   "link_count": 0,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Transport Job",
+   "link_count": 0,
+   "link_to": "Transport Job",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Transport POD",
+   "link_count": 0,
+   "link_to": "Transport POD",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Vehicle Trip Cost",
+   "link_count": 0,
+   "link_to": "Vehicle Trip Cost",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Driver Trip Allowance",
+   "link_count": 0,
+   "link_to": "Driver Trip Allowance",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Job Cost Allocation",
+   "link_count": 0,
+   "link_to": "Job Cost Allocation",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Fleet and Workshop",
+   "link_count": 0,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Trip Request",
+   "link_count": 0,
+   "link_to": "Trip Request",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Trip Planning",
+   "link_count": 0,
+   "link_to": "Trip Planning",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Vehicle Assignment",
+   "link_count": 0,
+   "link_to": "Vehicle Assignment",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Trip Log",
+   "link_count": 0,
+   "link_to": "Trip Log",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Fuel Entry",
+   "link_count": 0,
+   "link_to": "Fuel Entry",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Vehicle Expense",
+   "link_count": 0,
+   "link_to": "Vehicle Expense",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Vehicle Release Checklist",
+   "link_count": 0,
+   "link_to": "Vehicle Release Checklist",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Workshop Inspection",
+   "link_count": 0,
+   "link_to": "Workshop Inspection",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Workshop Job Card",
+   "link_count": 0,
+   "link_to": "Workshop Job Card",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Spare Parts Request",
+   "link_count": 0,
+   "link_to": "Spare Parts Request",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Workshop Summary",
+   "link_count": 0,
+   "link_to": "Workshop Summary",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Service Schedule",
+   "link_count": 0,
+   "link_to": "Service Schedule",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Maintenance Record",
+   "link_count": 0,
+   "link_to": "Maintenance Record",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Rental Contract",
+   "link_count": 0,
+   "link_to": "Rental Contract",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Insurance Policy",
+   "link_count": 0,
+   "link_to": "Insurance Policy",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Insurance Claim",
+   "link_count": 0,
+   "link_to": "Insurance Claim",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Standard ERPNext",
+   "link_count": 0,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Sales Invoice",
+   "link_count": 0,
+   "link_to": "Sales Invoice",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Purchase Invoice",
+   "link_count": 0,
+   "link_to": "Purchase Invoice",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Payment Entry",
+   "link_count": 0,
+   "link_to": "Payment Entry",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Fleet Reports ",
+   "link_count": 0,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Trip Log Register",
+   "link_count": 0,
+   "link_to": "Trip Log Register",
+   "link_type": "Report",
+   "onboard": 0,
+   "report_ref_doctype": "Trip Log",
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Vehicle Fuel Entry Register",
+   "link_count": 0,
+   "link_to": "Vehicle Fuel Entry Register",
+   "link_type": "Report",
+   "onboard": 0,
+   "report_ref_doctype": "Fuel Entry",
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Vehicle Expense Register",
+   "link_count": 0,
+   "link_to": "Vehicle Expense Register",
+   "link_type": "Report",
+   "onboard": 0,
+   "report_ref_doctype": "Vehicle Expense",
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Vehicle Maintenance Register",
+   "link_count": 0,
+   "link_to": "Vehicle Maintenance Register",
+   "link_type": "Report",
+   "onboard": 0,
+   "report_ref_doctype": "Maintenance Record",
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Vehicle Trip Request Register",
+   "link_count": 0,
+   "link_to": "Vehicle Trip Request Register",
+   "link_type": "Report",
+   "onboard": 0,
+   "report_ref_doctype": "Trip Request",
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Vehicle Insurance Policy Register",
+   "link_count": 0,
+   "link_to": "Vehicle Insurance Policy Register",
+   "link_type": "Report",
+   "onboard": 0,
+   "report_ref_doctype": "Insurance Policy",
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Vehicle Insurance Claim Register",
+   "link_count": 0,
+   "link_to": "Vehicle Insurance Claim Register",
+   "link_type": "Report",
+   "onboard": 0,
+   "report_ref_doctype": "Insurance Claim",
+   "type": "Link"
+  }
+ ],
+ "modified": "2026-09-07 14:56:25.064448",
+ "modified_by": "Administrator",
+ "module": "Freight Management",
+ "name": "Freight Management",
+ "number_cards": [],
+ "owner": "Administrator",
+ "public": 1,
+ "quick_lists": [],
+ "roles": [],
+ "sequence_id": 43.0,
+ "shortcuts": [],
+ "title": "Freight Management"
+}

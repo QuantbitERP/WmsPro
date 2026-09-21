@@ -22,7 +22,7 @@
    "fieldtype": "Link",
    "in_list_view": 1,
    "label": "Charge",
-   "options": "ILS Charge Master",
+   "options": "Item",
    "reqd": 1
   },
   {
@@ -39,21 +39,24 @@
    "fieldname": "buy_rate",
    "fieldtype": "Currency",
    "in_list_view": 1,
-   "label": "Buy Rate"
+   "label": "Buy Rate",
+   "options": "currency"
   },
   {
    "columns": 2,
    "fieldname": "sell_rate",
    "fieldtype": "Currency",
    "in_list_view": 1,
-   "label": "Sell Rate"
+   "label": "Sell Rate",
+   "options": "currency"
   },
   {
    "columns": 2,
    "fieldname": "amount",
    "fieldtype": "Currency",
    "in_list_view": 1,
-   "label": "Amount"
+   "label": "Amount",
+   "options": "currency"
   },
   {
    "columns": 2,

@@ -25,6 +25,7 @@ export default function Header({ user }) {
     if (path.startsWith('/freight/operations')) return 'Freight Management / Operations';
     if (path.startsWith('/freight/finance')) return 'Freight Management / Finance';
     if (path.startsWith('/freight/management')) return 'Freight Management / Management';
+    if (path.startsWith('/freight/transportation')) return 'Freight Management / Transportation';
     return 'Dashboard';
   };
 
@@ -60,7 +61,7 @@ export default function Header({ user }) {
               </div>
               <div 
                 className="dropdown-item"
-                onClick={() => window.location.href = import.meta.env.DEV ? 'http://127.0.0.1:8002/app' : '/app'}
+                onClick={() => window.location.href = import.meta.env.DEV ? `${import.meta.env.VITE_BACKEND_URL}/app` : '/app'}
               >
                 <ExternalLink size={14} /> Switch to Desk
               </div>

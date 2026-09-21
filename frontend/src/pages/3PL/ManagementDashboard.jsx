@@ -22,28 +22,28 @@ export default function ManagementDashboard() {
     <div className="kpi info">
       <div className="accent-bar"></div>
       <div className="label">Revenue MTD</div>
-      <div className="value">RM 342K</div>
-      <div className="sub">Target: RM 390K</div>
+      <div className="value">OMR 342K</div>
+      <div className="sub">Target: OMR 390K</div>
       <div className="delta warn">88% of target</div>
     </div>
     <div className="kpi success">
       <div className="accent-bar"></div>
       <div className="label">Projected Month-End</div>
-      <div className="value">RM 395K</div>
+      <div className="value">OMR 395K</div>
       <div className="sub">Based on current contracts</div>
       <div className="delta up">↑ 1% above target</div>
     </div>
     <div className="kpi warn">
       <div className="accent-bar"></div>
       <div className="label">Revenue at Risk</div>
-      <div className="value">RM 61K</div>
+      <div className="value">OMR 61K</div>
       <div className="sub">Unbilled + exceptions</div>
       <div className="delta down">Needs resolution</div>
     </div>
     <div className="kpi danger">
       <div className="accent-bar"></div>
       <div className="label">Overdue Receivables</div>
-      <div className="value">RM 128K</div>
+      <div className="value">OMR 128K</div>
       <div className="sub">8 customers · 4 critical</div>
       <div className="delta down">37% of monthly rev</div>
     </div>
@@ -56,12 +56,12 @@ export default function ManagementDashboard() {
     </div>
     <div className="card-body">
       <div style={{display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: 'var(--muted)', marginBottom: '6px'}}>
-        <span>Actual Billed: <strong style={{color: 'var(--ink)'}}>RM 342K</strong></span>
-        <span>Pending Resolution: <strong style={{color: 'var(--amber)'}}>RM 61K</strong></span>
-        <span>Target: <strong style={{color: 'var(--ink)'}}>RM 390K</strong></span>
+        <span>Actual Billed: <strong style={{color: 'var(--ink)'}}>OMR 342K</strong></span>
+        <span>Pending Resolution: <strong style={{color: 'var(--amber)'}}>OMR 61K</strong></span>
+        <span>Target: <strong style={{color: 'var(--ink)'}}>OMR 390K</strong></span>
       </div>
       <div className="forecast-bar-wrap">
-        <div className="forecast-bar-fill" style={{width: '58%', backgroundColor: 'var(--green)'}}>Billed: RM 342K</div>
+        <div className="forecast-bar-fill" style={{width: '58%', backgroundColor: 'var(--green)'}}>Billed: OMR 342K</div>
         <div className="forecast-bar-fill" style={{width: '10%', backgroundColor: 'var(--amber)'}}>At Risk</div>
         <div className="forecast-bar-fill" style={{width: '32%', backgroundColor: 'var(--border)', color: 'var(--muted)'}}>Remaining period</div>
       </div>
@@ -86,7 +86,7 @@ export default function ManagementDashboard() {
           <tbody>
             <tr>
               <td><strong>Alpha Pharma</strong></td>
-              <td className="mono">RM 84,000</td>
+              <td className="mono">OMR 84,000</td>
               <td>
                 <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
                   <div className="bar-wrap" style={{width: '80px'}}><div className="bar-fill" style={{width: '25%', backgroundColor: 'var(--blue)'}}></div></div>
@@ -97,7 +97,7 @@ export default function ManagementDashboard() {
             </tr>
             <tr>
               <td><strong>BrightGoods Sdn</strong></td>
-              <td className="mono">RM 61,200</td>
+              <td className="mono">OMR 61,200</td>
               <td>
                 <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
                   <div className="bar-wrap" style={{width: '80px'}}><div className="bar-fill" style={{width: '18%', backgroundColor: 'var(--blue)'}}></div></div>
@@ -108,7 +108,7 @@ export default function ManagementDashboard() {
             </tr>
             <tr>
               <td><strong>FreshPack Co</strong></td>
-              <td className="mono">RM 48,800</td>
+              <td className="mono">OMR 48,800</td>
               <td>
                 <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
                   <div className="bar-wrap" style={{width: '80px'}}><div className="bar-fill" style={{width: '14%', backgroundColor: 'var(--amber)'}}></div></div>
@@ -119,7 +119,7 @@ export default function ManagementDashboard() {
             </tr>
             <tr>
               <td>MegaRetail Sdn</td>
-              <td className="mono">RM 38,200</td>
+              <td className="mono">OMR 38,200</td>
               <td>
                 <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
                   <div className="bar-wrap" style={{width: '80px'}}><div className="bar-fill" style={{width: '11%', backgroundColor: 'var(--red)'}}></div></div>
@@ -130,7 +130,7 @@ export default function ManagementDashboard() {
             </tr>
             <tr>
               <td>Others (12 customers)</td>
-              <td className="mono">RM 109,800</td>
+              <td className="mono">OMR 109,800</td>
               <td>
                 <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
                   <div className="bar-wrap" style={{width: '80px'}}><div className="bar-fill" style={{width: '32%', backgroundColor: 'var(--green)'}}></div></div>
@@ -209,7 +209,7 @@ export default function ManagementDashboard() {
       <div className="label">Dead Stock Occupying Space</div>
       <div className="value">31 pallets</div>
       <div className="sub">Across 4 customers · 30+ days idle</div>
-      <div className="delta warn">Opportunity cost: RM 9,300</div>
+      <div className="delta warn">Opportunity cost: OMR 9,300</div>
     </div>
   </div>
 
@@ -226,13 +226,13 @@ export default function ManagementDashboard() {
           <div className="decision-num">1</div>
           <div className="decision-content">
             <div className="action">Approve or escalate SunTrade renewal — expires in 7 days</div>
-            <div className="reason">RM 8,000/month revenue. Volume declining 31%. Decide: renew at same rate or renegotiate minimum commitment downward.</div>
+            <div className="reason">OMR 8,000/month revenue. Volume declining 31%. Decide: renew at same rate or renegotiate minimum commitment downward.</div>
           </div>
         </div>
         <div className="decision-row">
           <div className="decision-num">2</div>
           <div className="decision-content">
-            <div className="action">Approve RM 84,200 in invoices pending Finance sign-off</div>
+            <div className="action">Approve OMR 84,200 in invoices pending Finance sign-off</div>
             <div className="reason">4 invoices aging 3+ days without approval. Month-end cash flow at risk.</div>
           </div>
         </div>
@@ -246,7 +246,7 @@ export default function ManagementDashboard() {
         <div className="decision-row">
           <div className="decision-num">4</div>
           <div className="decision-content">
-            <div className="action">Pursue RM 12,300 in debt over 90 days</div>
+            <div className="action">Pursue OMR 12,300 in debt over 90 days</div>
             <div className="reason">1 customer. Decide: issue final notice, engage collections, or negotiate payment plan before write-off risk.</div>
           </div>
         </div>
@@ -270,7 +270,7 @@ export default function ManagementDashboard() {
           <tbody>
             <tr>
               <td>Storage (Pallet)</td>
-              <td className="mono">RM 168,000</td>
+              <td className="mono">OMR 168,000</td>
               <td>
                 <div className="bar-wrap"><div className="bar-fill" style={{width: '49%', backgroundColor: 'var(--blue)'}}></div></div>
                 <span className="mono" style={{fontSize: '11px'}}>49%</span>
@@ -279,7 +279,7 @@ export default function ManagementDashboard() {
             </tr>
             <tr>
               <td>Handling (In/Out)</td>
-              <td className="mono">RM 98,500</td>
+              <td className="mono">OMR 98,500</td>
               <td>
                 <div className="bar-wrap"><div className="bar-fill" style={{width: '29%', backgroundColor: 'var(--green)'}}></div></div>
                 <span className="mono" style={{fontSize: '11px'}}>29%</span>
@@ -288,7 +288,7 @@ export default function ManagementDashboard() {
             </tr>
             <tr>
               <td>Fixed Monthly</td>
-              <td className="mono">RM 48,200</td>
+              <td className="mono">OMR 48,200</td>
               <td>
                 <div className="bar-wrap"><div className="bar-fill" style={{width: '14%', backgroundColor: 'var(--amber)'}}></div></div>
                 <span className="mono" style={{fontSize: '11px'}}>14%</span>
@@ -297,7 +297,7 @@ export default function ManagementDashboard() {
             </tr>
             <tr>
               <td>Min. Commitment Top-Up</td>
-              <td className="mono">RM 16,300</td>
+              <td className="mono">OMR 16,300</td>
               <td>
                 <div className="bar-wrap"><div className="bar-fill" style={{width: '5%', backgroundColor: 'var(--red)'}}></div></div>
                 <span className="mono" style={{fontSize: '11px'}}>5%</span>
@@ -306,7 +306,7 @@ export default function ManagementDashboard() {
             </tr>
             <tr>
               <td>One-Time Setup</td>
-              <td className="mono">RM 11,000</td>
+              <td className="mono">OMR 11,000</td>
               <td>
                 <div className="bar-wrap"><div className="bar-fill" style={{width: '3%', backgroundColor: '#94A3B8'}}></div></div>
                 <span className="mono" style={{fontSize: '11px'}}>3%</span>

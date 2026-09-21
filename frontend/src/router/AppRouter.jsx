@@ -11,6 +11,11 @@ import WmsManagement from '../pages/3PL/ManagementDashboard';
 import FreightOperations from '../pages/Freight/Operations';
 import FreightFinance from '../pages/Freight/Finance';
 import FreightManagement from '../pages/Freight/Management';
+import FreightTransportation from '../pages/Freight/Transportation';
+
+// Fleet Pages
+import FleetOperations from '../pages/Fleet/Operations';
+import FleetManagement from '../pages/Fleet/Management';
 
 export default function AppRouter() {
   return (
@@ -32,6 +37,13 @@ export default function AppRouter() {
           <Route path="operations" element={<FreightOperations />} />
           <Route path="finance" element={<FreightFinance />} />
           <Route path="management" element={<FreightManagement />} />
+          <Route path="transportation" element={<FreightTransportation />} />
+        </Route>
+
+        {/* Fleet Routes */}
+        <Route path="fleet">
+          <Route path="operations" element={<FleetOperations />} />
+          <Route path="management" element={<FleetManagement />} />
         </Route>
       </Route>
     </Routes>

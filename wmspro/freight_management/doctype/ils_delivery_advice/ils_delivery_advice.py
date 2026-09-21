@@ -16,11 +16,11 @@ class ILSDeliveryAdvice(Document):
 		if not freight_job:
 			return
 		status = frappe.db.get_value("ILS Freight Job", freight_job, "status")
-		allowed = ["Out for Delivery", "Customs Released"]
+		allowed = ["Customs Released", "Out for Delivery", "Delivered", "Invoiced", "Closed"]
 		if status not in allowed:
 			frappe.throw(
 				f"Delivery Advice can only be created when Freight Job is "
-				f"<b>Out for Delivery</b>. Current status: <b>{status}</b>"
+				f"<b>Out for Delivery</b> or later. Current status: <b>{status}</b>"
 			)
 
 	def fetch_job_details(self):

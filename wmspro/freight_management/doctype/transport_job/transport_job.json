@@ -1,0 +1,353 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "naming_series:",
+ "creation": "2026-08-22 16:36:01.389752",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "sec_break_1",
+  "col_break_1",
+  "naming_series",
+  "status",
+  "col_break_2",
+  "job_type",
+  "required_date",
+  "col_break_3",
+  "load_type",
+  "transporter",
+  "col_break_4",
+  "customer",
+  "source_job_type",
+  "sec_break_2",
+  "col_break_5",
+  "linked_freight_job",
+  "route",
+  "col_break_6",
+  "linked_warehouse_job",
+  "loading_point",
+  "col_break_7",
+  "linked_cfs_job",
+  "delivery_point",
+  "col_break_8",
+  "driver",
+  "vehicle",
+  "sec_break_3",
+  "col_break_9",
+  "transport_revenue",
+  "col_break_10",
+  "transport_cost",
+  "col_break_11",
+  "profit",
+  "sales_invoice",
+  "sec_break_4",
+  "item",
+  "sec_break_5",
+  "job_charges",
+  "sec_break_6",
+  "trip_expenses",
+  "sec_break_7",
+  "job_links",
+  "tabconnection_tab",
+  "doc_link_doctype",
+  "doc_link"
+ ],
+ "fields": [
+  {
+   "fieldname": "sec_break_1",
+   "fieldtype": "Section Break",
+   "label": "General Details"
+  },
+  {
+   "fieldname": "col_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "TRN-.YYYY.-.####",
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "label": "Naming Series",
+   "options": "TRN-.YYYY.-.####"
+  },
+  {
+   "default": "Draft",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Status",
+   "options": "Draft\nPlanned\nAssigned\nTrip Started\nIn Transit\nDelivered\nCompleted"
+  },
+  {
+   "fieldname": "col_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "Import",
+   "fieldname": "job_type",
+   "fieldtype": "Select",
+   "label": "Job Type",
+   "options": "Import\nExport"
+  },
+  {
+   "fieldname": "required_date",
+   "fieldtype": "Date",
+   "label": "Required Date"
+  },
+  {
+   "fieldname": "col_break_3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "FTL",
+   "fieldname": "load_type",
+   "fieldtype": "Select",
+   "label": "Load Type",
+   "options": "FTL\nLTL"
+  },
+  {
+   "fieldname": "transporter",
+   "fieldtype": "Link",
+   "label": "Transporter",
+   "options": "Transporter"
+  },
+  {
+   "fieldname": "col_break_4",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Customer",
+   "options": "Customer",
+   "reqd": 1
+  },
+  {
+   "default": "Freight",
+   "fieldname": "source_job_type",
+   "fieldtype": "Select",
+   "label": "Source Job Type",
+   "options": "Freight\nWarehouse\nCFS"
+  },
+  {
+   "fieldname": "sec_break_2",
+   "fieldtype": "Section Break",
+   "label": "Additional Info 1"
+  },
+  {
+   "fieldname": "col_break_5",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "linked_freight_job",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Linked Freight Job",
+   "options": "ILS Freight Job"
+  },
+  {
+   "fieldname": "loading_point",
+   "fieldtype": "Data",
+   "label": "Loading Point",
+   "reqd": 1
+  },
+  {
+   "fieldname": "col_break_6",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "linked_warehouse_job",
+   "fieldtype": "Link",
+   "label": "Linked Warehouse Job",
+   "options": "WMS Outbound Shipment"
+  },
+  {
+   "fieldname": "delivery_point",
+   "fieldtype": "Data",
+   "label": "Delivery Point",
+   "reqd": 1
+  },
+  {
+   "fieldname": "col_break_7",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "linked_cfs_job",
+   "fieldtype": "Data",
+   "label": "Linked CFS Job"
+  },
+  {
+   "fieldname": "vehicle",
+   "fieldtype": "Link",
+   "label": "Vehicle",
+   "options": "Vehicle Master"
+  },
+  {
+   "fieldname": "col_break_8",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "route",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Route",
+   "options": "Route"
+  },
+  {
+   "fieldname": "driver",
+   "fieldtype": "Link",
+   "label": "Driver",
+   "options": "Driver Master"
+  },
+  {
+   "fieldname": "sec_break_3",
+   "fieldtype": "Section Break",
+   "label": "Additional Info 2"
+  },
+  {
+   "fieldname": "col_break_9",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "transport_revenue",
+   "fieldtype": "Currency",
+   "label": "Transport Revenue"
+  },
+  {
+   "fieldname": "col_break_10",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "transport_cost",
+   "fieldtype": "Currency",
+   "label": "Transport Cost"
+  },
+  {
+   "fieldname": "col_break_11",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "profit",
+   "fieldtype": "Currency",
+   "label": "Profit"
+  },
+  {
+   "fieldname": "sales_invoice",
+   "fieldtype": "Link",
+   "label": "Sales Invoice",
+   "options": "Sales Invoice",
+   "read_only": 1
+  },
+  {
+   "fieldname": "sec_break_4",
+   "fieldtype": "Section Break",
+   "label": "Cargo Details"
+  },
+  {
+   "fieldname": "item",
+   "fieldtype": "Table",
+   "label": "Item",
+   "options": "Freight Enquiry Item"
+  },
+  {
+   "fieldname": "sec_break_5",
+   "fieldtype": "Section Break",
+   "label": "Job Charges"
+  },
+  {
+   "fieldname": "job_charges",
+   "fieldtype": "Table",
+   "label": "Job Charges",
+   "options": "ILS Job Charge"
+  },
+  {
+   "fieldname": "sec_break_6",
+   "fieldtype": "Section Break",
+   "label": "Trip Expenses"
+  },
+  {
+   "fieldname": "trip_expenses",
+   "fieldtype": "Table",
+   "label": "Trip Expenses",
+   "options": "ILS Cost Line"
+  },
+  {
+   "fieldname": "sec_break_7",
+   "fieldtype": "Section Break",
+   "label": "LTL Job Links"
+  },
+  {
+   "fieldname": "job_links",
+   "fieldtype": "Table",
+   "label": "LTL Job Links",
+   "options": "Job Links"
+  },
+  {
+   "fieldname": "tabconnection_tab",
+   "fieldtype": "Tab Break",
+   "label": "Connection"
+  },
+  {
+   "fieldname": "doc_link_doctype",
+   "fieldtype": "Link",
+   "label": "Doc Link Doctype",
+   "options": "DocType"
+  },
+  {
+   "fieldname": "doc_link",
+   "fieldtype": "Dynamic Link",
+   "label": "Doc Link",
+   "options": "doc_link_doctype"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [
+  {
+   "link_doctype": "Transport POD",
+   "link_fieldname": "transport_job"
+  },
+  {
+   "link_doctype": "Sales Invoice",
+   "link_fieldname": "custom_ils_transport_job"
+  }
+ ],
+ "modified": "2026-08-25 15:39:06.609789",
+ "modified_by": "Administrator",
+ "module": "Freight Management",
+ "name": "Transport Job",
+ "naming_rule": "By \"Naming Series\" field",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "All",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

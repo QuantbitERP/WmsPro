@@ -77,7 +77,7 @@ export default function OpsView() {
 
             <div className="pipeline-col">
               <div className="pipeline-col-head">Customs <span className="p-count red">18</span></div>
-              <div className="job-card"><div className="seg-pill">FCL-IMP</div><div className="job-card-no">FCL-IMP-26-00284</div><div className="job-card-cust">Falcon Imports</div><div className="job-card-meta">Duty: AED 42K</div><div className="job-card-days bad">🔴 REJECTED</div></div>
+              <div className="job-card"><div className="seg-pill">FCL-IMP</div><div className="job-card-no">FCL-IMP-26-00284</div><div className="job-card-cust">Falcon Imports</div><div className="job-card-meta">Duty: OMR 42K</div><div className="job-card-days bad">🔴 REJECTED</div></div>
               <div className="job-card"><div className="seg-pill air">AIR-IMP</div><div className="job-card-no">AIR-IMP-26-00176</div><div className="job-card-cust">Tech Solutions FZ</div><div className="job-card-meta">Under examination</div><div className="job-card-days warn">⚠ Day 3</div></div>
               <div className="job-card"><div className="seg-pill">LCL-IMP</div><div className="job-card-no">LCL-IMP-26-00071</div><div className="job-card-cust">Blue Ocean Trade</div><div className="job-card-meta">Docs submitted</div><div className="job-card-days ok">✓ Day 1</div></div>
             </div>
@@ -104,15 +104,15 @@ export default function OpsView() {
           </div>
 
           <div className="section-label">Today's Action Queue</div>
-          <div className="action-item"><div className="action-num red">1</div><div><div className="action-title">Customs rejection — respond within 24 hrs</div><div className="action-meta">Falcon Imports — AED 42,000 duty disputed. Resubmit with corrected HS codes.</div><div className="action-ref">FCL-IMP-26-00284 · CD-26-00091</div></div></div>
+          <div className="action-item"><div className="action-num red">1</div><div><div className="action-title">Customs rejection — respond within 24 hrs</div><div className="action-meta">Falcon Imports — OMR 42,000 duty disputed. Resubmit with corrected HS codes.</div><div className="action-ref">FCL-IMP-26-00284 · CD-26-00091</div></div></div>
           <div className="action-item"><div className="action-num red">2</div><div><div className="action-title">DO expires tomorrow — contact consignee immediately</div><div className="action-meta">DO-26-00211 valid until Jul 30. Summit Logistics not yet collected.</div><div className="action-ref">DO-26-00211 · FCL-IMP-26-00278</div></div></div>
           <div className="action-item"><div className="action-num amber">3</div><div><div className="action-title">CFS cargo held 3 days — free days exhausted, storage accruing</div><div className="action-meta">Multi Cargo Inc. not responding. Escalate to agent and notify management.</div><div className="action-ref">CFS-26-00044 · 3PL-GRN-00871</div></div></div>
-          <div className="action-item"><div className="action-num amber">4</div><div><div className="action-title">8 delivered jobs not invoiced — AED 286K revenue pending</div><div className="action-meta">Finance team to issue Sales Invoices before month-end close (2 working days).</div><div className="action-ref">View unbilled jobs →</div></div></div>
+          <div className="action-item"><div className="action-num amber">4</div><div><div className="action-title">8 delivered jobs not invoiced — OMR 286K revenue pending</div><div className="action-meta">Finance team to issue Sales Invoices before month-end close (2 working days).</div><div className="action-ref">View unbilled jobs →</div></div></div>
           <div className="action-item"><div className="action-num" style={{background:'var(--muted)'}}>5</div><div><div className="action-title">3 rate cards expiring this week — sales action needed</div><div className="action-meta">Gulf Traders LLC, Apex Electronics, Pharma Gulf. Renewal quotes to be sent.</div><div className="action-ref">Rate Card Expiry Report →</div></div></div>
 
           <div className="section-label">Customs Declaration Status</div>
           <table className="data-table">
-            <thead><tr><th>Job No</th><th>Customer</th><th>Decl. No</th><th>Dir.</th><th>Submitted</th><th>Days</th><th>Duty (AED)</th><th>Status</th></tr></thead>
+            <thead><tr><th>Job No</th><th>Customer</th><th>Decl. No</th><th>Dir.</th><th>Submitted</th><th>Days</th><th>Duty (OMR)</th><th>Status</th></tr></thead>
             <tbody>
               <tr><td className="mono link-cell">FCL-IMP-26-00284</td><td>Falcon Imports</td><td className="mono">CD-26-00091</td><td>IMP</td><td>Jul 24</td><td style={{color:'var(--red)',fontWeight:700}}>5</td><td className="mono">42,000</td><td><span className="badge red">Rejected</span></td></tr>
               <tr><td className="mono link-cell">AIR-IMP-26-00176</td><td>Tech Solutions FZ</td><td className="mono">CD-26-00097</td><td>IMP</td><td>Jul 27</td><td style={{color:'var(--amber)',fontWeight:700}}>2</td><td className="mono">18,500</td><td><span className="badge amber">Under Exam</span></td></tr>
@@ -142,7 +142,7 @@ export default function OpsView() {
           <div className="sidebar-card">
             <div className="sidebar-title">Info <span className="s-badge blue">4</span></div>
             <div className="alert-item warning"><span className="alert-icon">ℹ️</span><div><div>Rate card expiring in 2 days</div><div className="alert-ref">Gulf Traders LLC</div></div></div>
-            <div className="alert-item warning"><span className="alert-icon">ℹ️</span><div><div>8 jobs unbilled post-delivery</div><div className="alert-ref">AED 286,000 at risk</div></div></div>
+            <div className="alert-item warning"><span className="alert-icon">ℹ️</span><div><div>8 jobs unbilled post-delivery</div><div className="alert-ref">OMR 286,000 at risk</div></div></div>
             <div className="alert-item warning"><span className="alert-icon">ℹ️</span><div><div>Vessel delay — MSC Allegra</div><div className="alert-ref">3 jobs impacted</div></div></div>
             <div className="alert-item warning"><span className="alert-icon">ℹ️</span><div><div>Bayan integration update</div><div className="alert-ref">2 declarations pending</div></div></div>
           </div>
