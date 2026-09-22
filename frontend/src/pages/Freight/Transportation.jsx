@@ -26,17 +26,20 @@ export default function Transportation() {
           font-family: var(--font-sans);
         }
         .transport-dashboard .flex-center { display: flex; align-items: center; gap: 8px; }
-        .transport-dashboard .row { display: grid; gap: 12px; margin-bottom: 12px; }
-        .transport-dashboard .r4 { grid-template-columns: repeat(4, 1fr); }
-        .transport-dashboard .r3 { grid-template-columns: repeat(3, 1fr); }
-        .transport-dashboard .r2 { grid-template-columns: 1fr 1fr; }
+        .transport-dashboard .row { display: grid; gap: 14px; margin-bottom: 14px; }
+        .transport-dashboard .r4 { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+        .transport-dashboard .r3 { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+        .transport-dashboard .r2 { grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
         .transport-dashboard .r21 { grid-template-columns: 2fr 1fr; }
+        @media (max-width: 1024px) {
+          .transport-dashboard .r21 { grid-template-columns: 1fr; }
+        }
         .transport-dashboard .card { background: var(--surface-2); border: 0.5px solid var(--border); border-radius: 12px; padding: 16px; }
-        .transport-dashboard .metric { background: var(--surface-1); border-radius: var(--radius); padding: 12px 14px; border: 0.5px solid var(--border); transition: transform 0.2s, box-shadow 0.2s; }
+        .transport-dashboard .metric { background: var(--surface-1); border-radius: var(--radius); padding: 14px 16px; border: 0.5px solid var(--border); transition: transform 0.2s, box-shadow 0.2s; min-width: 0; }
         .transport-dashboard .metric:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-        .transport-dashboard .metric-label { font-size: 12px; color: var(--text-secondary); margin-bottom: 4px; font-weight: 500; }
-        .transport-dashboard .metric-val { font-size: 22px; font-weight: 600; color: var(--text-primary); line-height: 1; }
-        .transport-dashboard .metric-sub { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
+        .transport-dashboard .metric-label { font-size: 12px; color: var(--text-secondary); margin-bottom: 5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .transport-dashboard .metric-val { font-size: 21px; font-weight: 700; color: var(--text-primary); line-height: 1.2; font-family: 'JetBrains Mono', monospace; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .transport-dashboard .metric-sub { font-size: 12px; color: var(--text-muted); margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         
         .transport-dashboard .metric-blue { background: rgba(37, 99, 235, 0.05); border: 1px solid rgba(37, 99, 235, 0.15); }
         .transport-dashboard .metric-blue .metric-val { color: #2563EB; }
