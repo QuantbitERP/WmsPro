@@ -24,10 +24,28 @@ const backendPort = getBackendPort()
 export default defineConfig({
   plugins: [react()],
   server: {
+    host: '0.0.0.0',
+    port: 3017,
     proxy: {
       '/api': {
         target: `http://127.0.0.1:${backendPort}`,
         changeOrigin: true,
+        headers: {
+          'X-Frappe-Site-Name': 'wmspro.erpdata.in'
+        }
+      }
+    }
+  },
+  preview: {
+    host: '0.0.0.0',
+    port: 3017,
+    proxy: {
+      '/api': {
+        target: `http://127.0.0.1:${backendPort}`,
+        changeOrigin: true,
+        headers: {
+          'X-Frappe-Site-Name': 'wmspro.erpdata.in'
+        }
       }
     }
   },

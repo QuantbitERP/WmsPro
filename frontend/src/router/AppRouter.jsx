@@ -17,6 +17,10 @@ import FreightTransportation from '../pages/Freight/Transportation';
 import FleetOperations from '../pages/Fleet/Operations';
 import FleetManagement from '../pages/Fleet/Management';
 
+// Workshop Pages
+import WorkshopOperations from '../pages/Workshop/Operations';
+import WorkshopManagement from '../pages/Workshop/Management';
+
 export default function AppRouter() {
   return (
     <Routes>
@@ -44,6 +48,12 @@ export default function AppRouter() {
         <Route path="fleet">
           <Route path="operations" element={<FleetOperations />} />
           <Route path="management" element={<FleetManagement />} />
+        </Route>
+
+        {/* Workshop Routes */}
+        <Route path="workshop">
+          <Route path="operations" element={<WorkshopOperations />} />
+          <Route path="management" element={<WorkshopManagement />} />
         </Route>
       </Route>
     </Routes>

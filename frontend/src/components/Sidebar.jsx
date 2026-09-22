@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { Box, Truck, ChevronDown, ChevronRight, LayoutDashboard, Briefcase, Activity, Car } from 'lucide-react';
+import { Box, Truck, ChevronDown, ChevronRight, LayoutDashboard, Briefcase, Activity, Car, Wrench } from 'lucide-react';
 
 export default function Sidebar() {
   const location = useLocation();
   const [expandedMenu, setExpandedMenu] = useState(
-    location.pathname.startsWith('/3pl') ? '3pl' : location.pathname.startsWith('/freight') ? 'freight' : location.pathname.startsWith('/fleet') ? 'fleet' : null
+    location.pathname.startsWith('/3pl') ? '3pl' : location.pathname.startsWith('/freight') ? 'freight' : location.pathname.startsWith('/fleet') ? 'fleet' : location.pathname.startsWith('/workshop') ? 'workshop' : null
   );
 
   const toggleMenu = (menu) => {
@@ -143,6 +143,41 @@ export default function Sidebar() {
               >
                 <div className="nav-item-left">
                   <Briefcase size={16} /> Management & Costs
+                </div>
+              </NavLink>
+            </div>
+          )}
+          
+          {/* Workshop Menu */}
+          <div 
+            className="nav-item" 
+            onClick={() => toggleMenu('workshop')}
+            style={{ marginBottom: expandedMenu === 'workshop' ? 4 : 8 }}
+          >
+            <div className="nav-item-left">
+              <Wrench size={18} /> Workshop Management
+            </div>
+            {expandedMenu === 'workshop' ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+          </div>
+
+          {expandedMenu === 'workshop' && (
+            <div style={{ paddingLeft: 12, marginBottom: 12 }}>
+              <NavLink 
+                to="/workshop/operations" 
+                className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+                style={{ fontSize: 13, padding: '8px 12px' }}
+              >
+                <div className="nav-item-left">
+                  <LayoutDashboard size={16} /> Operations & Bays
+                </div>
+              </NavLink>
+              <NavLink 
+                to="/workshop/management" 
+                className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+                style={{ fontSize: 13, padding: '8px 12px' }}
+              >
+                <div className="nav-item-left">
+                  <Briefcase size={16} /> Analytics & Costs
                 </div>
               </NavLink>
             </div>
