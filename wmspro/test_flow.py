@@ -101,6 +101,7 @@ def create_transport_masters():
 
 
 def run_flow():
+	frappe.in_test = True
 	frappe.flags.in_test = True
 	print("Starting full user flow creation...")
 

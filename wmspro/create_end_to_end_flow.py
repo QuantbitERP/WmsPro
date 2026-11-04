@@ -2,6 +2,7 @@ import frappe
 from frappe.utils import today, add_days
 
 def run():
+    frappe.in_test = True
     frappe.flags.in_test = True
     print("--- STARTING END TO END FLOW ---")
     

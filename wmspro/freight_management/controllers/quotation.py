@@ -260,7 +260,6 @@ def ils_create_freight_job(doc):
 		"Quotation", doc.name,
 		"custom_ils_linked_freight_job", job.name
 	)
-	frappe.db.commit()
 
 	frappe.msgprint(
 		f"Freight Job <b>{job.name}</b> created successfully.",

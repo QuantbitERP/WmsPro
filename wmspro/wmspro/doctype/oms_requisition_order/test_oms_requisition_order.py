@@ -2,10 +2,10 @@
 # See license.txt
 
 import frappe
-from frappe.tests.utils import FrappeTestCase
+from frappe.tests import IntegrationTestCase, UnitTestCase
 
 
-class TestOMSRequisitionOrder(FrappeTestCase):
+class TestOMSRequisitionOrder(IntegrationTestCase):
 	
 	def test_get_available_stock(self):
 		"""Test the get_available_stock function"""

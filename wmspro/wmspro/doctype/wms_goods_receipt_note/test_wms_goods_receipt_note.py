@@ -2,10 +2,10 @@
 # See license.txt
 
 import frappe
-from frappe.tests.utils import FrappeTestCase
+from frappe.tests import IntegrationTestCase, UnitTestCase
 
 
-class TestWMSGoodsReceiptNote(FrappeTestCase):
+class TestWMSGoodsReceiptNote(IntegrationTestCase):
 	
 	def test_status_set_to_received_on_submit(self):
 		"""Test that status is set to 'Received' when GRN is submitted"""
