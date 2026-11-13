@@ -10,16 +10,16 @@ app_license = "mit"
 
 # required_apps = []
 
-# Each item in the list will be shown as an app in the apps page
-# add_to_apps_screen = [
-# 	{
-# 		"name": "wmspro",
-# 		"logo": "/assets/wmspro/logo.png",
-# 		"title": "WmsPro",
-# 		"route": "/wmspro",
-# 		"has_permission": "wmspro.api.permission.has_app_permission"
-# 	}
-# ]
+# Each item in the list will be shown as an app in the apps page / desktop screen (v16)
+add_to_apps_screen = [
+	{
+		"name": "wmspro",
+		"logo": "/assets/wmspro/logo.svg",
+		"title": "WmsPro",
+		"route": "/desk",
+	}
+]
+
 
 # Includes in <head>
 # ------------------

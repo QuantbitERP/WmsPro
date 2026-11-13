@@ -38,6 +38,7 @@ def create_rate_card(segment, currency, charge_code, amount):
     return rc.name
 
 def run():
+    frappe.in_test = True
     frappe.flags.in_test = True
     customer = "ILS Flow Customer 2"
     segment = "FCL-EXP"

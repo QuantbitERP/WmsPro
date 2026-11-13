@@ -326,7 +326,6 @@ def sales_invoice_on_submit(doc, method):
 	if doc.get("custom_ils_transport_job"):
 		frappe.db.set_value("Transport Job", doc.custom_ils_transport_job, "sales_invoice", doc.name)
 
-	frappe.db.commit()
 	frappe.msgprint(
 		f"Freight Job <b>{doc.custom_ils_freight_job}</b> marked as Invoiced.",
 		indicator="green"
@@ -357,5 +356,3 @@ def sales_invoice_on_cancel(doc, method):
 		cs_doc = frappe.get_doc("ILS Job Cost Sheet", cost_sheet)
 		cs_doc.fetch_invoices()
 		cs_doc.save(ignore_permissions=True)
-
-	frappe.db.commit()

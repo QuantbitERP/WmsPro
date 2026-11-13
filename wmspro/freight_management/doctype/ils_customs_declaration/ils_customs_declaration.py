@@ -74,7 +74,6 @@ class ILSCustomsDeclaration(Document):
 				job = frappe.get_doc("ILS Freight Job", freight_job)
 				job.status = target_job_status
 				job.save(ignore_permissions=True)
-				frappe.db.commit()
 
 		if status == "Rejected":
 			frappe.msgprint(
